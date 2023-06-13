@@ -31,10 +31,28 @@ class SpecialItem(models.Model):
     def __str__(self) -> str:
         return self.name
 
-class Order(models.Model):
+class ItemDetail(models.Model):
+    suborder = models.ForeignKey('SubOrder', related_name='suborder',blank=True,on_delete=models.CASCADE)
+    item = models.ForeignKey('MenuItem', related_name='item',blank=True,on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField(default=1)
+    price = models.PositiveIntegerField(default=0)
+
+    def __str__(self) -> str:
+        return str(self.id)
+
+class SubOrder(models.Model):
     customer = models.ForeignKey(Customer, related_name='customer',blank=True,on_delete=models.CASCADE)
+    order = models.ForeignKey('Order', related_name='order',blank=True,on_delete=models.CASCADE)
+    items = models.ManyToManyField('MenuItem', related_name='suborder_items', blank=True, through=ItemDetail)
+    price = models.PositiveIntegerField(default = 0)
+    tip = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self) -> str:
+        return str(self.id)
+
+class Order(models.Model):
+    customers = models.ManyToManyField(Customer, related_name='customerList', blank=True, through=SubOrder)
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_order',blank=True,on_delete=models.CASCADE)
-    items = models.ManyToManyField('MenuItem', related_name='items', blank=True)
     price = models.PositiveIntegerField(default = 0)
     time = models.DateTimeField(default= now())
     tableNumber = models.PositiveSmallIntegerField(default= 0)
