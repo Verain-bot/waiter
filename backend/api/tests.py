@@ -1,10 +1,12 @@
 from django.test import TestCase, Client
 from .models import *
+from rest_framework.test import APIClient
 
 #Testing views
 class TestViews(TestCase):
     def setUp(self):
         self.client = Client()
+        self.APIClient = APIClient()
 
         Customer.objects.create(name='Test Customer 1', phone='1234567890',email='test1@test.com')
         Customer.objects.create(name='Test Customer 2', phone='1234567891',email='test2@test.com')
@@ -91,13 +93,27 @@ class TestViews(TestCase):
     def login(self):
         data = {'phone': '1234567890'}
         response = self.client.post('/api/login/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['phone'], '1234567890')
+
+        #Check OTP
         data = {'otp': '1234'}
         response = self.client.post('/api/otp/', data)
-        
-        return 1234567890
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        print(response)
+        self.assertEquals(response['verified'], True)
 
+    def logout(self):
+        data = {'logout': True}
+        response = self.client.post('/api/login/',data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['logout'], True)
+        
     #Test login page
-    def test_login_GET(self):
+    def test_login_POST(self):
         response = self.client.post('/api/login/')
         self.assertEquals(response.status_code, 400)
 
@@ -153,3 +169,63 @@ class TestViews(TestCase):
         response = response.json()
         self.assertEquals('error' in response, True)
 
+#check user retrieve update page
+    def test_user_detail_GET(self):
+        response = self.client.get('/api/account/')
+        self.assertEquals(response.status_code, 403)
+
+        self.login()
+        response = self.client.get('/api/account/')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['name'], 'Test Customer 1')
+        self.assertEquals(response['phone'], 1234567890)
+        self.logout()
+
+    def test_user_detail_PATCH(self):
+        response = self.client.patch('/api/account/')
+        self.assertEquals(response.status_code, 403)
+
+        self.login()
+        data = {"email": "verain@verain.com"}
+        response = self.client.patch('/api/account/', data,content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['name'], 'Test Customer 1')
+        self.assertEquals(response['phone'], 1234567890)
+        self.assertEquals(response['email'], 'verain@verain.com')
+        self.logout()
+    
+    #Order list view
+    def test_order_list_GET(self):
+        response = self.client.get('/api/account/orders/')
+        self.assertEquals(response.status_code, 403)
+
+        self.login()
+        response = self.client.get('/api/account/orders/')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['count'], 1)
+        self.assertEquals(response['results'][0]['id'], 1)
+
+        #check if json contains url
+        self.assertEquals(response['results'][0]['url'], 'http://testserver/api/account/orders/details/1')
+        self.logout()
+    
+    def test_order_detail_GET(self):
+        response = self.client.get('/api/account/orders/details/1')
+        self.assertEquals(response.status_code, 403)
+
+        self.login()
+        response = self.client.get('/api/account/orders/details/1')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['id'], 1)
+
+        response = self.client.get('/api/account/orders/details/2')
+        self.assertEquals(response.status_code, 403)
+
+        self.logout()
+
+
+        
