@@ -26,7 +26,7 @@ class MenuDetails(generics.RetrieveAPIView):
 
 class CustomerView(generics.CreateAPIView):
     queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+    serializer_class = CustomerDetailSerializer
 
 class CustomerLogin(views.APIView):
 
@@ -43,7 +43,7 @@ class CustomerLogin(views.APIView):
             if not Customer.objects.filter(phone=phone).exists():
                 return Response({'error': 'Phone number is not registered. Please register first'})
             
-            request.session['phone'] = phone
+            request.session['phone'] = int(phone)
             request.session['is_verified'] = False
             
             cacheData = {
@@ -82,7 +82,7 @@ class VerifyOTP(views.APIView):
 #Update customer details
 class UpdateAccount(generics.RetrieveUpdateAPIView):
     queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+    serializer_class = CustomerDetailSerializer
     permission_classes = [IsCustomer]
 
     def get_object(self):
@@ -91,9 +91,15 @@ class UpdateAccount(generics.RetrieveUpdateAPIView):
         return obj
 
 class OrderList(generics.ListAPIView):
+    #queryset contains all the orders of the customer
     queryset = Order.objects.all()
     serializer_class = OrderListSerializer
+    permission_classes = [IsCustomer, IsCustomerOrder]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(customers__phone=self.request.session['phone'])
 
 class OrderDetails(generics.RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderDetailsSerializer
+    permission_classes = [IsCustomer, IsCustomerOrder]

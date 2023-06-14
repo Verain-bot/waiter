@@ -24,9 +24,26 @@ class RestaurantListSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = ['id', 'name', 'logo','url']
 
-class CustomerSerializer(serializers.ModelSerializer):
+class CustomerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
+        fields = '__all__'
+class CustomerListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'name']
+
+class OrderItemDetailsSerializer(serializers.ModelSerializer):
+    item = MenuListSerializer(read_only=True)
+    class Meta:
+        model = ItemDetail
+        fields = '__all__'
+
+class SubOrderSerializer(serializers.ModelSerializer):
+    items = OrderItemDetailsSerializer(many=True, read_only=True, source='suborder')
+    customer = CustomerListSerializer(read_only=True)
+    class Meta:
+        model = SubOrder
         fields = '__all__'
 
 #Order list Serializer
@@ -40,9 +57,9 @@ class OrderListSerializer(serializers.ModelSerializer):
 
 class OrderDetailsSerializer(serializers.ModelSerializer):
     restaurant = RestaurantListSerializer(read_only=True)
-    customer = serializers.CharField(source='customer.name', read_only=True)
     items = MenuListSerializer(many=True, read_only=True)
-    
+    customers = SubOrderSerializer(many=True, read_only=True, source='order')
+
     class Meta:
         model = Order
         fields = '__all__'
