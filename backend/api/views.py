@@ -36,12 +36,13 @@ class CustomerLogin(views.APIView):
                 request.session.flush()
                 return Response({'logout': True})
             return Response({'phone': request.session['phone'], 'created': False})
+        
         elif 'phone' in request.data:
             phone = request.data['phone']
 
             # Check if phone number is already registered
             if not Customer.objects.filter(phone=phone).exists():
-                return Response({'error': 'Phone number is not registered. Please register first'})
+                return Response({'error': 'Phone number is not registered. Please register first'}, status=404)
             
             request.session['phone'] = int(phone)
             request.session['is_verified'] = False
@@ -54,13 +55,13 @@ class CustomerLogin(views.APIView):
 
             return Response({'phone': phone, 'message' : 'OTP is sent to your phone and will expire in 2 mins'})
         
-        return Response({'error': 'Invalid Request'})
+        return Response({'error': 'Invalid Request'}, status=400)
 
 class VerifyOTP(views.APIView):
 
     def post(self, request, *args, **kwargs):
         if 'phone' not in request.session or 'is_verified' not in request.session:
-            return Response({'error': 'Please generate OTP first'})
+            return Response({'error': 'Please generate OTP first'}, 400)
 
         phone = request.session['phone']
         otp = int(request.data['otp'])
@@ -71,7 +72,7 @@ class VerifyOTP(views.APIView):
         if cacheData['tries'] >= 5:
             cache.delete(phone)
             request.session.flush()
-            return Response({'error': 'Too many attempts. Please try again', 'logout': request.session})
+            return Response({'error': 'Too many attempts. Please try again'}, status=400)
         
         if otp == cacheData['otp']:
             request.session['is_verified'] = True
