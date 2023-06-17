@@ -31,14 +31,23 @@ class SpecialItem(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 class ItemDetail(models.Model):
     suborder = models.ForeignKey('SubOrder', related_name='suborder',blank=True,on_delete=models.CASCADE)
     item = models.ForeignKey('MenuItem', related_name='item',blank=True,on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField(default=1)
+    customizations = models.ManyToManyField('CustomatizationOptions', related_name='customizations', blank=True, through='Quantity')
     price = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return str(self.id)
+
+class Quantity(models.Model):
+    itemDetail = models.ForeignKey('ItemDetail', related_name='itemDetail',blank=True,on_delete=models.CASCADE)
+    option = models.ForeignKey('CustomatizationOptions', related_name='option',blank=True,on_delete=models.CASCADE)
+    qty = models.PositiveSmallIntegerField()
+
+    def __str__(self) -> str:
+        return self.name
 
 class SubOrder(models.Model):
     customer = models.ForeignKey(Customer, related_name='customer',blank=True,on_delete=models.CASCADE)
@@ -101,6 +110,23 @@ class CustomerVisit(models.Model):
 
     def __str__(self) -> str:
         return self.customer.name + " " + self.restaurant.name + "Restaurant Visit"
+
+
+class MenuItemCustomization(models.Model):
+    item = models.ForeignKey(MenuItem, related_name='item_customization', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, blank=True)
+    customizationType = models.CharField(max_length=10, blank=True)
+
+    def __str__(self) -> str:
+        return self.name
+
+class CustomatizationOptions(models.Model):
+    customization = models.ForeignKey(MenuItemCustomization, related_name='customization_options', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50, blank=True)
+    price = models.PositiveIntegerField(default=0)
+
+    def __str__(self) -> str:
+        return self.name
 
 class Restaurant(models.Model):
 

@@ -101,6 +101,9 @@ class OrderList(generics.ListAPIView):
         return super().get_queryset().filter(customers__phone=self.request.session['phone'])
 
 class OrderDetails(generics.RetrieveAPIView):
+
     queryset = Order.objects.all()
     serializer_class = OrderDetailsSerializer
     permission_classes = [IsCustomer, IsCustomerOrder]
+
+

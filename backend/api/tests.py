@@ -37,12 +37,12 @@ class TestViews(TestCase):
         SubOrder.objects.create(customer=Customer.objects.get(name='Test Customer 2'), order=Order.objects.get(tableNumber=1))
         SubOrder.objects.create(customer=Customer.objects.get(name='Test Customer 3'), order=Order.objects.get(tableNumber=2))
 
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 1')), item=MenuItem.objects.get(name='Test Menu Item 1'), quantity=1, price=100)
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 1')), item=MenuItem.objects.get(name='Test Menu Item 2'), quantity=2, price=400)
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 2')), item=MenuItem.objects.get(name='Test Menu Item 1'), quantity=1, price=100)
+        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 1')), item=MenuItem.objects.get(name='Test Menu Item 1'), price=100)
+        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 1')), item=MenuItem.objects.get(name='Test Menu Item 2'), price=400)
+        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 2')), item=MenuItem.objects.get(name='Test Menu Item 1'), price=100)
 
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 3')), item=MenuItem.objects.get(name='Test Menu Item 1'), quantity=1, price=100)
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 3')), item=MenuItem.objects.get(name='Test Menu Item 2'), quantity=2, price=400)
+        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 3')), item=MenuItem.objects.get(name='Test Menu Item 1'), price=100)
+        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 3')), item=MenuItem.objects.get(name='Test Menu Item 2'), price=400)
         
         CustomerVisit.objects.create(customer=Customer.objects.get(name='Test Customer 1'), restaurant=Restaurant.objects.get(name='Test Restaurant 1'))
         CustomerVisit.objects.create(customer=Customer.objects.get(name='Test Customer 2'), restaurant=Restaurant.objects.get(name='Test Restaurant 1'))

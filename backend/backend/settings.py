@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'nested_admin',
     'rest_framework',
     'api',
     'django.contrib.admin',
