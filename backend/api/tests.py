@@ -8,52 +8,101 @@ class TestViews(TestCase):
         self.client = Client()
         self.APIClient = APIClient()
 
-        Customer.objects.create(name='Test Customer 1', phone='1234567890',email='test1@test.com')
-        Customer.objects.create(name='Test Customer 2', phone='1234567891',email='test2@test.com')
-        Customer.objects.create(name='Test Customer 3', phone='1234567892',email='test3@test.com')
+        Customer.objects.create(name='Verain', phone='1',email='test1@test.com')
+        Customer.objects.create(name='Sunil', phone='2',email='test2@test.com')
+        Customer.objects.create(name='Karan', phone='3',email='test3@test.com')
 
-        ItemType.objects.create(name='Test Item Type 1')
-        ItemType.objects.create(name='Test Item Type 2')
+        ItemType.objects.create(name='Beverage')
+        ItemType.objects.create(name='Food')
 
-        SpecialItem.objects.create(name='Test Special Item 1', color='red')
-        SpecialItem.objects.create(name='Test Special Item 2', color='blue')
+        SpecialItem.objects.create(name='Bestseller', color='red')
+        SpecialItem.objects.create(name='Popular', color='blue')
 
-        Restaurant.objects.create(name='Test Restaurant 1', phone='1234567890')
-        Restaurant.objects.create(name='Test Restaurant 2', phone='1234567891')
-        
-        MenuItem.objects.create(name='Test Menu Item 1', price=100, restaurant=Restaurant.objects.get(name='Test Restaurant 1'), itemType=ItemType.objects.get(name='Test Item Type 1'), category=SpecialItem.objects.get(name='Test Special Item 1'))
-        MenuItem.objects.create(name='Test Menu Item 2', price=200, restaurant=Restaurant.objects.get(name='Test Restaurant 1'), itemType=ItemType.objects.get(name='Test Item Type 2'))
-        MenuItem.objects.create(name='Test Menu Item 3', price=300, restaurant=Restaurant.objects.get(name='Test Restaurant 1'), itemType=ItemType.objects.get(name='Test Item Type 2'))
+        Restaurant.objects.create(name='Bar', phone='1234567890')
+        Restaurant.objects.create(name='Pizza', phone='1234567891')
+
+        MenuItem.objects.create(name='LIIT', price=100, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Beverage'), category=SpecialItem.objects.get(name='Bestseller'))
+        MenuItem.objects.create(name='Beer', price=200, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Beverage'))
+        MenuItem.objects.create(name='Snacks', price=300, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Food'))
 
         #Similar menu for restaurant 2
-        MenuItem.objects.create(name='Test Item 1', price=100, restaurant=Restaurant.objects.get(name='Test Restaurant 2'), itemType=ItemType.objects.get(name='Test Item Type 1'), category=SpecialItem.objects.get(name='Test Special Item 1'))
-        MenuItem.objects.create(name='Test Item 2', price=200, restaurant=Restaurant.objects.get(name='Test Restaurant 2'), itemType=ItemType.objects.get(name='Test Item Type 2'))
-        MenuItem.objects.create(name='Test Item 3', price=300, restaurant=Restaurant.objects.get(name='Test Restaurant 2'), itemType=ItemType.objects.get(name='Test Item Type 2'))
+        MenuItem.objects.create(name='Pizza', price=100, restaurant=Restaurant.objects.get(name='Pizza'), itemType=ItemType.objects.get(name='Food'), category=SpecialItem.objects.get(name='Popular'))
+        MenuItem.objects.create(name='Coke', price=300, restaurant=Restaurant.objects.get(name='Pizza'), itemType=ItemType.objects.get(name='Beverage'))
 
-        Order.objects.create(restaurant=Restaurant.objects.get(name='Test Restaurant 1'), tableNumber=1)
-        Order.objects.create(restaurant=Restaurant.objects.get(name='Test Restaurant 1'), tableNumber=2)
+        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='LIIT'), name='Size', customizationType='radio')
+        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='LIIT'), name='Ice', customizationType='radio')
+        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Beer'), name='Size', customizationType='radio')
+        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Snacks'), name='Size', customizationType='radio')
 
-        SubOrder.objects.create(customer=Customer.objects.get(name='Test Customer 1'), order=Order.objects.get(tableNumber=1))
-        SubOrder.objects.create(customer=Customer.objects.get(name='Test Customer 2'), order=Order.objects.get(tableNumber=1))
-        SubOrder.objects.create(customer=Customer.objects.get(name='Test Customer 3'), order=Order.objects.get(tableNumber=2))
+        #Similar customizations for restaurant 2
+        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Pizza'), name='Size', customizationType='radio')
+        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Pizza'), name='Toppings', customizationType='checkbox')
+        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Coke'), name='Size', customizationType='radio')
 
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 1')), item=MenuItem.objects.get(name='Test Menu Item 1'), price=100)
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 1')), item=MenuItem.objects.get(name='Test Menu Item 2'), price=400)
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 2')), item=MenuItem.objects.get(name='Test Menu Item 1'), price=100)
+        #Customizations for LIIT
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Small', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Medium', price=50)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Large', price=100)
 
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 3')), item=MenuItem.objects.get(name='Test Menu Item 1'), price=100)
-        ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(name='Test Customer 3')), item=MenuItem.objects.get(name='Test Menu Item 2'), price=400)
-        
-        CustomerVisit.objects.create(customer=Customer.objects.get(name='Test Customer 1'), restaurant=Restaurant.objects.get(name='Test Restaurant 1'))
-        CustomerVisit.objects.create(customer=Customer.objects.get(name='Test Customer 2'), restaurant=Restaurant.objects.get(name='Test Restaurant 1'))
-        CustomerVisit.objects.create(customer=Customer.objects.get(name='Test Customer 3'), restaurant=Restaurant.objects.get(name='Test Restaurant 1'))
-    
+        #Ice for LIIT
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Less', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Normal', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='More', price=0)
+
+        #Customizations for Beer
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Small', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Medium', price=50)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Large', price=100)
+
+        #Customizations for Snacks
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Small', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Medium', price=50)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Large', price=100)
+
+        #Customizations for Pizza
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Small', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Medium', price=50)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Large', price=100)
+
+        #Toppings for Pizza
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Onion', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Capsicum', price=0)
+        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Tomato', price=0)
+
+        Order.objects.create(restaurant=Restaurant.objects.get(name='Bar'), tableNumber=1)
+        Order.objects.create(restaurant=Restaurant.objects.get(name='Bar'), tableNumber=2)
+
+        SubOrder.objects.create(customer=Customer.objects.get(pk=1), order=Order.objects.get(tableNumber=1))
+        SubOrder.objects.create(customer=Customer.objects.get(pk=2), order=Order.objects.get(tableNumber=1))
+        SubOrder.objects.create(customer=Customer.objects.get(pk=3), order=Order.objects.get(tableNumber=2))
+
+        i1 = ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(pk=1)), item=MenuItem.objects.get(name='LIIT'), price=100)
+        i2 = ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(pk=1)), item=MenuItem.objects.get(name='Beer'), price=400)
+        i3 = ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(pk=2)), item=MenuItem.objects.get(name='Snacks'), price=100)
+
+        i4 = ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(pk=3)), item=MenuItem.objects.get(name='Beer'), price=100)
+        i5 = ItemDetail.objects.create(suborder=SubOrder.objects.get(customer=Customer.objects.get(pk=3)), item=MenuItem.objects.get(name='LIIT'), price=400)
+
+        #Quantity details for each itemdetail
+        q1 = Quantity.objects.create(itemDetail=i1,qty=2)
+        q1.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Medium', price=50))
+        q1.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Normal', price=0))
+
+        Quantity.objects.create(itemDetail=i2, qty=1)
+        Quantity.objects.create(itemDetail=i3, qty=1)
+        Quantity.objects.create(itemDetail=i4, qty=1)
+        Quantity.objects.create(itemDetail=i5, qty=2)
+
+        CustomerVisit.objects.create(customer=Customer.objects.get(pk=2), restaurant=Restaurant.objects.get(name='Bar'))
+        CustomerVisit.objects.create(customer=Customer.objects.get(pk=1), restaurant=Restaurant.objects.get(name='Bar'))
+        CustomerVisit.objects.create(customer=Customer.objects.get(pk=3), restaurant=Restaurant.objects.get(name='Bar'))
+
     def test_restaurant_list_GET(self):
         response = self.client.get('/api/restaurants/')
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response['count'], 2)
-        self.assertEquals(response['results'][0]['name'], 'Test Restaurant 1')
+        self.assertEquals(response['results'][0]['name'], 'Bar')
         
         #check if json contains url
         self.assertEquals(response['results'][0]['url'], 'http://testserver/api/restaurants/details/1')
@@ -62,7 +111,7 @@ class TestViews(TestCase):
         response = self.client.get('/api/restaurants/details/1')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['name'], 'Test Restaurant 1')
+        self.assertEquals(response['name'], 'Bar')
         
         #check length of menu
         self.assertEquals(len(response['menu']), 3)
@@ -74,7 +123,7 @@ class TestViews(TestCase):
         response = self.client.get('/api/menu/details/1')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['name'], 'Test Menu Item 1')
+        self.assertEquals(response['name'], 'LIIT')
         self.assertEquals(response['price'], 100)
         
     #Test create user page
@@ -91,11 +140,11 @@ class TestViews(TestCase):
         self.assertEquals(response['name'], 'Create User')
     
     def login(self):
-        data = {'phone': '1234567890'}
+        data = {'phone': '1'}
         response = self.client.post('/api/login/', data)
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['phone'], '1234567890')
+        self.assertEquals(response['phone'], '1')
 
         #Check OTP
         data = {'otp': '1234'}
@@ -122,11 +171,12 @@ class TestViews(TestCase):
         response = self.client.post('/api/login/', data)
         self.assertEquals(response.status_code, 404)
         
-        data = {'phone': '1234567890'}
+        #correct data
+        data = {'phone': '1'}
         response = self.client.post('/api/login/', data)
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['phone'], '1234567890')
+        self.assertEquals(response['phone'], '1')
 
         #Check OTP
         data = {'otp': '1234'}
@@ -139,7 +189,7 @@ class TestViews(TestCase):
         response = self.client.post('/api/login/')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['phone'], 1234567890)
+        self.assertEquals(response['phone'], 1)
 
         #logout
         data = {'logout': True}
@@ -154,7 +204,7 @@ class TestViews(TestCase):
 
         #Check OTP Limit
 
-        data = {'phone': '1234567890'}
+        data = {'phone': '1'}
         response = self.client.post('/api/login/', data)
 
         data = {'otp': 1233}
@@ -178,8 +228,8 @@ class TestViews(TestCase):
         response = self.client.get('/api/account/')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['name'], 'Test Customer 1')
-        self.assertEquals(response['phone'], 1234567890)
+        self.assertEquals(response['name'], 'Verain')
+        self.assertEquals(response['phone'], 1)
         self.logout()
 
     def test_user_detail_PATCH(self):
@@ -191,8 +241,8 @@ class TestViews(TestCase):
         response = self.client.patch('/api/account/', data,content_type='application/json')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['name'], 'Test Customer 1')
-        self.assertEquals(response['phone'], 1234567890)
+        self.assertEquals(response['name'], 'Verain')
+        self.assertEquals(response['phone'], 1)
         self.assertEquals(response['email'], 'verain@verain.com')
         self.logout()
     

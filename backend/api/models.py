@@ -35,19 +35,18 @@ class SpecialItem(models.Model):
 class ItemDetail(models.Model):
     suborder = models.ForeignKey('SubOrder', related_name='suborder',blank=True,on_delete=models.CASCADE)
     item = models.ForeignKey('MenuItem', related_name='item',blank=True,on_delete=models.CASCADE)
-    customizations = models.ManyToManyField('CustomatizationOptions', related_name='customizations', blank=True, through='Quantity')
     price = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
-        return str(self.id)
+        return self.suborder.__str__() + " " + self.item.__str__()
 
 class Quantity(models.Model):
     itemDetail = models.ForeignKey('ItemDetail', related_name='itemDetail',blank=True,on_delete=models.CASCADE)
-    option = models.ForeignKey('CustomatizationOptions', related_name='option',blank=True,on_delete=models.CASCADE)
+    option = models.ManyToManyField('CustomatizationOptions', related_name='option',blank=True)
     qty = models.PositiveSmallIntegerField()
 
     def __str__(self) -> str:
-        return self.name
+        return self.itemDetail.__str__() + " Quantity"
 
 class SubOrder(models.Model):
     customer = models.ForeignKey(Customer, related_name='customer',blank=True,on_delete=models.CASCADE)
@@ -57,7 +56,7 @@ class SubOrder(models.Model):
     tip = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self) -> str:
-        return str(self.id)
+        return self.customer.__str__() + " Order No. " + self.order.id.__str__()
 
 class Order(models.Model):
     customers = models.ManyToManyField(Customer, related_name='customerList', blank=True, through=SubOrder)
@@ -77,7 +76,7 @@ class Order(models.Model):
         ]
 
     def __str__(self) -> str:
-        return str(self.id)
+        return " ".join(self.customers.all().values_list('name', flat=True)) + ' ' + str(self.id)
 
 class MenuItem(models.Model):
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='restaurant', null=True)
@@ -124,6 +123,7 @@ class CustomatizationOptions(models.Model):
     customization = models.ForeignKey(MenuItemCustomization, related_name='customization_options', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=True)
     price = models.PositiveIntegerField(default=0)
+    dependencies = models.ManyToManyField('self', related_name='dependencies', blank=True)
 
     def __str__(self) -> str:
         return self.name
