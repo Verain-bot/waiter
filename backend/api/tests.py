@@ -146,6 +146,11 @@ class TestViews(TestCase):
         response = response.json()
         self.assertEquals(response['name'], 'LIIT')
         self.assertEquals(response['price'], 100)
+        #Check for 2 customizations
+        self.assertEquals(len(response['customizations']), 2)
+
+        #Check for customization options
+        self.assertEquals(len(response['customizations'][0]['customizationOptions']), 3)
         
     #Test create user page
     def test_create_user_GET(self):
@@ -292,6 +297,17 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response['id'], 1)
+
+        #check that 2 customers created the order
+        self.assertEquals(len(response['customers']), 2)
+        
+        #check that 2 items are in the order by customer 1
+        self.assertEquals(len(response['customers'][0]['items']), 2)
+
+        #check customizations for the first item
+
+        self.assertEquals(len(response['customers'][0]['items'][0]['quantity']), 1)
+        self.assertEquals(len(response['customers'][0]['items'][0]['quantity'][0]['option']), 2)
 
         response = self.client.get('/api/account/orders/details/2')
         self.assertEquals(response.status_code, 403)

@@ -1,6 +1,18 @@
 from rest_framework import serializers
 from .models import *
 
+class CustomatizationOptionsSerializer(serializers.ModelSerializer):
+    customization = serializers.CharField(source='customization.name', read_only=True)
+    class Meta:
+        model = CustomatizationOptions
+        fields = '__all__'
+
+class MenuItemCustomizationSerializer(serializers.ModelSerializer):
+    customizationOptions = CustomatizationOptionsSerializer(many=True, read_only=True, source='customization_options')
+    class Meta:
+        model = MenuItemCustomization
+        fields = '__all__'
+
 class MenuListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='menu-details')
     class Meta:
@@ -8,6 +20,7 @@ class MenuListSerializer(serializers.ModelSerializer):
         fields = ['name', 'url']
 
 class MenuDetailsSerializer(serializers.ModelSerializer):
+    customizations = MenuItemCustomizationSerializer(many=True, read_only=True, source='item_customization')
     class Meta:
         model = MenuItem
         fields = '__all__'
@@ -28,13 +41,22 @@ class CustomerDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = '__all__'
+
 class CustomerListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ['id', 'name']
 
+class QuantitySerializer(serializers.ModelSerializer):
+    option = CustomatizationOptionsSerializer(read_only=True,many=True)
+    class Meta:
+        model = Quantity
+        fields = '__all__'
+
 class OrderItemDetailsSerializer(serializers.ModelSerializer):
     item = MenuListSerializer(read_only=True)
+    quantity = QuantitySerializer(read_only=True, source='itemDetail',many=True)
+
     class Meta:
         model = ItemDetail
         fields = '__all__'
@@ -57,7 +79,6 @@ class OrderListSerializer(serializers.ModelSerializer):
 
 class OrderDetailsSerializer(serializers.ModelSerializer):
     restaurant = RestaurantListSerializer(read_only=True)
-    items = MenuListSerializer(many=True, read_only=True)
     customers = SubOrderSerializer(many=True, read_only=True, source='order')
 
     class Meta:
