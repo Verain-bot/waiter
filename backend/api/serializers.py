@@ -84,3 +84,8 @@ class OrderDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+class TableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tables
+        fields = '__all__'

@@ -28,6 +28,14 @@ class CustomerView(generics.CreateAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerDetailSerializer
 
+class TableListView(generics.ListAPIView):
+    queryset = Tables.objects.all()
+    serializer_class = TableSerializer
+
+    def get_queryset(self):
+        queryset = Tables.objects.filter(restaurant=self.kwargs['pk'])
+        return queryset
+
 class CustomerLogin(views.APIView):
 
     def post(self, request, *args, **kwargs):
@@ -106,4 +114,82 @@ class OrderDetails(generics.RetrieveAPIView):
     serializer_class = OrderDetailsSerializer
     permission_classes = [IsCustomer, IsCustomerOrder]
 
+#assign table to customer using session
+class AssignTable(views.APIView):
+    permission_classes = [IsCustomer]
 
+    def post(self, request, *args, **kwargs):
+        
+        #if table already assigned
+        if 'tableNumber' in request.session:
+            return Response({'error': 'Table already assigned to you'}, status=400)
+
+        if 'tableNumber' not in request.data:
+            return Response({'error': 'Please provide table id'}, status=400)
+        
+        tableNumber = request.data['tableNumber']
+        #get table
+        table = get_object_or_404(Tables, tableNumber=tableNumber, restaurant=self.kwargs['pk'])
+        
+        if table.status != 'Available':
+            return Response({'error': 'Table is already occupied'}, status=400)
+        
+        table.status = 'Occupied'
+        table.customersSitting.add(Customer.objects.get(phone=request.session['phone']))
+        table.save()
+        request.session['table'] = tableNumber
+        request.session['restaurant'] = self.kwargs['pk']
+        return Response({'message': 'Table assigned successfully'})
+    
+    #delete assigned table
+    def delete(self, request, *args, **kwargs):
+        if 'table' not in request.session:
+            return Response({'error': 'No table assigned to you'}, status=400)
+        
+        tableNumber = request.session['table']
+        table = get_object_or_404(Tables, tableNumber=tableNumber, restaurant=self.kwargs['pk'])
+        table.status = 'Available'
+        table.customersSitting.remove(Customer.objects.get(phone=request.session['phone']))
+        table.save()
+        del request.session['table']
+        del request.session['restaurant']
+        return Response({'message': 'Table unassigned successfully'})
+    
+#Join existing table
+class JoinTable(views.APIView):
+    permission_classes = [IsCustomer]
+    def post(self, request, *args, **kwargs):
+        
+        #if table already assigned
+        if 'tableNumber' in request.session:
+            return Response({'error': 'Table already assigned to you'}, status=400)
+        
+        if 'tableNumber' not in request.data:
+            return Response({'error': 'Please provide table id'}, status=400)
+
+        tableNumber = request.data['tableNumber']
+        table = get_object_or_404(Tables, tableNumber=tableNumber, restaurant=self.kwargs['pk'])
+        
+        if table.status != 'Occupied':
+            return Response({'error': 'Table is not occupied'}, status=400)
+        #append to existing cache
+        if cache.get(f'{table.restaurant.id}+{table.tableNumber}'):
+            cacheData = cache.get(f'{table.restaurant.id}+{table.tableNumber}')
+            cacheData.append({'phone': request.session['phone']})
+            cache.set(f'{table.restaurant.id}+{table.tableNumber}', cacheData, timeout=300)
+        
+        else:
+            cache.set(f'{table.restaurant.id}+{table.tableNumber}', [{'phone': request.session['phone'], 'status': 'requested'}], timeout=300)
+        
+        return Response({'message': 'You will join the table when someone from the table accepts your request'})
+
+class CheckTable(views.APIView):
+    permission_classes = [IsCustomer,IsTableAssigned]
+    def get(self, request, *args, **kwargs):
+        table_id = request.session['table']
+        table = get_object_or_404(Tables, id=table_id)
+        data = []
+        if cache.get(f'{table.restaurant.id}+{table.tableNumber}'):
+            data = cache.get(f'{table.restaurant.id}+{table.tableNumber}')
+        
+        return Response({'restaurant': table.restaurant.name,'tableNumber': table.tableNumber, 'status': table.status, 'peopleRequesting': data})

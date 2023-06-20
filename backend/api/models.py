@@ -18,6 +18,21 @@ class Customer(models.Model):
     def __str__(self) -> str:
         return self.name
 
+class Tables(models.Model):
+    restaurant = models.ForeignKey('Restaurant', related_name='restaurant_table',blank=True,on_delete=models.CASCADE)
+    tableNumber = models.PositiveSmallIntegerField(default= 0)
+    capacity = models.PositiveSmallIntegerField(default= 0)
+    status = models.CharField(max_length= 50, default= 'Available')
+    customersSitting = models.ManyToManyField(Customer, related_name='customer_sitting', blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['restaurant', 'tableNumber'], name='unique_table')
+        ]
+
+    def __str__(self) -> str:
+        return self.restaurant.__str__() + " Table No. " + self.tableNumber.__str__()
+
 class ItemType(models.Model):
     name = models.CharField(max_length=50)
 
@@ -30,7 +45,6 @@ class SpecialItem(models.Model):
 
     def __str__(self) -> str:
         return self.name
-
 
 class ItemDetail(models.Model):
     suborder = models.ForeignKey('SubOrder', related_name='suborder',blank=True,on_delete=models.CASCADE)
@@ -110,7 +124,6 @@ class CustomerVisit(models.Model):
     def __str__(self) -> str:
         return self.customer.name + " " + self.restaurant.name + "Restaurant Visit"
 
-
 class MenuItemCustomization(models.Model):
     item = models.ForeignKey(MenuItem, related_name='item_customization', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=True)
@@ -143,6 +156,13 @@ class Restaurant(models.Model):
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)
     joinDate = models.DateField(default=now())
+    tables = models.PositiveSmallIntegerField(default=10)
     
     def __str__(self) -> str:
         return self.name
+    
+    #create tables when restaurant is created
+    def save(self, *args, **kwargs):
+        super(Restaurant, self).save(*args, **kwargs)
+        for i in range(1, self.tables+1):
+            Tables.objects.create(restaurant=self, tableNumber=i)

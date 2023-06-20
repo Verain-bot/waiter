@@ -1,12 +1,15 @@
 from django.test import TestCase, Client
 from .models import *
 from rest_framework.test import APIClient
+from django.core.cache import cache
 
 #Testing views
 class TestViews(TestCase):
     def setUp(self):
         self.client = Client()
         self.APIClient = APIClient()
+        self.table = 111
+        self.client2 = Client()
 
         Customer.objects.create(name='Verain', phone='1',email='test1@test.com')
         Customer.objects.create(name='Sunil', phone='2',email='test2@test.com')
@@ -69,7 +72,6 @@ class TestViews(TestCase):
         CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Capsicum', price=0)
         CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Tomato', price=0)
 
-
         #Order1 for person 1 and 2 at Bar
         Order.objects.create(restaurant=Restaurant.objects.get(name='Bar'), tableNumber=1)
         SubOrder1 = SubOrder.objects.create(customer=Customer.objects.get(pk=1), order=Order.objects.get(tableNumber=1))
@@ -118,6 +120,77 @@ class TestViews(TestCase):
         CustomerVisit.objects.create(customer=Customer.objects.get(pk=1), restaurant=Restaurant.objects.get(name='Pizza'))
         CustomerVisit.objects.create(customer=Customer.objects.get(pk=3), restaurant=Restaurant.objects.get(name='Pizza'))
 
+    
+    #reset cache
+    def reset_cache(self):
+        cache.clear()
+    
+    def reset_table(self):
+        #Assign customers to all tables null
+        for table in Tables.objects.all():
+            table.customersSitting.clear()
+            table.status='Available'
+            table.save()
+    #login user with phone 2 with 2nd client
+    def login2(self):
+        data = {'phone': '2'}
+        response = self.client2.post('/api/login/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['phone'], '2')
+
+        #Check OTP
+        data = {'otp': '1234'}
+        response = self.client2.post('/api/otp/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        print(response)
+        self.assertEquals(response['verified'], True)
+
+    #logout user with phone 2
+    def logout2(self):
+        data = {'logout': True}
+        response = self.client2.post('/api/login/',data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['logout'], True)
+
+    def login(self):
+        data = {'phone': '1'}
+        response = self.client.post('/api/login/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['phone'], '1')
+
+        #Check OTP
+        data = {'otp': '1234'}
+        response = self.client.post('/api/otp/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        print(response)
+        self.assertEquals(response['verified'], True)
+
+    def logout(self):
+        data = {'logout': True}
+        response = self.client.post('/api/login/',data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['logout'], True)
+
+    def assignTable(self, tableNumber, client):
+        data = {'tableNumber': tableNumber}
+        response = client.post('/api/restaurants/1/table/assign/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['message'], 'Table assigned successfully')
+    
+    def requestToJoinTable(self, tableNumber, client):
+        data = {'tableNumber': tableNumber}
+        response = client.post('/api/restaurants/1/table/join/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['message'], 'You will join the table when someone from the table accepts your request')
+
     def test_restaurant_list_GET(self):
         response = self.client.get('/api/restaurants/')
         self.assertEquals(response.status_code, 200)
@@ -165,27 +238,6 @@ class TestViews(TestCase):
         response = response.json()
         self.assertEquals(response['name'], 'Create User')
     
-    def login(self):
-        data = {'phone': '1'}
-        response = self.client.post('/api/login/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['phone'], '1')
-
-        #Check OTP
-        data = {'otp': '1234'}
-        response = self.client.post('/api/otp/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        print(response)
-        self.assertEquals(response['verified'], True)
-
-    def logout(self):
-        data = {'logout': True}
-        response = self.client.post('/api/login/',data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['logout'], True)
         
     #Test login page
     def test_login_POST(self):
@@ -314,5 +366,94 @@ class TestViews(TestCase):
 
         self.logout()
 
-
+    def test_table_list(self):
+        response = self.client.get('/api/restaurants/1/tables')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['count'], 10)
         
+    def test_simultaneous_login(self):
+        self.login()
+        self.login2()
+
+        #check if both users are logged in
+        response = self.client.get('/api/account/')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['name'], 'Verain')
+
+        response = self.client2.get('/api/account/')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['name'], 'Sunil')
+
+        self.logout()
+        self.logout2()
+
+    def test_assign_Table_POSTDELETE(self):
+        self.login()
+        #request without table number
+        response = self.client.post('/api/restaurants/1/table/assign/')
+        self.assertEquals(response.status_code, 400)
+
+        #request with table number
+        data = {'tableNumber': 1}
+        response = self.client.post('/api/restaurants/1/table/assign/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['message'], 'Table assigned successfully')
+
+        #request with already assigned table
+        self.login2()
+        response = self.client2.post('/api/restaurants/1/table/assign/', data)
+        self.assertEquals(response.status_code, 400)
+
+        self.logout2()
+        
+        response = self.client.delete('/api/restaurants/1/table/assign/')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['message'], 'Table unassigned successfully')
+        self.logout()
+
+    def test_Join_table_POST(self):
+        self.login()
+        self.assignTable(1, self.client)
+        self.login2()
+        
+        response = self.client2.post('/api/restaurants/1/table/join/')
+        self.assertEquals(response.status_code, 400)
+        
+        response = self.client.post('/api/restaurants/1/table/join/')
+        self.assertEquals(response.status_code, 400)
+
+        data = {'tableNumber': 2}
+        response = self.client2.post('/api/restaurants/1/table/join/', data)
+        self.assertEquals(response.status_code, 400)
+
+        data = {'tableNumber': 1}
+        response = self.client2.post('/api/restaurants/1/table/join/', data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['message'], 'You will join the table when someone from the table accepts your request')
+        self.logout()
+        self.logout2()
+    
+    def test_view_table_GET(self):
+        self.reset_cache()
+        self.reset_table()
+        self.login()
+        self.login2()
+        self.assignTable(1, self.client)
+
+        self.requestToJoinTable(1, self.client2)
+        
+        response = self.client.get('/api/table/view/')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response['tableNumber'], 1)
+        self.assertEquals(response['status'], 'Occupied')
+        self.assertEquals(len(response['peopleRequesting']), 1)
+
+        self.logout()
+        self.logout2()
