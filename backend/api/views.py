@@ -269,7 +269,9 @@ class CheckTable(views.APIView):
         if cache.get(f"TableCache {table.id}"):
             data = cache.get(f"TableCache {table.id}")
         
-        return Response({'restaurant': table.restaurant.name,'tableNumber': table.tableNumber, 'status': table.status, 'peopleRequesting': data, "people": [customer.name for customer in table.customersSitting.all()]})
+        #return using serializer
+        serializer = TableSerializer(table)
+        return Response({'table': serializer.data, 'peopleRequesting': data})
     
     def post(self, request):
         #get phone from request

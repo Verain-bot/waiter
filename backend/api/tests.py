@@ -447,8 +447,8 @@ class TestViews(TestCase):
         response = self.client.get('/api/table/view/')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['tableNumber'], 1)
-        self.assertEquals(response['status'], 'Occupied')
+        self.assertEquals(response['table']['tableNumber'], 1)
+        self.assertEquals(response['table']['status'], 'Occupied')
         self.assertEquals(len(response['peopleRequesting']), 1)
 
         self.client2.delete('/api/restaurants/1/table/join/')
@@ -456,8 +456,7 @@ class TestViews(TestCase):
         response = self.client.get('/api/table/view/')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['tableNumber'], 1)
-        self.assertEquals(response['status'], 'Occupied')
+        self.assertEquals(response['table']['tableNumber'], 1)
         self.assertEquals(len(response['peopleRequesting']), 0)
 
         self.logout()
