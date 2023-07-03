@@ -16,4 +16,5 @@ urlpatterns = [
     path('restaurants/<int:pk>/table/assign/', views.AssignTable.as_view(), name='assign-table'),
     path('restaurants/<int:pk>/table/join/', views.JoinTable.as_view(), name='join-table'),
     path('table/view/', views.CheckTable.as_view(), name='view-table'),
+    path('account/cart/', views.ViewUpdateCart.as_view(), name='request-table'),
 ]

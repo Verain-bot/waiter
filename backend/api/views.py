@@ -301,3 +301,12 @@ class CheckTable(views.APIView):
         cache.set(f"TableCache {table.id}", cacheData, timeout=300)
         return Response(msg.USER_ACCEPTED)
         
+class ViewUpdateCart(views.APIView):
+    permission_classes = [IsCustomer,IsTableAssigned]
+    def get(self, request, *args, **kwargs):
+        #get cart
+        
+        request.session['cart'] = [{"itemID": 1, "customizations": [{"customizationID": 1, "quantity": 2}, {"customizationID": 2, "quantity": 1}]}]
+        
+        result = CartSerializer(request.session['cart'], many=True)
+        return Response(result.data)

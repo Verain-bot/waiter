@@ -89,3 +89,10 @@ class TableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tables
         fields = '__all__'
+
+class CartSerializer(serializers.Serializer):
+    #get menu item from primary key
+    itemID = serializers.PrimaryKeyRelatedField(queryset=MenuItem.objects.all())
+
+    class Meta:
+        fields = ['itemID', 'quantity', 'customization']
