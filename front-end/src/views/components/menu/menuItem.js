@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Stars } from "./stars"
 
 export const MenuItem = (props) => {
 
@@ -15,29 +16,26 @@ export const MenuItem = (props) => {
 
     return(
 
-    <div class="row">
-        <div class="col-11 col-md-9 card col-xl-8 mx-auto p-1 shadow menu-item">
+    <div class="row my-0 d-flex align-items-center justify-content-center">
+        <div class="col-12 col-md-9 col-xl-8 mx-0 p-0 menu-item">
 
             <div class="row d-flex align-items-center justify-content-center">
                 <div class="col-4 mx-auto">
-                    <img class='rounded img-thumbnail border-0' src='https://media.istockphoto.com/id/938742222/photo/cheesy-pepperoni-pizza.jpg?s=612x612&w=0&k=20&c=D1z4xPCs-qQIZyUqRcHrnsJSJy_YbUD9udOrXpilNpI=' />
+                    <img class='rounded img-thumbnail shadow-sm border-0' src='https://media.istockphoto.com/id/938742222/photo/cheesy-pepperoni-pizza.jpg?s=612x612&w=0&k=20&c=D1z4xPCs-qQIZyUqRcHrnsJSJy_YbUD9udOrXpilNpI=' />
                 </div>
-                <div class="col-8 mx-auto mt-2 px-3">
+                <div class="col-8 mx-0 mt-2 px-0">
                     <div class='row'>
                         <div class='col-7 pb-2'>
                             <div class='row'>
                                 
-                                <h1 class='card-title py-0 m-0' ><i class='bi bi-dash-square-fill text-success' /> Pizza</h1>
+                                <h1 class='card-title py-0 m-0 medium' ><i class='bi bi-dash-square-fill text-success' /> Pizza</h1>
                                 <span class='text-muted small'>Rs. 209</span>
                                 
-                                <span class='text-warning small pb-2'>
-                                    <i class='bi bi-star-fill' />
-                                    <i class='bi bi-star-fill' />
-                                    <i class='bi bi-star-fill' />
-                                    <i class='bi bi-star-half' />
-                                    <i class='bi bi-star' />
-                                    <span class='text-dark'>(21)</ span>
+                                <span class='small pb-1'>
+                                <Stars stars={3.4} numRatings={21} />
                                 </span>
+                                
+
                             </div>
 
                             <div class='row'>
@@ -45,7 +43,7 @@ export const MenuItem = (props) => {
                             </div>
                         </div>
 
-                        <div class='col-5 d-flex flex-column align-items-center justify-content-center'>
+                        <div class='col-4 d-flex flex-column align-items-center justify-content-center'>
                             
                             <div class='row'>
                                 {quantity===0 && <i class='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity}></i>}
@@ -54,7 +52,7 @@ export const MenuItem = (props) => {
                                     <button class='btn btn-outline-secondary btn-sm' onClick={decreaseQuantity}>
                                         <i class='bi bi-dash'></i>
                                     </button>
-                                    <input type='number' class='form-control center-input' value={quantity} />
+                                    <input type='number' class='form-control cart-input' value={quantity} />
                                     <button class='btn btn-outline-secondary btn-sm' onClick={increaseQuantity}>
                                         <i class='bi bi-plus'></i>
                                     </button>
@@ -69,9 +67,10 @@ export const MenuItem = (props) => {
 
                 </div>
             </div>
+            <hr class='mx-auto'/>
         </div>
 
-
+        
     </div>
     )
 }

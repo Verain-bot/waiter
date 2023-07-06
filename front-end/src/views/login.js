@@ -2,7 +2,7 @@ import React, { useEffect,useState} from 'react';
 
 import { Header } from './components/header/header';
 import { FormCard } from './components/forms/formCard';
-import { Check, TextInput, Button } from './components/forms/inputs';
+import { Check, TextInput, Button, IntegerInput } from './components/forms/inputs';
 
 const App = () => {
 
@@ -18,8 +18,8 @@ const App = () => {
     },[phone])
 
     const Inputs = [
-        <TextInput name='Phone' value={phone} set={setPhone} type={'number'} />,
-        <Check />,
+        <IntegerInput name='Phone' value={phone} set={setPhone} type={'number'} />,
+        <Check name='Remember me' />,
         <Button name='Login' disabled={disabled} onClick={()=>alert('as')} />
     ]
 

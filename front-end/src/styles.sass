@@ -405,9 +405,49 @@ input::-webkit-inner-spin-button
 .hidden
     visibility: hidden
 
-.center-input
+.cart-input
     text-align: center
+    padding: 0px
+    margin: 0px
+@media ( max-width: 750px )    
+    .btn-sm
+        padding-right: 2px
+        padding-left: 2px
+
+    .small
+        font-size: 10px
+
+    .medium
+        font-size: 15px
+
+.menu-header-show
+    top: 70px
+    z-index: 990
+    transition: top 0.3s
+
+.menu-header-hide
+    top: 0px
+    z-index: 990
+    transition: top 0.3s
 
 
-    
-    
+.menu-cart-footer
+    z-index: 990
+    cursor: pointer
+
+.menu-footer-show
+    bottom: 60px
+    z-index: 990
+    transition: bottom 0.5s
+  
+.menu-footer-hide
+    bottom: -50px
+    z-index: 990
+    transition: bottom 0.5s
+
+@media ( min-width: 750px )    
+    .menu-cart-footer
+        visibility: hidden
+
+.pointer
+    cursor: pointer
