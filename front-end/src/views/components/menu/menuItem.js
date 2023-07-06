@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Stars } from "./stars"
+import { MenuCustomizationModal } from "./menuCustomizationModal"
 
 export const MenuItem = (props) => {
 
@@ -28,7 +29,7 @@ export const MenuItem = (props) => {
                         <div class='col-7 pb-2'>
                             <div class='row'>
                                 
-                                <h1 class='card-title py-0 m-0 medium' ><i class='bi bi-dash-square-fill text-success' /> Pizza</h1>
+                                <h1 class='card-title py-0 m-0 medium' ><i class='bi bi-dash-square-fill text-success' /> {props.name}</h1>
                                 <span class='text-muted small'>Rs. 209</span>
                                 
                                 <span class='small pb-1'>
@@ -46,17 +47,9 @@ export const MenuItem = (props) => {
                         <div class='col-4 d-flex flex-column align-items-center justify-content-center'>
                             
                             <div class='row'>
-                                {quantity===0 && <i class='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity}></i>}
+                                {quantity===0 && <i class='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity} data-bs-toggle="modal" data-bs-target={`#MenuItemModal${props.name.replace(' ','')}`}></i>}
 
-                                {quantity>0&&<div class='input-group d-flex'>
-                                    <button class='btn btn-outline-secondary btn-sm' onClick={decreaseQuantity}>
-                                        <i class='bi bi-dash'></i>
-                                    </button>
-                                    <input type='number' class='form-control cart-input' value={quantity} />
-                                    <button class='btn btn-outline-secondary btn-sm' onClick={increaseQuantity}>
-                                        <i class='bi bi-plus'></i>
-                                    </button>
-                                </div>}
+                                {quantity>0&&<QuantityModifier changeQuantity={setQuantity} plusClick={increaseQuantity} minusClick={decreaseQuantity} useModal={true} modalId={`#MenuItemModal${props.name.replace(' ','')}`} value={quantity} />}
                             </div>
 
                             <div class='row'>
@@ -70,7 +63,27 @@ export const MenuItem = (props) => {
             <hr class='mx-auto'/>
         </div>
 
-        
+        <MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} />
     </div>
+    )
+}
+
+export const QuantityModifier = (props) => {
+    return(
+        <div class='input-group d-flex'>
+            <button class='btn btn-outline-secondary btn-sm' onClick={props.minusClick}>
+                <i class='bi bi-dash'></i>
+            </button>
+            <input type='number' class='form-control cart-input' value={props.value} />
+            {props.useModal&&<button class='btn btn-outline-secondary btn-sm' onClick={props.plusClick} data-bs-toggle="modal" data-bs-target={props.modalId}>
+                <i class='bi bi-plus'></i>
+            </button>}
+
+            {!props.useModal&&<button class='btn btn-outline-secondary btn-sm' onClick={props.plusClick} >
+                <i class='bi bi-plus'></i>
+            </button>}
+
+
+        </div>
     )
 }

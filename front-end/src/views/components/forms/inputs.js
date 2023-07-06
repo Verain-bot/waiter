@@ -10,7 +10,7 @@ export const TextInput = (props) => {
         <div class="col-12">
         <label for="yourUsername" class="form-label">{props.name}</label>
         <div class="input-group has-validation">
-          <span class="input-group-text" id="inputGroupPrepend">+91</span>
+          
           <input type={props.type} name="username" class="form-control" id="yourUsername" required value={props.value} onChange={handleChange} />
         </div>
       </div>
