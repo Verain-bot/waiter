@@ -10,11 +10,6 @@ export const MenuItem = (props) => {
         setQuantity(quantity+1)
     }
 
-    const decreaseQuantity = () => {
-        if (quantity>0)
-            setQuantity(quantity-1)
-    }
-
     return(
 
     <div class="row my-0 d-flex align-items-center justify-content-center">
@@ -49,7 +44,7 @@ export const MenuItem = (props) => {
                             <div class='row'>
                                 {quantity===0 && <i class='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity} data-bs-toggle="modal" data-bs-target={`#MenuItemModal${props.name.replace(' ','')}`}></i>}
 
-                                {quantity>0&&<QuantityModifier changeQuantity={setQuantity} plusClick={increaseQuantity} minusClick={decreaseQuantity} useModal={true} modalId={`#MenuItemModal${props.name.replace(' ','')}`} value={quantity} />}
+                                {quantity>0&&<QuantityModifier changeQuantity={setQuantity} useModal={true} modalId={`#MenuItemModal${props.name.replace(' ','')}`} value={quantity} />}
                             </div>
 
                             <div class='row'>
@@ -69,17 +64,26 @@ export const MenuItem = (props) => {
 }
 
 export const QuantityModifier = (props) => {
+    const increase = () => {
+        props.changeQuantity(props.value+1)
+    }
+
+    const decrease = () => {
+        if (props.value>0)
+            props.changeQuantity(props.value-1)
+    }
+
     return(
         <div class='input-group d-flex'>
-            <button class='btn btn-outline-secondary btn-sm' onClick={props.minusClick}>
+            <button class='btn btn-outline-secondary btn-sm' onClick={decrease}>
                 <i class='bi bi-dash'></i>
             </button>
             <input type='number' class='form-control cart-input' value={props.value} />
-            {props.useModal&&<button class='btn btn-outline-secondary btn-sm' onClick={props.plusClick} data-bs-toggle="modal" data-bs-target={props.modalId}>
+            {props.useModal&&<button class='btn btn-outline-secondary btn-sm' onClick={increase} data-bs-toggle="modal" data-bs-target={props.modalId}>
                 <i class='bi bi-plus'></i>
             </button>}
 
-            {!props.useModal&&<button class='btn btn-outline-secondary btn-sm' onClick={props.plusClick} >
+            {!props.useModal&&<button class='btn btn-outline-secondary btn-sm' onClick={increase} >
                 <i class='bi bi-plus'></i>
             </button>}
 

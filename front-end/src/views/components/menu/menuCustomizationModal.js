@@ -5,20 +5,12 @@ import { QuantityModifier } from "./menuItem"
 export const MenuCustomizationModal = (props)=>{
 
     const [qty,setQty] = useState(props.quantity)
-
+    const close = ()=>{
+        props.changeQuantity(props.quantity-1)
+    }
 
     const add = ()=>{
         props.changeQuantity(qty)
-    }
-
-    const increase = () => {
-        setQty(qty+1)
-    }
-
-    const decrease = () => {
-        if(qty>0){
-            setQty(qty-1)
-        }
     }
 
     return(
@@ -52,12 +44,12 @@ export const MenuCustomizationModal = (props)=>{
 
                     <div class='col-3 d-flex align-items-center justify-content-center'>
                     
-                    <QuantityModifier  plusClick={increase} minusClick={decrease} useModal={false} value={qty} />
+                    <QuantityModifier  changeQuantity={setQty} useModal={false} value={qty} />
                         
                     </div>
                     
                     <div class='col-6 text-end'>
-                        <button type="button" class="btn btn-dark mx-2" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-dark mx-2" data-bs-dismiss="modal" onClick={close} >Close</button>
                         <button type="button" class="btn btn-danger mx-2" data-bs-dismiss="modal" onClick={add}>Add</button>
                     </div>
 
