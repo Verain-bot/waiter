@@ -26,7 +26,7 @@ export const Stars = (props) =>{
     },[])
 
     return(
-        <span class='text-warning'>
+        <span class='text-warning p-0'>
             {props.withNumber&&<b>{props.stars} </b>}
             {
                 stars.map((item)=>{

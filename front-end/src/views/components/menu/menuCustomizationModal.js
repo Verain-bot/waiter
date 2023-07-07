@@ -1,16 +1,21 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { TextInput } from "../forms/inputs"
 import { QuantityModifier } from "./menuItem"
 
 export const MenuCustomizationModal = (props)=>{
 
-    const [qty,setQty] = useState(props.quantity)
+    const [qty,setQty] = useState()
+
+    useEffect(()=>{
+        setQty(props.quantity)
+    },[])
+
     const close = ()=>{
-        props.changeQuantity(props.quantity-1)
+        props.changeQuantity(qty)
     }
 
     const add = ()=>{
-        props.changeQuantity(qty)
+        setQty(props.quantity)
     }
 
     return(
@@ -44,13 +49,13 @@ export const MenuCustomizationModal = (props)=>{
 
                     <div class='col-3 d-flex align-items-center justify-content-center'>
                     
-                    <QuantityModifier  changeQuantity={setQty} useModal={false} value={qty} />
+                    <QuantityModifier  changeQuantity={props.changeQuantity} useModal={false} value={props.quantity} />
                         
                     </div>
                     
                     <div class='col-6 text-end'>
                         <button type="button" class="btn btn-dark mx-2" data-bs-dismiss="modal" onClick={close} >Close</button>
-                        <button type="button" class="btn btn-danger mx-2" data-bs-dismiss="modal" onClick={add}>Add</button>
+                        <button type="button" class="btn btn-danger mx-2" data-bs-dismiss="modal" onClick={add} >Add</button>
                     </div>
 
                 </div>

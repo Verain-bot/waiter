@@ -6,17 +6,27 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import RestaurantList from './views/restaurantList';
 import './styles.sass'
+import { createContext, useState } from 'react';
 
 import {Route, Routes} from 'react-router-dom';
 
+export const SearchContext = createContext(null)
+
 const App = () => {
+  const [search,setSearch] = useState('')
   return (
-  <Routes>
-    <Route path="/" element={<Main />} />
-    <Route path="/menu" element={<Menu />} />
-  </ Routes>
+    <SearchContext.Provider value={[search,setSearch]}>
+
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/res" element={<RestaurantList />} />
+      </ Routes>
+
+    </SearchContext.Provider>
   )
 }
 

@@ -11,7 +11,7 @@ export const MenuItem = (props) => {
     }
 
     return(
-
+<>
     <div class="row my-0 d-flex align-items-center justify-content-center">
         <div class="col-12 col-md-9 col-xl-8 mx-0 p-0 menu-item">
 
@@ -58,8 +58,9 @@ export const MenuItem = (props) => {
             <hr class='mx-auto'/>
         </div>
 
-        <MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} />
     </div>
+        <MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} />
+    </>
     )
 }
 

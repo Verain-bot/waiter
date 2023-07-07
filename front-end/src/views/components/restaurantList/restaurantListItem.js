@@ -1,0 +1,27 @@
+import { Stars } from "../menu/stars"
+export const RestaurantListItem = (props)=>{
+    return (
+        <div class="row card pointer p-2 mb-3 d-flex flex-row shadow align-items-center">
+            <div class='col-4'>
+            <img class='img-thumbnail rounded border-0 p-0 shadow' src={props.img} alt="No Image Found" />
+            </div>
+
+            <div class='col-8'>
+            
+                <div class='row card-title p-1 pb-0'>
+                    {props.name}
+                    <span class='small p-0'>
+                    <Stars stars={4.5} numRatings={389} withNumber={true} />
+                    </span>
+                    <span class='small p-0 text-muted'>
+                        {props.type}
+                    </span>
+                </div>
+                
+                
+
+            </div>
+
+        </div>
+    )
+}
