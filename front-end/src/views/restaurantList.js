@@ -4,7 +4,7 @@ import { Stars } from "./components/menu/stars"
 import { SearchContext } from "../App"
 import { SearchResultMessage } from "./components/header/search"
 import { RestaurantListItem } from "./components/restaurantList/restaurantListItem"
-import { makeRegex } from "../helper"
+import { Search } from "../helper"
 const App = ()=>{
 
     const [restaurants,setRestaurants] = useState([])
@@ -57,31 +57,6 @@ const App = ()=>{
         setRestaurants(res)
     }
 
-    const getFilteredRestaurants = ()=>{
-        var result1 = restaurants.filter((item)=> makeRegex(item.name).includes(makeRegex(search)))
-
-        var remaining = restaurants.filter((item)=> !makeRegex(item.name).includes(makeRegex(search)))
-
-        var result2 = remaining.filter((item)=>{
-            var itemWords = item.name.split(' ')
-            var searchWords = search.split(' ')
-            if (itemWords.length === searchWords.length)
-            {
-                for (var i=0;i<itemWords.length;i++)
-                {
-                    if (!makeRegex(itemWords[i]).startsWith(makeRegex(searchWords[i])))
-                        return false
-                }
-                return true
-            }
-            return false
-
-        })
-        
-
-        return  result1.concat(result2)
-    }
-
     useEffect(()=>{
         if (restaurants.length===0)
             getRestaurants()
@@ -97,7 +72,7 @@ const App = ()=>{
             <SearchResultMessage />
             <div class="container p-0">
             {
-                getFilteredRestaurants().map((item)=>{
+                Search(restaurants,search,'name').map((item)=>{
                     return <RestaurantListItem name={item.name} type={item.type} img={item.img} />
                 })
             }
