@@ -22,7 +22,7 @@ export const Stars = (props) =>{
 
 
         setStars(s)
-        console.log(s)
+        
     },[])
 
     return(

@@ -18,8 +18,6 @@ export const RestaurantListItem = (props)=>{
                     </span>
                 </div>
                 
-                
-
             </div>
 
         </div>
