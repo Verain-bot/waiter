@@ -37,7 +37,7 @@ export const Check = (props) => {
     return(
         
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
+                <input class="form-check-input m-0" type="checkbox" name="remember" value="true" id="rememberMe" />
                 <label class="form-check-label" for="rememberMe">{props.name}</label>
             </div>
         
@@ -50,7 +50,8 @@ export const OutlinedCheck = (props) => {
     useEffect(() => {
         var newID = 'OutlinedCheckbox'+props.name
         setId(newID)
-    })
+        
+    },[id,props.name])
 
     return(
         <div class='mx-2'>
