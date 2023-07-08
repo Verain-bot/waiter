@@ -1,7 +1,7 @@
 import { Stars } from "../menu/stars"
 export const RestaurantListItem = (props)=>{
     return (
-        <div class="col-md-6 col-lg-5 card pointer p-2 mb-3 d-flex flex-row shadow align-items-center m-md-3" >
+        <div class="col-12 card pointer p-2 mb-3 d-flex flex-row shadow align-items-center m-md-3" >
             <div class='row'>
 
             <div class='col-4'>

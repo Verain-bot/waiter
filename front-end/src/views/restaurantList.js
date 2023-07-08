@@ -66,14 +66,11 @@ const App = ()=>{
     return(
         <>
         <Header /> 
-        <main id="main" class="main">
-            
-            <div class="container p-0 d-flex ">
-            <div class='row align-items-center justify-content-center'>
-
+        
+            <div class='col-md-6 col-12'>
 
             <div class="col-12">
-            <h2>Explore</h2>
+                <h2>Explore</h2>
             </div>
             <SearchResultMessage />
             {
@@ -83,8 +80,6 @@ const App = ()=>{
             }
             
             </div>
-            </div>
-        </main>
         </>
     )
 }

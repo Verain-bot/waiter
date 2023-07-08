@@ -14,17 +14,18 @@ const App = () =>{
         <>
         
             <Header />
-            <main id="main" class="main">
+            <div class='col-md-6 col-12'>
+
             <MenuTitle name='Verains Pizza' type={['American','Italian','Indian']} />
                 
-                <MenuHeader />
+            <MenuHeader />
 
-                {sections.map((section)=>(<MenuSection name={section} />))}
+            {sections.map((section)=>(<MenuSection name={section} />))}
 
                 <MenuFooter sections={sections} />
                 <MenuCartFooter />
-            </main>
-            </>
+            </div>
+        </>
         
     )
 }

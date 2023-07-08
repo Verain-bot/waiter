@@ -17,7 +17,12 @@ export const SearchContext = createContext(null)
 const App = () => {
   const [search,setSearch] = useState('')
   return (
+    <main id="main" class="main">
+      <div class='container m-0 p-0'>
+      <div class='row p-2 d-flex align-items-center justify-content-center'>
     <SearchContext.Provider value={[search,setSearch]}>
+
+
 
       <Routes>
         <Route path="/" element={<Main />} />
@@ -28,6 +33,10 @@ const App = () => {
       </ Routes>
 
     </SearchContext.Provider>
+    </div>
+                
+    </div>
+    </main>
   )
 }
 

@@ -6,32 +6,21 @@ const App = ()=>{
     return(
         <>
         <Header />
-        <main id="main" class="main">
+        
+            <div class='col-12 col-md-6 card shadow'>
 
-            <div class='container m-0 p-0'>
-                <div class='row p-2 d-flex align-items-center justify-content-center'>
+                <h5 class='card-title'>Cart</h5>
 
-                    <div class='col-12 col-md-6 card shadow'>
-
-                        <h5 class='card-title'>Cart</h5>
-
-                        <div class='list-group list-group-flush'>
-                            <CartItem name='Pizza' price='231'/>
-                            <CartItem name='Pizza' price='231'/>
-                            <CartItem name='Pizza' price='231'/>
-                            <CartItem name='Pizza' price='231'/>
-                            <CartTotal />
-                            
-                        </div>
-
-                    </div>
-
-
+                <div class='list-group list-group-flush'>
+                    <CartItem name='Pizza' price='231'/>
+                    <CartItem name='Pizza' price='231'/>
+                    <CartItem name='Pizza' price='231'/>
+                    <CartItem name='Pizza' price='231'/>
+                    <CartTotal />
+                    
                 </div>
-                
-            </div>
 
-        </main>
+            </div>
         </>
             
     )
