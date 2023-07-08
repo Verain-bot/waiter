@@ -87,8 +87,6 @@ export const QuantityModifier = (props) => {
             {!props.useModal&&<button class='btn btn-outline-secondary btn-sm' onClick={increase} >
                 <i class='bi bi-plus'></i>
             </button>}
-
-
         </div>
     )
 }

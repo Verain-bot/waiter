@@ -9,7 +9,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import RestaurantList from './views/restaurantList';
 import './styles.sass'
 import { createContext, useState } from 'react';
-
+import Cart from './views/cart'
 import {Route, Routes} from 'react-router-dom';
 
 export const SearchContext = createContext(null)
@@ -24,6 +24,7 @@ const App = () => {
         <Route path="/menu" element={<Menu />} />
         <Route path="/menu" element={<Menu />} />
         <Route path="/res" element={<RestaurantList />} />
+        <Route path="/cart" element={<Cart />} />
       </ Routes>
 
     </SearchContext.Provider>
