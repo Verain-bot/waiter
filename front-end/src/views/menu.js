@@ -12,10 +12,11 @@ const App = () =>{
     
     return(
         <>
-            <Header />
         
+            <Header />
             <main id="main" class="main">
-                <MenuTitle name='Verains Pizza' type={['American','Italian','Indian']} />
+            <MenuTitle name='Verains Pizza' type={['American','Italian','Indian']} />
+                
                 <MenuHeader />
 
                 {sections.map((section)=>(<MenuSection name={section} />))}

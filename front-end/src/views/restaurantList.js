@@ -68,15 +68,21 @@ const App = ()=>{
         <Header /> 
         <main id="main" class="main">
             
+            <div class="container p-0 d-flex ">
+            <div class='row align-items-center justify-content-center'>
+
+
+            <div class="col-12">
             <h2>Explore</h2>
+            </div>
             <SearchResultMessage />
-            <div class="container p-0">
             {
                 Search(restaurants,search,'name').map((item)=>{
                     return <RestaurantListItem name={item.name} type={item.type} img={item.img} />
                 })
             }
             
+            </div>
             </div>
         </main>
         </>

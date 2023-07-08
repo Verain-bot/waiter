@@ -1,7 +1,9 @@
 import { Stars } from "../menu/stars"
 export const RestaurantListItem = (props)=>{
     return (
-        <div class="row card pointer p-2 mb-3 d-flex flex-row shadow align-items-center">
+        <div class="col-md-6 col-lg-5 card pointer p-2 mb-3 d-flex flex-row shadow align-items-center m-md-3" >
+            <div class='row'>
+
             <div class='col-4'>
             <img class='img-thumbnail rounded border-0 p-0 shadow' src={props.img} alt="No Image Found" />
             </div>
@@ -20,6 +22,7 @@ export const RestaurantListItem = (props)=>{
                 
             </div>
 
+            </div>
         </div>
     )
 }
