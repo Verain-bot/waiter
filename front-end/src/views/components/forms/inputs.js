@@ -37,7 +37,7 @@ export const Check = (props) => {
     return(
         
             <div class="form-check">
-                <input class="form-check-input m-0" type="checkbox" name="remember" value="true" id="rememberMe" />
+                <input class={`form-check-input ${props.name===null?"m-0":''}`} type="checkbox" name="remember" value="true" id="rememberMe" />
                 <label class="form-check-label" for="rememberMe">{props.name}</label>
             </div>
         

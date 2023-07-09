@@ -2,15 +2,10 @@ import { Check, TextInput } from "./inputs"
 
 export const FormCard = (props) => {
     return(
-        <div class="container">
+          
+            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center" style={{'height':'80vh'}}>
 
-      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
-
-
-              <div class="card mb-3">
+              <div class="card">
 
                 <div class="card-body">
 
@@ -19,7 +14,7 @@ export const FormCard = (props) => {
                     <p class="text-center medium">{props.subtitle}</p>
                   </div>
 
-                  <form class="row g-3 needs-validation" novalidate>
+                  <form class="row g-3" novalidate>
 
                     {props.inputs.map((input) => (input))}                    
                     
@@ -29,11 +24,8 @@ export const FormCard = (props) => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          
+  
 
-      </section>
-
-    </div>
     )
 }

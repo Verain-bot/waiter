@@ -2,7 +2,7 @@ import { Check } from "../forms/inputs"
 
 export const CartCredits = (props) =>{
     return(
-        <div class='row card shadow'>
+        <div class='row card shadow pb-3'>
             <h5 class='card-title mb-0 pb-1'>Credits</h5>
             <div class='row'>
                 
