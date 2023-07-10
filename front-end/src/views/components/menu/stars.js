@@ -38,7 +38,7 @@ export const Stars = (props) =>{
                         return <i class='bi bi-star' />
                 })
             }
-            <span class='text-dark'>({props.numRatings})</ span>
+            {props.numRatings&&<span class='text-dark'>({props.numRatings})</ span>}
         </span>
     )
 }

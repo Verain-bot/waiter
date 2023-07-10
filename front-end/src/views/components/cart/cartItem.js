@@ -18,10 +18,17 @@ export const CartItem = (props)=>{
                 </div>
                 <div class='col-6 d-flex flex-row-reverse'>
                     <div class='d-flex align-items-center'>
+                        
+                        {
+                            props.fixed&&<span class='text-secondary small'>
+                                {quantity} x
+                            </span>
+                        }
                         <span class='card-text mx-2 medium'>
                             {props.price}
                         </span>
-                        <QuantityModifier value={quantity} changeQuantity={setQuantity} />
+                        {!props.fixed&&<QuantityModifier value={quantity} changeQuantity={setQuantity} />}
+                        
                     </div>
 
                 </div>
