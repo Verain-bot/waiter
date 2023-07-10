@@ -1,6 +1,6 @@
 export const OrderListItem = (props)=>{
     return(
-        <div class='row'>
+        <div class='row pointer'>
             <hr class='p-0 m-0'/>
             <div class='col-12 p-2'>
                 <div class='row px-2'>
