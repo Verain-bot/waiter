@@ -1,7 +1,9 @@
 import { Header } from "./components/header/header"
 import { CartItem, CartTotal } from "./components/cart/cartItem"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 import { RatingsContext } from "../App"
+import { Table } from "./components/table/table"
+import { TableItem } from "./components/table/tableItems"
 
 const App = ()=>{
 
@@ -11,9 +13,9 @@ const App = ()=>{
         setData({...data,canRate:true, title: 'Rate order'})
     }
 
+
     return(
     <>
-    <Header />
     <div class='col-12 col-md-6'>
         <div class='row card shadow p-2'>
             <h2 class='card-title mb-0 pb-1'>Order Details</h2>
@@ -30,15 +32,9 @@ const App = ()=>{
 
         </div>
 
-        <div class='row card shadow p-2 d-flex flex-row align-items-center'>
-            <div class='col-6'>
-                <h2 class='card-title p-1 mb-0'>Order status</h2>
-            </div>
-            <div class='col-6 text-end'>
-                <strong class='text-danger pt-0 mt-0' >Delivered</strong>
-                
-            </div>
-        </div>
+        <Table title='Order Status' >
+            <TableItem right={<strong class='text-success'> Delivered</strong>} left='Status' width={7} />
+        </Table>
 
 
         <div class='row card shadow p-1 pb-3 pointer' onClick={review}>

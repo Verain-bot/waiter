@@ -1,15 +1,15 @@
 import { useContext, useEffect, useState } from "react"
 import { Header } from "./components/header/header"
 import { Stars } from "./components/menu/stars"
-import { SearchContext } from "../App"
 import { SearchResultMessage } from "./components/header/search"
 import { RestaurantListItem } from "./components/restaurantList/restaurantListItem"
 import { Search } from "../helper"
+import { useSearchBar } from "../hooks"
 const App = ()=>{
 
     const [restaurants,setRestaurants] = useState([])
-    const [search,setSearch] = useContext(SearchContext)
-
+    const search = useSearchBar()
+    
     const getRestaurants = ()=>
     {
         var res = [
@@ -61,11 +61,11 @@ const App = ()=>{
         if (restaurants.length===0)
             getRestaurants()
         
+
     },[search])
 
     return(
         <>
-        <Header /> 
         
             <div class='col-md-6 col-12'>
 

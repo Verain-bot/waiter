@@ -1,29 +1,20 @@
+import { useContext } from "react"
+import { LoginContext } from "../../../App"
 export const AccountDropDown = (props) =>{
+
+    const [{login, user}, setLogin] = useContext(LoginContext)
+
     return (
         <li class="nav-item dropdown pe-3">
 
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle"/>
-            <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
-          </a>
+          {login&&<button class='btn'>
+            <i class="bi bi-person-circle" style={{fontSize: '25px'}} />
+          </button>}
+          
 
-          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-            <li class="dropdown-header">
-              <h6>Kevin Anderson</h6>
-              <span>Web Designer</span>
-            </li>
-            <li>
-              <hr class="dropdown-divider" />
-            </li>
-
-
-            <DropDownItem divider={true} name={'Profile'} iconClass={'bi-person'} />
-            <DropDownItem divider={true} name={'Profile'} iconClass={'bi-person'} />
-            <DropDownItem divider={true} name={'Profile'} iconClass={'bi-person'} />
-            <DropDownItem divider={false} name={'Profile'} iconClass={'bi-person'} />
-
-
-          </ul>
+          {!login&&<button class='btn  btn-outline-dark'>
+            <strong>Login</strong>
+            </button>}
         </li>
 
     )

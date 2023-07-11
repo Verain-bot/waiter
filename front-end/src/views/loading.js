@@ -20,7 +20,7 @@ const App = ()=>{
         <div class='col-12 d-flex align-items-center justify-content-center loading flex-column' >
         <div class="spinner-border text-danger" style={{"width": "4rem", "height": "4rem"}} role="status"/>
         <h4 class='text-center m-3' >Loading{dots}</h4>
-        <Header/>    
+        
         </div>
     )
 }

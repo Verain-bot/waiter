@@ -7,13 +7,15 @@ import { MenuModal } from "./components/menu/menuModal";
 import { MenuTitle } from "./components/menu/menuTitle";
 import { MenuAccordion } from "./components/menu/menuSubCategoryAccordion";
 import { MenuSection } from "./components/menu/menuSubSection";
+import { useSearchBar } from "../hooks";
 const App = () =>{
     const [sections, setSections] = useState(['Starters','Main Course','Sides','Beverages'])
-    
+    const search = useSearchBar()
+
     return(
         <>
         
-            <Header />
+    
             <div class='col-md-6 col-12'>
 
             <MenuTitle name='Verains Pizza' type={['American','Italian','Indian']} />

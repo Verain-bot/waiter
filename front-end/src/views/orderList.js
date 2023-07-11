@@ -1,29 +1,45 @@
+import { useSearchBar } from "../hooks"
 import { Header } from "./components/header/header"
-import { OrderListItem } from "./components/orders/orderItem"
+
+import { Table } from "./components/table/table"
+import { TableHeading, TableItem } from "./components/table/tableItems"
+import { useContext, useEffect } from "react"
 
 const App = ()=>{
+
+    const search = useSearchBar()
+
     return(
         <>
-        <Header />
+    
         <div class='col-12 col-md-6 m-0 p-0'>
-            <div class='row card shadow p-2 m-0'>
-                <h3 class='card-title'>Orders</h3>
-                <div class='col-12 d-flex flex-column'>
-                    <OrderListItem restaurant='Verains Pizza'  price='231' id='123876123876' quantity='5'/>
-                    <OrderListItem restaurant='Verains Pizza'  price='231' id='123876123876' quantity='5'/>
-                    <OrderListItem restaurant='Verains Pizza'  price='231' id='123876123876' quantity='5'/>
-                    <OrderListItem restaurant='Verains Pizza'  price='231' id='123876123876' quantity='5'/>
-                    <OrderListItem restaurant='Verains Pizza'  price='231' id='123876123876' quantity='5'/>
-                    
-                </div>
-            </div>
+            <Table title='Orders' subTitle={'Your orders from all the restaurants available'} info={'Check your order history here. In case you need help, please contact the restaurant.'}  >
+                <TableHeading left='Restaurant' right='Amount' width={8} />
+                <TableItem left={<Left id={12312312312} restaurant={'Verain'} quantity={3} />} right={<Right price={123} />} width={8}/>
+                <TableItem left={<Left id={12312312312} restaurant={'Verain'} quantity={3} />} right={<Right price={123} />} width={8}/>
+                <TableItem left={<Left id={12312312312} restaurant={'Verain'} quantity={3} />} right={<Right price={123} />} width={8}/>
+            </Table>
         </div>
         </>       
     )
 }
 
+const Right = (props)=>{
+    return(
+    <div class='d-flex flex-column align-items-center justify-content-center'>
+        <h6 class='p-0 m-0'>{props.price}</h6>
+    </div>
+    )
+}
 
-
-
+const Left = (props)=>{
+    return(
+        <>
+            <span class='text-muted small m-0 p-0'>#{props.id}</span>
+            <h6 class='p-0 m-0'>{props.restaurant}</h6>
+            <span class='small m-0 p-0'>{props.quantity} item(s)</span>
+        </>
+    )
+}
 
 export default App

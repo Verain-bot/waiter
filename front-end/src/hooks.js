@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-
+import { useContext } from 'react';
+import { SearchBarContext,SearchContext } from './App';
 export const useScrollDirection = () =>
 {
     const [direction, setDirection] = useState('up');
@@ -29,4 +30,19 @@ export const useScrollDirection = () =>
     }, [lastScrollY]);
     
     return direction
+}
+
+export const useSearchBar = () =>{
+    const [searchBarState, setSearchBarState] = useContext(SearchBarContext)
+    const [search, setSearch] = useContext(SearchContext)
+
+    useEffect(()=>{
+        setSearchBarState(true)
+
+        return ()=>{
+            setSearchBarState(false)
+        }
+    })
+
+    return search
 }

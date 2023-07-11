@@ -41,7 +41,6 @@ const App = () => {
 
     return (
         <>
-            <Header />
             
             <FormCard title='Login' subtitle='Please enter your phone for verification' submitText='Submit' inputs={Inputs} />
             
