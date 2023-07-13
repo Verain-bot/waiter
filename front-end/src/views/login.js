@@ -1,8 +1,6 @@
 import React, { useContext, useEffect,useState} from 'react';
-
-import { Header } from './components/header/header';
 import { FormCard } from './components/forms/formCard';
-import { Check, TextInput, Button, IntegerInput } from './components/forms/inputs';
+import { Check, Button, IntegerInput, LinkFooter } from './components/forms/inputs';
 import { MessageContext } from '../App';
 const App = () => {
 
@@ -33,18 +31,17 @@ const App = () => {
         return false
     }
 
-    const Inputs = [
-        <IntegerInput name='Phone' value={phone} set={setPhone} type={'number'} />,
-        <Check name='Remember me' />,
-        <Button name='Login' disabled={disabled} onClick={verify} />
-    ]
-
     return (
-        <>
-            
-            <FormCard title='Login' subtitle='Please enter your phone for verification' submitText='Submit' inputs={Inputs} />
-            
-        </>
+        
+        <div class="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center" style={{'height':'80vh'}}>
+        <FormCard title='Login' subtitle='Please enter your phone for verification' submitText='Submit'>
+            <IntegerInput name='Phone' value={phone} set={setPhone} type={'number'} prepend={'+91'} maxlen={10} />
+            <Check name='Remember me' />
+            <Button name='Login' disabled={disabled} onClick={verify} />
+            <LinkFooter text="Don't have an account?" linkText="Register" />
+        </FormCard> 
+        </div>
+        
         
     );
     }

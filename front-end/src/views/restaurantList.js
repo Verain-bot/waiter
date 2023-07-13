@@ -1,6 +1,4 @@
-import { useContext, useEffect, useState } from "react"
-import { Header } from "./components/header/header"
-import { Stars } from "./components/menu/stars"
+import { useEffect, useState } from "react"
 import { SearchResultMessage } from "./components/header/search"
 import { RestaurantListItem } from "./components/restaurantList/restaurantListItem"
 import { Search } from "../helper"

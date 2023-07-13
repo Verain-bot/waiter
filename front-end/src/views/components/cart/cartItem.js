@@ -38,19 +38,8 @@ export const CartItem = (props)=>{
     )
 }
 
-export const CartTotal = (props) =>{
-    return(
-        <div class='list-group-item'>
-            <CartTotalItem name='Subtotal' amount={1000} /> 
-            <CartTotalItem name='GST(18%)' small amount={"180"} />
-            <CartTotalItem name='Service Tax(10%)' small  amount={100} />
-            <CartTotalItem name='Delivery Charge' small  amount={50} />
-            <CartTotalItem name='Grand Total' amount={1330} strong={true} />
-        </div>
-    )
-}
 
-const CartTotalItem = (props) =>{
+export const CartTotalItem = (props) =>{
     return(
         <div class='row m-0 p-0'>
             <div class='col-6 p-0 m-0'>

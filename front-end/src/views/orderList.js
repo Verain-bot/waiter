@@ -1,9 +1,6 @@
 import { useSearchBar } from "../hooks"
-import { Header } from "./components/header/header"
-
 import { Table } from "./components/table/table"
 import { TableHeading, TableItem } from "./components/table/tableItems"
-import { useContext, useEffect } from "react"
 
 const App = ()=>{
 

@@ -18,7 +18,8 @@ import OrderList from './views/orderList';
 import Credits from './views/credits'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Header } from './views/components/header/header';
-
+import OTP from './views/otp';
+import Register from './views/register';
 
 export const SearchContext = createContext(null)
 export const MessageContext = createContext(null)
@@ -74,6 +75,8 @@ const App = () => {
         <Route path="/order" element={<OrderDetail />} />
         <Route path="/orders" element={<OrderList />} />
         <Route path="/credits" element={<Credits />} />
+        <Route path="/otp" element={<OTP />} />
+        <Route path="/register" element={<Register />} />
       </ Routes>
 
     </SearchBarContext.Provider>

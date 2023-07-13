@@ -19,14 +19,20 @@ export const TextInput = (props) => {
 
 export const IntegerInput = (props) => {
     const handleChange = (e) => {
-        props.set(e.target.value)
+        // regex for integer
+        const regex = new RegExp('^[0-9]*$')
+
+        if (regex.test(e.target.value) && e.target.value.length <= props.maxlen){
+            props.set(e.target.value)
+        }
+        
     }
 
     return(
         <div class="col-12">
         <label for="yourUsername" class="form-label">{props.name}</label>
         <div class="input-group has-validation">
-          <span class="input-group-text" id="inputGroupPrepend">+91</span>
+          {props.prepend&&<span class="input-group-text" id="inputGroupPrepend">{props.prepend}</span>}
           <input type='number' pattern="[0-9]*" name="username" class="form-control" id="yourUsername" required value={props.value} onChange={handleChange} />
         </div>
       </div>
@@ -66,5 +72,14 @@ export const Button = (props) => {
         <div class="col-12">
             <button class="btn btn-primary w-100" type="submit" disabled={props.disabled} onClick={props.onClick} >{props.name}</button>
         </div>
+    )
+}
+
+export const LinkFooter = (props) =>{
+    return(
+        <span>
+            {props.text}&nbsp;
+            <a href='#' class='link-primary'>{props.linkText}</a>
+        </span>
     )
 }

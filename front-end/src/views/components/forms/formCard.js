@@ -3,7 +3,7 @@ import { Check, TextInput } from "./inputs"
 export const FormCard = (props) => {
     return(
           
-            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center" style={{'height':'80vh'}}>
+            
 
               <div class="card">
 
@@ -16,16 +16,11 @@ export const FormCard = (props) => {
 
                   <form class="row g-3" novalidate>
 
-                    {props.inputs.map((input) => (input))}                    
+                    {props.children}
                     
-
                   </form>
 
                 </div>
               </div>
-            </div>
-          
-  
-
     )
 }

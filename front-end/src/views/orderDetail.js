@@ -1,5 +1,4 @@
-import { Header } from "./components/header/header"
-import { CartItem, CartTotal } from "./components/cart/cartItem"
+import { CartItem, CartTotalItem } from "./components/cart/cartItem"
 import { useContext, useEffect } from "react"
 import { RatingsContext } from "../App"
 import { Table } from "./components/table/table"
@@ -27,7 +26,12 @@ const App = ()=>{
                 <CartItem name='Pizza' price='231' fixed/>
                 <CartItem name='Pizza' price='231' fixed/>
                 <CartItem name='Pizza' price='231' fixed/>
-                <CartTotal />
+                <div class='list-group-item'>
+
+                <CartTotalItem name='Cart total' amount='123' />
+                <CartTotalItem name='Cart total' amount='123' small />
+                <CartTotalItem name='Cart total' amount='123' strong />
+                </div>
             </div>
 
         </div>
