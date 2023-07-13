@@ -1,5 +1,6 @@
 
 
+import { useEffect } from 'react';
 import { CartFooter } from './components/cart/cartFooter';
 import { CartItem, CartTotalItem } from './components/cart/cartItem';
 import { Check } from './components/forms/inputs';
@@ -7,6 +8,8 @@ import { Table } from './components/table/table';
 import { TableHeading, TableItem } from './components/table/tableItems';
 
 const App = ()=>{
+    
+
     return(
         <>
         
@@ -30,6 +33,7 @@ const App = ()=>{
 
             <Table title='Address' subTitle='Please select your delivery address'>
                 <TableItem left='Delivering to:' right={<Address name='Verain' address='10 N Model Town, Hisar' />}  width={5}/>
+                <TableItem left={<span class='small'>Tap to change your delivery address</span>}  width={11}/>
             </Table>
             
             <Table title='Amount' subTitle='Your Total Amount'>

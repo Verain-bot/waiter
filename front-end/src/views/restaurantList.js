@@ -58,8 +58,6 @@ const App = ()=>{
     useEffect(()=>{
         if (restaurants.length===0)
             getRestaurants()
-        
-
     },[search])
 
     return(

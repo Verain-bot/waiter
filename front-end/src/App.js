@@ -9,7 +9,7 @@ import RestaurantList from './views/restaurantList';
 import Loading from './views/loading';
 import Message from './views/messageModal';
 import './styles.sass'
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import Cart from './views/cart'
 import {Route, Routes} from 'react-router-dom';
 import OrderDetail from './views/orderDetail';
@@ -20,6 +20,8 @@ import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Header } from './views/components/header/header';
 import OTP from './views/otp';
 import Register from './views/register';
+import Address from './views/deliveryAddress'
+
 
 export const SearchContext = createContext(null)
 export const MessageContext = createContext(null)
@@ -28,6 +30,7 @@ export const LoginContext = createContext(null)
 export const SearchBarContext = createContext(null)
 
 const App = () => {
+  
   const [search,setSearch] = useState('')
   const [message,setMessage] = useState({'heading':'', 'body':'', 'type':''})
   const [ratings, setRatings] = useState({
@@ -49,6 +52,7 @@ const App = () => {
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
     console.log('asd')
+
   })
 
 
@@ -77,6 +81,7 @@ const App = () => {
         <Route path="/credits" element={<Credits />} />
         <Route path="/otp" element={<OTP />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/address" element={<Address />} />
       </ Routes>
 
     </SearchBarContext.Provider>
