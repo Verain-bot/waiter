@@ -6,9 +6,9 @@ import { CartItem, CartTotalItem } from './components/cart/cartItem';
 import { Check } from './components/forms/inputs';
 import { Table } from './components/table/table';
 import { TableHeading, TableItem } from './components/table/tableItems';
+import { Link, useNavigate } from 'react-router-dom';
 
 const App = ()=>{
-    
 
     return(
         <>
@@ -30,11 +30,14 @@ const App = ()=>{
                 <TableItem left='Total Store credits' right='90'  width={8}/>
                 <TableItem left='Use Credits' right={<Check />}  width={8}/>
             </Table>
-
-            <Table title='Address' subTitle='Please select your delivery address'>
-                <TableItem left='Delivering to:' right={<Address name='Verain' address='10 N Model Town, Hisar' />}  width={5}/>
-                <TableItem left={<span class='small'>Tap to change your delivery address</span>}  width={11}/>
-            </Table>
+            
+            <Link to='/address' className='link text-dark'>
+                <Table title='Address' subTitle='Please select your delivery address'>
+                    <TableItem left='Delivering to:' right={<Address name='Verain' address='10 N Model Town, Hisar' />}  width={5}/>
+                    <TableItem left={<span class='small'>Tap to change your delivery address</span>}  width={11}/>
+                </Table>
+            </Link>
+            
             
             <Table title='Amount' subTitle='Your Total Amount'>
                 

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 import { SearchResultMessage } from "./components/header/search"
 import { RestaurantListItem } from "./components/restaurantList/restaurantListItem"
-import { Search } from "../helper"
-import { useSearchBar } from "../hooks"
+import { Search, getData } from "../helper"
+import { useFetch, useSearchBar } from "../hooks"
+import { Link, useLoaderData, useOutletContext } from "react-router-dom"
 const App = ()=>{
 
     const [restaurants,setRestaurants] = useState([])
+    const data = useLoaderData()
     const search = useSearchBar()
     
     const getRestaurants = ()=>
@@ -57,7 +59,9 @@ const App = ()=>{
 
     useEffect(()=>{
         if (restaurants.length===0)
-            getRestaurants()
+            setRestaurants(data.results)
+
+        
     },[search])
 
     return(
@@ -71,7 +75,7 @@ const App = ()=>{
             <SearchResultMessage />
             {
                 Search(restaurants,search,'name').map((item)=>{
-                    return <RestaurantListItem name={item.name} type={item.type} img={item.img} />
+                    return <Link to={`/restaurant/${item.id}/menu`}><RestaurantListItem name={item.name} type={item.type} img={item.img} /></Link>
                 })
             }
             
@@ -80,6 +84,11 @@ const App = ()=>{
     )
 }
 
+
+export const RestaurantListLoader = async () =>{
+    const data = await getData('api/restaurants')
+    return data.json()
+}
 
 
 

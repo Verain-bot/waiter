@@ -15,9 +15,10 @@ class MenuItemCustomizationSerializer(serializers.ModelSerializer):
 
 class MenuListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='menu-details')
+    itemType = serializers.CharField(source='itemType.name', read_only=True)
     class Meta:
         model = MenuItem
-        fields = ['name', 'url']
+        fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto']
 
 class MenuDetailsSerializer(serializers.ModelSerializer):
     customizations = MenuItemCustomizationSerializer(many=True, read_only=True, source='item_customization')
@@ -29,7 +30,7 @@ class RestaurantDetailsSerializer(serializers.ModelSerializer):
     menu = MenuListSerializer(many=True, read_only=True, source='restaurant')
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'phone', 'email', 'logo', 'menu']
+        fields = ['id', 'name', 'phone', 'email', 'logo', 'restaurantType', 'menu']
 
 class RestaurantListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-details')

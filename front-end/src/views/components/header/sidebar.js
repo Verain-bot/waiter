@@ -1,3 +1,6 @@
+import { NavLink } from 'react-router-dom'
+import  RouteList,{NAV} from '../../../routeList'
+
 export const SideBar = (props) =>{
     return(
 
@@ -6,11 +9,13 @@ export const SideBar = (props) =>{
         <ul class="sidebar-nav" id="sidebar-nav">
 
         
-            <SideBarItem name='Dashboard' collapsed={false} iconName='bi-grid' />
+            {RouteList.filter((item) => item.nav.includes(NAV)).map((item,key)=>(
+                <SideBarItem name={item.name} iconName={`bi-${item.icon}`} link={item.path} key={key} />
+            ))}
 
-            <li class="nav-heading">Pages</li>
+            {//<li class="nav-heading">Pages</li>}
+            }
 
-            <SideBarItem name='Profile' collapsed={true} iconName='bi-person' />
 
         </ul>
 
@@ -33,12 +38,17 @@ export const ToggleSideBar = (props) =>{
 }
 
 const SideBarItem = (props) =>{
+    const toggle = ()=>{
+        document.body.classList.toggle('toggle-sidebar')
+    }
+
     return(
         <li class="nav-item">
-            <a class={props.collapsed?'nav-link collapsed':'nav-link'} href="">
+            
+            <NavLink className={({isActive, isPending})=>isActive?'nav-link':isPending?'nav-link collapsed':'nav-link collapsed'} to={props.link} onClick={toggle}>
                 <i class={"bi " + props.iconName}></i>
                 <span>{props.name}</span>
-            </a>
+            </NavLink>
         </li>
     )
 }

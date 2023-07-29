@@ -17,7 +17,7 @@ export const MenuItem = (props) => {
 
             <div class="row d-flex align-items-center justify-content-center">
                 <div class="col-4 mx-auto">
-                    <img class='rounded img-thumbnail shadow-sm border-0' src='https://media.istockphoto.com/id/938742222/photo/cheesy-pepperoni-pizza.jpg?s=612x612&w=0&k=20&c=D1z4xPCs-qQIZyUqRcHrnsJSJy_YbUD9udOrXpilNpI=' />
+                    <img class='rounded img-thumbnail shadow-sm border-0' src={props.itemPhoto} />
                 </div>
                 <div class="col-8 mx-0 mt-2 px-0">
                     <div class='row'>
@@ -25,7 +25,7 @@ export const MenuItem = (props) => {
                             <div class='row'>
                                 
                                 <h1 class='card-title py-0 m-0 medium' ><i class='bi bi-dash-square-fill text-success' /> {props.name}</h1>
-                                <span class='text-muted small'>Rs. 209</span>
+                                <span class='text-muted small'>Rs. {props.price}</span>
                                 
                                 <span class='small pb-1'>
                                 <Stars stars={3.4} numRatings={21} />
@@ -35,7 +35,7 @@ export const MenuItem = (props) => {
                             </div>
 
                             <div class='row'>
-                                <span class='card-text text-secondary small'>Freshly baked pizza with cheese and pepperoni</span>
+                                <span class='card-text text-secondary small'>{props.description}</span>
                             </div>
                         </div>
 
@@ -59,7 +59,7 @@ export const MenuItem = (props) => {
         </div>
 
     </div>
-        <MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} />
+        <MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} menuItemID = {props.id}/>
     </>
     )
 }

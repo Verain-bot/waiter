@@ -1,3 +1,8 @@
+import RouteList from './routeList'
+
+export const BASEUrl = 'http://localhost:8000/'
+
+
 const makeRegex = (str)=>{
     var regex = /[a-zA-Z0-9]/
     str=str.toLowerCase()
@@ -9,6 +14,7 @@ const makeRegex = (str)=>{
     }
     return res
 }
+
 
 export const Search = (list, search, lookup)=>{
     var result1 = list.filter((item)=> makeRegex(item[lookup]).includes(makeRegex(search)))
@@ -33,4 +39,9 @@ export const Search = (list, search, lookup)=>{
     
 
     return  result1.concat(result2)
+}
+
+export const getData = async (url) =>{
+    const response = await fetch(BASEUrl+url)
+    return response
 }

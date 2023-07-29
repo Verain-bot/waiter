@@ -1,26 +1,15 @@
 import './App.css';
-import Main from './views/login';
-import Menu from './views/menu';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import RestaurantList from './views/restaurantList';
-import Loading from './views/loading';
 import Message from './views/messageModal';
 import './styles.sass'
 import { createContext, useEffect, useRef, useState } from 'react';
-import Cart from './views/cart'
-import {Route, Routes} from 'react-router-dom';
-import OrderDetail from './views/orderDetail';
+import {Outlet, Route, Routes, useNavigation} from 'react-router-dom';
 import Review from './views/ratingModal'
-import OrderList from './views/orderList';
-import Credits from './views/credits'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Header } from './views/components/header/header';
-import OTP from './views/otp';
-import Register from './views/register';
-import Address from './views/deliveryAddress'
 
 
 export const SearchContext = createContext(null)
@@ -30,7 +19,7 @@ export const LoginContext = createContext(null)
 export const SearchBarContext = createContext(null)
 
 const App = () => {
-  
+  const n = useNavigation()
   const [search,setSearch] = useState('')
   const [message,setMessage] = useState({'heading':'', 'body':'', 'type':''})
   const [ratings, setRatings] = useState({
@@ -52,7 +41,8 @@ const App = () => {
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
     console.log('asd')
-
+    console.log(n)
+    
   })
 
 
@@ -70,19 +60,9 @@ const App = () => {
       <Message />
       <Review />
       <Header />
-      <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/menu" element={<Menu />} />
-        <Route path="/res" element={<RestaurantList />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/loading" element={<Loading />} />
-        <Route path="/order" element={<OrderDetail />} />
-        <Route path="/orders" element={<OrderList />} />
-        <Route path="/credits" element={<Credits />} />
-        <Route path="/otp" element={<OTP />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/address" element={<Address />} />
-      </ Routes>
+      <Outlet context={{
+        baseURL: 'http://localhost:8000/',
+      }} />
 
     </SearchBarContext.Provider>
     </LoginContext.Provider>

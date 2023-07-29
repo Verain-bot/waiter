@@ -1,20 +1,33 @@
 import { useEffect, useState } from "react"
 import { TextInput } from "../forms/inputs"
 import { QuantityModifier } from "./menuItem"
+import { getData } from "../../../helper"
+import { useModal } from "../../../hooks"
 
 export const MenuCustomizationModal = (props)=>{
 
     const [qty,setQty] = useState()
+    const [customizations, setCustomizations] = useState([])
+    
+    const getCustomizations = async () =>{
+        const response =await getData(`api/menu/details/${props.menuItemID}`)
+        const json = await response.json()
+        setCustomizations(json.customizations)
+        console.log(json.customizations)
+    }
+    const modal = useModal(props.id, null, null, getCustomizations)
 
     useEffect(()=>{
         setQty(props.quantity)
     },[])
 
     const close = ()=>{
+        modal.close()
         props.changeQuantity(qty)
     }
 
     const add = ()=>{
+        modal.close()
         setQty(props.quantity)
     }
 
@@ -27,15 +40,7 @@ export const MenuCustomizationModal = (props)=>{
             </div>
             <div class="modal-body">
                 
-                <Form name='Size' type='radio' />
-                <Form name='Size 2' type='checkbox' />
-                <Form name='Size 2' type='checkbox' />
-                <Form name='Size 2' type='checkbox' />
-                <Form name='Size 2' type='checkbox' />
-                <Form name='Size 2' type='checkbox' />
-                <Form name='Size 2' type='checkbox' />
-                <Form name='Size 2' type='checkbox' />
-                
+                {customizations.map((customization)=><Form {...customization} />)}
                 
             </div>
 
@@ -54,8 +59,8 @@ export const MenuCustomizationModal = (props)=>{
                     </div>
                     
                     <div class='col-6 text-end'>
-                        <button type="button" class="btn btn-dark mx-2" data-bs-dismiss="modal" onClick={close} >Close</button>
-                        <button type="button" class="btn btn-danger mx-2" data-bs-dismiss="modal" onClick={add} >Add</button>
+                        <button type="button" class="btn btn-dark mx-2" onClick={close} >Close</button>
+                        <button type="button" class="btn btn-danger mx-2"  onClick={add} >Add</button>
                     </div>
 
                 </div>
@@ -86,9 +91,7 @@ const Form = (props) => {
         <div class="row mb-3">
             <strong>{props.name}</strong>
                 <div class="col-12">
-                    <CheckAndRadio name='One' price='21' for={props.name.replace(' ','')}  type={props.type} />
-                    <CheckAndRadio name='One' price='21' for={props.name.replace(' ','')}  type={props.type} />
-                    <CheckAndRadio name='One' price='21' for={props.name.replace(' ','')}  type={props.type} />
+                    {props.customizationOptions.map((option)=><CheckAndRadio {...option} type={props.customizationType} for={props.name} />)  }
                 </div>
         </div>
     )
