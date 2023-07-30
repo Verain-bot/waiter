@@ -10,6 +10,7 @@ import {Outlet, Route, Routes, useNavigation} from 'react-router-dom';
 import Review from './views/ratingModal'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Header } from './views/components/header/header';
+import { useStorage } from './hooks';
 
 
 export const SearchContext = createContext(null)
@@ -19,7 +20,6 @@ export const LoginContext = createContext(null)
 export const SearchBarContext = createContext(null)
 
 const App = () => {
-  const n = useNavigation()
   const [search,setSearch] = useState('')
   const [message,setMessage] = useState({'heading':'', 'body':'', 'type':''})
   const [ratings, setRatings] = useState({
@@ -36,15 +36,16 @@ const App = () => {
 })
   const [login, setLogin] = useState({login:false, user:{}})
   const [searchBar, setSearchBar] = useState(false)
+  const [cart,setCart] = useStorage('cart')
 
   useEffect(()=>{
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
-    console.log('asd')
-    console.log(n)
+    if (cart === null){ 
+      setCart([])
+    }
     
   })
-
 
   return (
     <main id="main" class="main">

@@ -16,9 +16,18 @@ class MenuItemCustomizationSerializer(serializers.ModelSerializer):
 class MenuListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='menu-details')
     itemType = serializers.CharField(source='itemType.name', read_only=True)
+    #create a field which is false if length of customization is 0
+    hasCustomization = serializers.SerializerMethodField('get_hasCustomization')
+    
+    def get_hasCustomization(self, obj):
+        if len(obj.item_customization.all()) > 0:
+            return True
+        else:
+            return False
+
     class Meta:
         model = MenuItem
-        fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto']
+        fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto','hasCustomization']
 
 class MenuDetailsSerializer(serializers.ModelSerializer):
     customizations = MenuItemCustomizationSerializer(many=True, read_only=True, source='item_customization')

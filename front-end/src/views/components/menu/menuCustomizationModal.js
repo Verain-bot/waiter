@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { TextInput } from "../forms/inputs"
 import { QuantityModifier } from "./menuItem"
 import { getData } from "../../../helper"
@@ -8,18 +8,25 @@ export const MenuCustomizationModal = (props)=>{
 
     const [qty,setQty] = useState()
     const [customizations, setCustomizations] = useState([])
-    
+    const [selectedCustomizations, setSelectedCustomizations] = useState([])
     const getCustomizations = async () =>{
         const response =await getData(`api/menu/details/${props.menuItemID}`)
         const json = await response.json()
-        setCustomizations(json.customizations)
-        console.log(json.customizations)
+        const cust = json.customizations
+        setCustomizations(cust)
+        setSelectedCustomizations(cust.map((customization)=>{return {
+            CustomizationID: customization.id,
+            CustomizationName: customization.name,
+            Options: [],
+        }
+        }))
+        
     }
     const modal = useModal(props.id, null, null, getCustomizations)
 
     useEffect(()=>{
         setQty(props.quantity)
-    },[])
+    },[props.quantity])
 
     const close = ()=>{
         modal.close()
@@ -40,7 +47,12 @@ export const MenuCustomizationModal = (props)=>{
             </div>
             <div class="modal-body">
                 
-                {customizations.map((customization)=><Form {...customization} />)}
+                {customizations.map((customization, key)=>
+                    <Form {...customization} 
+                        index={key} 
+                        selected = {selectedCustomizations} 
+                        setSelected = {setSelectedCustomizations} 
+                />)}
                 
             </div>
 
@@ -54,7 +66,7 @@ export const MenuCustomizationModal = (props)=>{
 
                     <div class='col-3 d-flex align-items-center justify-content-center'>
                     
-                    <QuantityModifier  changeQuantity={props.changeQuantity} useModal={false} value={props.quantity} />
+                        <QuantityModifier  changeQuantity={props.changeQuantity} useModal={false} value={props.quantity} />
                         
                     </div>
                     
@@ -72,7 +84,70 @@ export const MenuCustomizationModal = (props)=>{
     )
 }
 
+
+const Form = (props) => {
+    const [selections, setSelections] = useState([])
+
+    const handleChange = useCallback((e)=>{
+        
+        var newSelections = []
+
+        if (e.target.type === 'radio')
+            newSelections = [e.target.value]
+        
+        if (e.target.type === 'checkbox')
+        {
+            if (selections.includes(e.target.value))
+                newSelections = selections.filter((selection)=>selection !== e.target.value)
+            else
+                newSelections = [...selections, e.target.value]
+        }
+
+        setSelections(newSelections)
+
+        let selectedCpy = [...props.selected]
+        const index = props.index
+        selectedCpy[index] = {
+            ...(selectedCpy[index]),
+            'Options': newSelections.map((selection)=>({id: selection.split('-')[0],name: selection.split('-')[1]}))
+        }
+        props.setSelected(selectedCpy)
+        console.log(selectedCpy, 'selected', props.index)
+
+
+    },[props])
+
+    return(
+        <div class="row mb-3">
+            <strong>{props.name}</strong>
+                <div class="col-12">
+                    {props.customizationOptions.map((option)=>
+                    <CheckAndRadio {...option} 
+                        type={props.customizationType} 
+                        for={props.name} 
+                        selections={selections}
+                        change={handleChange} 
+                    />)  }
+                </div>
+        </div>
+    )
+}
+
+
 const CheckAndRadio = (props) =>{
+    const [val, setVal] = useState(null)
+    const [checked, setChecked] = useState(false)
+    useEffect(()=>{
+        if(val === null)
+            setVal(String(props.id)+'-'+props.name)
+        
+        if(props.selections.includes(val))
+            setChecked(true)
+        else
+            setChecked(false)
+
+    },[props.selections])
+
     return(
         <div class="row p-2">
             <div class="col-8">
@@ -80,19 +155,14 @@ const CheckAndRadio = (props) =>{
             </div>
             <div class="col-4 text-end">
                 <label class="form-check-label text-secondary">+ {props.price} &nbsp;</label>
-                <input class="form-check-input" type={props.type} name={props.for} value="true" />
+                <input class="form-check-input" 
+                    type={props.type} 
+                    name={props.for} 
+                    value={val} checked={checked} 
+                    onChange={props.change}
+                />
+                
             </div>
-        </div>
-    )
-}
-
-const Form = (props) => {
-    return(
-        <div class="row mb-3">
-            <strong>{props.name}</strong>
-                <div class="col-12">
-                    {props.customizationOptions.map((option)=><CheckAndRadio {...option} type={props.customizationType} for={props.name} />)  }
-                </div>
         </div>
     )
 }

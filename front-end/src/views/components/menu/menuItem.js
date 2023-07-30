@@ -1,14 +1,41 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
+import { useStorage } from "../../../hooks"
 
 export const MenuItem = (props) => {
 
     const [quantity, setQuantity] = useState(0)
+    const [cart, setCart] = useStorage('cart')
+    const [cartItem, setCartItem] = useState(null)
+    const [customizations, setCustomizations] = useState([])
+
 
     const increaseQuantity = () => {
         setQuantity(quantity+1)
     }
+
+    useEffect(()=>{
+        //find the item in the cart
+        console.log('cart',cart)
+        if (cart!==null){
+            const item = cart.find((item)=>item.id===props.id)
+            if (!item && quantity>0){
+                const newItem = {
+                    'id': props.id,
+                    'name': props.name,
+                    'customizations': [{quantity:quantity, price:props.price}],
+                }
+
+                setCart([...cart, newItem])
+                console.log('added new item',cart)
+            }
+
+        }
+        
+        
+    },[quantity])
+
 
     return(
 <>
@@ -42,14 +69,16 @@ export const MenuItem = (props) => {
                         <div class='col-4 d-flex flex-column align-items-center justify-content-center'>
                             
                             <div class='row'>
-                                {quantity===0 && <i class='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity} data-bs-toggle="modal" data-bs-target={`#MenuItemModal${props.name.replace(' ','')}`}></i>}
+                                {props.hasCustomization && quantity===0 && <i class='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity} data-bs-toggle="modal" data-bs-target={`#MenuItemModal${props.name.replace(' ','')}`}></i>}
+                                {!props.hasCustomization && quantity===0 && <i class='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity}></i>}
 
-                                {quantity>0&&<QuantityModifier changeQuantity={setQuantity} useModal={true} modalId={`#MenuItemModal${props.name.replace(' ','')}`} value={quantity} />}
+                                {props.hasCustomization && quantity>0&&<QuantityModifier changeQuantity={setQuantity} useModal={true} modalId={`#MenuItemModal${props.name.replace(' ','')}`} value={quantity} />}
+                                {!props.hasCustomization && quantity>0&&<QuantityModifier changeQuantity={setQuantity} useModal={false} value={quantity} />}
                             </div>
 
-                            <div class='row'>
+                            {props.hasCustomization&&<div class='row'>
                                 <span class='small text-secondary'>Customizable+</span>
-                            </div>
+                            </div>}
                         </div>
                     </div>
 
@@ -59,7 +88,8 @@ export const MenuItem = (props) => {
         </div>
 
     </div>
-        <MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} menuItemID = {props.id}/>
+
+        {props.hasCustomization&&<MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} menuItemID = {props.id} customizationList={{customizations, setCustomizations}} />}
     </>
     )
 }

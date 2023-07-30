@@ -105,3 +105,19 @@ export const useModal = (modalID, onShow = null, onHide= null, onFirstOpen = nul
 
     return {show ,open,close}
 }
+
+export const useStorage = (key) => {
+    const [value, setValue] = useState(() => {
+      
+      const storedValue = localStorage.getItem(key);
+      return storedValue ? JSON.parse(storedValue) : null;
+    });
+      
+    useEffect(() => {      
+      localStorage.setItem(key, JSON.stringify(value));
+    }, [key, value]); 
+
+  
+    return [value, setValue];
+  };
+  

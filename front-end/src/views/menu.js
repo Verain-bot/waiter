@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MenuCartFooter, MenuFooter } from "./components/menu/menuFooter";
 import { MenuHeader } from "./components/menu/menuFilterHeader";
 import { MenuTitle } from "./components/menu/menuTitle";
 import { MenuSection } from "./components/menu/menuSubSection";
-import { useSearchBar } from "../hooks";
+import { useSearchBar, useStorage } from "../hooks";
 import { useLoaderData, useParams } from "react-router-dom";
 import { Search, getData } from "../helper";
 import { SearchResultMessage } from "./components/header/search";
@@ -23,7 +23,8 @@ const getSectionsFromMenu = (menu)=>{
 const App = () =>{
     const search = useSearchBar()
     const data = useLoaderData()
-
+    const [cart, setCart] = useStorage('cart')
+    
     return(
     
         <div class='col-md-6 col-12'>
