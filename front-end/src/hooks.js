@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useContext } from 'react';
 import { SearchBarContext,SearchContext } from './App';
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -49,56 +49,53 @@ export const useSearchBar = () =>{
     return search
 }
 
-export const useModal = (modalID, onShow = null, onHide= null, onFirstOpen = null) =>{
+export const useModal = (modalID, onShow = null, onHide= null) =>{
     const [show,setShow] = useState(false)
     const [modal,setModal] = useState(false)
-    let firstOpen = true
+    
+    const OPEN = useCallback(()=>{
+        if (onShow)
+            onShow()
+           
+        setShow(true)
+    },[onShow])
+
+    const HIDE = useCallback(()=>{
+        if (onHide)
+            onHide()
+           
+        setShow(false)
+    },[onHide])
+
 
     useEffect(()=>{
         const m = document.getElementById(modalID)
-        setModal(new bootstrap.Modal(m))
-        
-        m.addEventListener('show.bs.modal',()=>{
-            if (onShow)
-                onShow()
-            if(firstOpen && onFirstOpen)
-            {
-                onFirstOpen()
-                firstOpen = false
-            }
-            setShow(true)
-        } )
-
-        m.addEventListener('hide.bs.modal',()=>{
-            if (onHide)
-                onHide()
-            setShow(false)
-        })
-        return ()=>{
-            m.removeEventListener('show.bs.modal',()=>{
-                if (onShow)
-                    onShow()
-                setShow(true)
-            } )
-    
-            m.removeEventListener('hide.bs.modal',()=>{
-                if (onHide)
-                    onHide()
-                if(firstOpen && onFirstOpen)
-                    {
-                        onFirstOpen()
-                        firstOpen = false
-                    }
-                setShow(false)
-            })
+        if (!modal)
+        {
+            setModal(new bootstrap.Modal(m))
+            
+            m.addEventListener('show.bs.modal',OPEN)
+            m.addEventListener('hide.bs.modal',HIDE)
         }
-    },[])
+        else{
+            m.removeEventListener('show.bs.modal',OPEN)
+            m.removeEventListener('hide.bs.modal',HIDE)
+
+            m.addEventListener('show.bs.modal',OPEN)
+            m.addEventListener('hide.bs.modal',HIDE)
+        }
+
+        return ()=>{
+            
+            m.removeEventListener('show.bs.modal',OPEN)
+            m.removeEventListener('hide.bs.modal',HIDE)
+        }
+    },[OPEN,HIDE])
 
     const open = ()=>{
         modal.show()
     } 
-        
-
+    
     const close = ()=>{
         modal.hide()
     }

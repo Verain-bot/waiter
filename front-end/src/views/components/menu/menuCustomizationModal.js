@@ -9,6 +9,8 @@ export const MenuCustomizationModal = (props)=>{
     const [qty,setQty] = useState()
     const [customizations, setCustomizations] = useState([])
     const [selectedCustomizations, setSelectedCustomizations] = useState([])
+    const modal = useModal(props.id, ()=>{onOpen()}, ()=>{onClose()})
+
     const getCustomizations = async () =>{
         const response =await getData(`api/menu/details/${props.menuItemID}`)
         const json = await response.json()
@@ -22,20 +24,71 @@ export const MenuCustomizationModal = (props)=>{
         }))
         
     }
-    const modal = useModal(props.id, null, null, getCustomizations)
+
+    const onClose = ()=>{
+        console.log(qty)
+        props.changeQuantity(props.quantity - 1)
+    }
+
+    const onOpen= ()=>{
+        if(props.useLast)
+        {
+            let last = props.customizations[props.customizations.length-1]
+            setSelectedCustomizations(last.customizations)
+            setQty(last.quantity)
+        }
+        else{
+            setSelectedCustomizations(customizations.map((customization)=>{return {
+                CustomizationID: customization.id,
+                CustomizationName: customization.name,
+                Options: [],
+            }
+        }))
+        
+        setQty(1)
+
+        }
+        
+    }
 
     useEffect(()=>{
-        setQty(props.quantity)
-    },[props.quantity])
+        getCustomizations()
+        
+    },[])
 
     const close = ()=>{
         modal.close()
-        props.changeQuantity(qty)
     }
 
     const add = ()=>{
         modal.close()
-        setQty(props.quantity)
+        props.changeQuantity(qty)
+        let x = [...props.customizations]
+        
+        if (props.useLast)
+        {
+            if (qty>0)
+            {
+                x[x.length-1]={
+                    quantity: qty,
+                    customizations: selectedCustomizations,
+                }
+            }
+            else{
+                x.pop()
+            }
+        }
+        else{
+            if (qty>0)
+            {
+                x.push({
+                    quantity: qty,
+                    customizations: selectedCustomizations,
+                })
+            }
+            
+        }
+        props.setCustomizations(x)
     }
 
     return(
@@ -66,7 +119,7 @@ export const MenuCustomizationModal = (props)=>{
 
                     <div class='col-3 d-flex align-items-center justify-content-center'>
                     
-                        <QuantityModifier  changeQuantity={props.changeQuantity} useModal={false} value={props.quantity} />
+                        <QuantityModifier  changeQuantity={setQty} useModal={false} value={qty} />
                         
                     </div>
                     
@@ -87,6 +140,21 @@ export const MenuCustomizationModal = (props)=>{
 
 const Form = (props) => {
     const [selections, setSelections] = useState([])
+
+    useEffect(()=>{
+        let selectedCpy = [...props.selected]
+        const index = props.index
+        let options = selectedCpy[index].Options
+        
+        if(options.length>0){
+            if(selections.length === 0)
+                setSelections(options.map((option)=>option.id+'-'+option.name))
+        }
+        else{
+            if(selections.length > 0)
+                setSelections([])
+        }
+    })
 
     const handleChange = useCallback((e)=>{
         

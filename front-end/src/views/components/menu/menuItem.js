@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
 import { useStorage } from "../../../hooks"
+import { MenuLastCustomization } from "./menuLastCustomizationModal"
 
 export const MenuItem = (props) => {
 
@@ -9,32 +10,15 @@ export const MenuItem = (props) => {
     const [cart, setCart] = useStorage('cart')
     const [cartItem, setCartItem] = useState(null)
     const [customizations, setCustomizations] = useState([])
-
+    const [selectedCustomizations, setSelectedCustomizations] = useState([])
 
     const increaseQuantity = () => {
         setQuantity(quantity+1)
     }
 
-    useEffect(()=>{
-        //find the item in the cart
-        console.log('cart',cart)
-        if (cart!==null){
-            const item = cart.find((item)=>item.id===props.id)
-            if (!item && quantity>0){
-                const newItem = {
-                    'id': props.id,
-                    'name': props.name,
-                    'customizations': [{quantity:quantity, price:props.price}],
-                }
-
-                setCart([...cart, newItem])
-                console.log('added new item',cart)
-            }
-
-        }
-        
-        
-    },[quantity])
+    useEffect(()=>{        
+        console.log(customizations, 'selected customizations')
+    })
 
 
     return(
@@ -88,8 +72,20 @@ export const MenuItem = (props) => {
         </div>
 
     </div>
-
-        {props.hasCustomization&&<MenuCustomizationModal id={`MenuItemModal${props.name.replace(' ','')}`} quantity={quantity}  changeQuantity={setQuantity} menuItemID = {props.id} customizationList={{customizations, setCustomizations}} />}
+        {props.hasCustomization&&
+        <MenuLastCustomization 
+            id={`MenuItemCustModal${props.name.replace(' ','')}`}
+        />}
+        {props.hasCustomization&&
+        <MenuCustomizationModal 
+            id={`MenuItemModal${props.name.replace(' ','')}`} 
+            quantity={quantity}  
+            changeQuantity={setQuantity}
+            menuItemID = {props.id} 
+            customizations={customizations}
+            setCustomizations = {setCustomizations} 
+            useLast = {false}
+        />}
     </>
     )
 }
