@@ -85,8 +85,8 @@ const App = ()=>{
 }
 
 
-export const RestaurantListLoader = async () =>{
-    const data = await getData('api/restaurants')
+export const RestaurantListLoader = async ({request}) =>{
+    const data = await getData('api/restaurants',request.signal)
     return data.json()
 }
 

@@ -75,20 +75,20 @@ export const useModal = (modalID, onShow = null, onHide= null) =>{
             setModal(new bootstrap.Modal(m))
             
             m.addEventListener('show.bs.modal',OPEN)
-            m.addEventListener('hide.bs.modal',HIDE)
+            m.addEventListener('hidden.bs.modal',HIDE)
         }
         else{
             m.removeEventListener('show.bs.modal',OPEN)
-            m.removeEventListener('hide.bs.modal',HIDE)
+            m.removeEventListener('hidden.bs.modal',HIDE)
 
             m.addEventListener('show.bs.modal',OPEN)
-            m.addEventListener('hide.bs.modal',HIDE)
+            m.addEventListener('hidden.bs.modal',HIDE)
         }
 
         return ()=>{
             
             m.removeEventListener('show.bs.modal',OPEN)
-            m.removeEventListener('hide.bs.modal',HIDE)
+            m.removeEventListener('hidden.bs.modal',HIDE)
         }
     },[OPEN,HIDE])
 

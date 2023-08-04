@@ -41,7 +41,10 @@ export const Search = (list, search, lookup)=>{
     return  result1.concat(result2)
 }
 
-export const getData = async (url) =>{
-    const response = await fetch(BASEUrl+url)
+export const getData = async (url,signal) =>{
+    const response = await fetch(BASEUrl+url,{
+        signal: signal,
+        
+    })
     return response
 }

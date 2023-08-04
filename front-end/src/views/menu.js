@@ -41,8 +41,8 @@ const App = () =>{
 }
 
 
-export const MenuListLoader = async ({params})=>{
-    const data = await getData(`api/restaurants/details/${params.restaurantID}`)
+export const MenuListLoader = async ({params, request})=>{
+    const data = await getData(`api/restaurants/details/${params.restaurantID}`, request.signal)
     return data.json()
 }
 

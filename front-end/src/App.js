@@ -10,6 +10,7 @@ import {Outlet, Route, Routes, useNavigation} from 'react-router-dom';
 import Review from './views/ratingModal'
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min';
 import { Header } from './views/components/header/header';
+import LoadingScreen from './views/loading'
 import { useStorage } from './hooks';
 
 
@@ -18,6 +19,7 @@ export const MessageContext = createContext(null)
 export const RatingsContext = createContext(null)
 export const LoginContext = createContext(null)
 export const SearchBarContext = createContext(null)
+export const CartContext = createContext(null)
 
 const App = () => {
   const [search,setSearch] = useState('')
@@ -37,6 +39,7 @@ const App = () => {
   const [login, setLogin] = useState({login:false, user:{}})
   const [searchBar, setSearchBar] = useState(false)
   const [cart,setCart] = useStorage('cart')
+  const navigation = useNavigation()
 
   useEffect(()=>{
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
@@ -44,7 +47,6 @@ const App = () => {
     if (cart === null){ 
       setCart([])
     }
-    
   })
 
   return (
@@ -57,14 +59,21 @@ const App = () => {
     <RatingsContext.Provider value={[ratings, setRatings]}>
     <LoginContext.Provider value={[login, setLogin]}>
     <SearchBarContext.Provider value={[searchBar, setSearchBar]}>
-
+    <CartContext.Provider value={[cart,setCart]}>
       <Message />
       <Review />
       <Header />
-      <Outlet context={{
-        baseURL: 'http://localhost:8000/',
-      }} />
+      
+      {navigation.state === 'loading'&&
+        <LoadingScreen />
+      }
 
+      {navigation.state !== 'loading'&&
+        <Outlet />
+      }
+
+
+    </CartContext.Provider>
     </SearchBarContext.Provider>
     </LoginContext.Provider>
     </RatingsContext.Provider>
