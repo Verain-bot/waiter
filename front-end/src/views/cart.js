@@ -1,14 +1,33 @@
 
 
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { CartFooter } from './components/cart/cartFooter';
 import { CartItem, CartTotalItem } from './components/cart/cartItem';
 import { Check } from './components/forms/inputs';
 import { Table } from './components/table/table';
 import { TableHeading, TableItem } from './components/table/tableItems';
 import { Link, useNavigate } from 'react-router-dom';
+import { CartContext } from '../App';
 
 const App = ()=>{
+    const [cart, setCart] = useContext(CartContext)
+    const getItems = ()=>{
+        let items = []
+        cart.forEach(item=>{
+            item.customizations.forEach(customization=>{
+                items.push({
+                    name: item.menuItemName,
+                    price: item.menuItemPrice,
+                    quantity: customization.quantity,
+                    customization: customization.customizations
+                })
+            })
+        })
+        return items
+    }
+
+    const items = getItems()
+    
 
     return(
         <>
@@ -18,10 +37,7 @@ const App = ()=>{
             <div class='row card shadow'>
                 <h5 class='card-title'>Cart</h5>
                 <div class='list-group list-group-flush'>
-                    <CartItem name='Pizza' price='231'/>
-                    <CartItem name='Pizza' price='231'/>
-                    <CartItem name='Pizza' price='231'/>
-                    <CartItem name='Pizza' price='231'/>
+                    {items.map(item=><CartItem {...item}  />)}
                     
                 </div>
             </div>

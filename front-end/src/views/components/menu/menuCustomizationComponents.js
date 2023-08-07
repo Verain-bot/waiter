@@ -123,7 +123,11 @@ export const Form = memo((props) => {
         const index = props.index
         selectedCpy[index] = {
             ...(selectedCpy[index]),
-            'Options': newSelections.map((selection)=>({id: selection.split('-')[0],name: selection.split('-')[1]}))
+            'Options': newSelections.map((selection)=>({
+                id: selection.split('-')[0],
+                name: selection.split('-')[1],
+                price: props.customizationOptions.find((option)=>option.id == selection.split('-')[0]).price
+            }))
         }
         props.setSelected(selectedCpy)
         console.log(selectedCpy, 'selected', props.index)

@@ -1,21 +1,38 @@
+import { useContext, useEffect, useState } from "react"
 import { useScrollDirection } from "../../../hooks"
 import { MenuModal } from "./menuModal"
+import { CartContext } from "../../../App"
+import { Link } from "react-router-dom"
 
 export const MenuCartFooter = () => {
+
+    const [cart, setCart] = useContext(CartContext)
+    
+    const getQty = ()=>{
+        let q = 0
+        cart.forEach(item=>{
+            item.customizations.forEach(customization=>{
+                q += customization.quantity
+            })
+        })
+        return q
+    }
+
+    const qty = getQty()
+    
     return(
-        <div class="card p-2 rounded fixed-bottom mx-auto my-0 bg-danger col-12 menu-cart-footer text-white">
-            <div class='container'>
-                <div class='row menu-footer-row'>
-                    <div class='col-12 text-center'>
-                    <i class='bi bi-cart'></i>
-
-                        <b> View Cart </b>(2)
+        <Link to={'/cart'}>
+            <div class={`card p-2 rounded fixed-bottom mx-auto my-0 bg-danger col-12 menu-cart-footer text-white ${qty===0?'hidden':''}`}>
+                <div class='container'>
+                    <div class='row menu-footer-row'>
+                        <div class='col-12 text-center'>
+                        <i class='bi bi-cart'></i>
+                            <b> View Cart </b>({qty})
+                        </div>
                     </div>
-
-                
                 </div>
             </div>
-        </div>
+        </Link>
     )
 }
 

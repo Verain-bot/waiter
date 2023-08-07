@@ -67,6 +67,7 @@ export const MenuItem = (props) => {
                     menuItemID: props.id,
                     menuItemName: props.name,
                     restaurantID: props.restaurantID,
+                    menuItemPrice: props.price,
                     customizations: structuredClone(customizations),
                 }
                 ]

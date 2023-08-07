@@ -3,17 +3,34 @@ import { QuantityModifier } from '../menu/menuItem'
 
 export const CartItem = (props)=>{
 
-    const [quantity, setQuantity] = useState(0)
+    const [quantity, setQuantity] = useState(props.quantity)
+    
+    const custString = props.customization.map(cust=>{
+        let optionString = cust.Options.map(option=> `${option.name} `).join(', ')
+        return `${cust.CustomizationName} : ${optionString}`
+    }).join('; ')
+
+    const BasePrice = props.customization.reduce((acc, cust)=>{
+        return acc + cust.Options.reduce((acc, option)=>{
+            return acc+option.price
+        },0)
+    },props.price)
+
 
     return(
         <div class='list-group-item pointer'>
             <div class='row'>
                 <div class='col-6 d-flex flex-column justify-content-center'>
-                    <span class='card-text'>
+                    <span class='card-text py-0 my-0'>
                         {props.name}
                     </span>
+                    <span class='card-text small py-0 my-0 text-muted'>
+                        <strong>
+                        Rs. {BasePrice}
+                        </strong>
+                    </span>
                     <span class='card-text text-muted small'>
-                    Large, Extra Cheese, Large, Extra Cheese, Large, Extra Cheese, Large, Extra Cheese
+                    {custString}
                     </span>        
                 </div>
                 <div class='col-6 d-flex flex-row-reverse'>
@@ -25,7 +42,7 @@ export const CartItem = (props)=>{
                             </span>
                         }
                         <span class='card-text mx-2 medium'>
-                            {props.price}
+                            {BasePrice*quantity}
                         </span>
                         {!props.fixed&&<QuantityModifier value={quantity} changeQuantity={setQuantity} />}
                         
