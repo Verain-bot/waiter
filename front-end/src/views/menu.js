@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { MenuCartFooter, MenuFooter } from "./components/menu/menuFooter";
 import { MenuHeader } from "./components/menu/menuFilterHeader";
 import { MenuTitle } from "./components/menu/menuTitle";
@@ -7,6 +7,7 @@ import { useSearchBar, useStorage } from "../hooks";
 import { useLoaderData, useParams } from "react-router-dom";
 import { Search, getData } from "../helper";
 import { SearchResultMessage } from "./components/header/search";
+
 
 const getSectionsFromMenu = (menu)=>{
     const sections = new Set(menu.map((item)=>item.itemType))
@@ -23,7 +24,7 @@ const getSectionsFromMenu = (menu)=>{
 const App = () =>{
     const search = useSearchBar()
     const data = useLoaderData()
-    const [cart, setCart] = useStorage('cart')
+    
     
     return(
     
@@ -31,7 +32,7 @@ const App = () =>{
             <MenuTitle name={data.name} type={data.restaurantType.split(',')} />
             <MenuHeader />
             <SearchResultMessage /> 
-            {getSectionsFromMenu(Search(data.menu,search,'name')).map((section)=>(<MenuSection name={section.name} items={section.items} />))}
+            {getSectionsFromMenu(Search(data.menu,search,'name')).map((section)=>(<MenuSection name={section.name} items={section.items} restaurantID={data.id} />))}
 
             <MenuFooter sections={getSectionsFromMenu(data.menu).map((item)=>item.name)} />
             <MenuCartFooter />

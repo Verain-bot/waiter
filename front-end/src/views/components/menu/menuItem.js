@@ -1,13 +1,15 @@
-import { memo, useEffect, useState } from "react"
+import { memo, useEffect, useState, useContext } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
-import { useStorage } from "../../../hooks"
+import { CartContext } from "../../../App"
+
 
 export const MenuItem = (props) => {
     const modalId = `menu-itemcutomizationModal-${props.id}`
     const [quantity, setQuantity] = useState(0)
-    const [cart, setCart] = useStorage('cart')
+    const [cart, setCart] = useContext(CartContext)
     const [customizations, setCustomizations] = useState([])
+    const [firstLoad, setFirstLoad] = useState(true)
 
     const getQuantity = ()=>{
         //sum of all customizations
@@ -23,11 +25,54 @@ export const MenuItem = (props) => {
 
     useEffect(()=>{        
         console.log(customizations, 'selected customizations')
+        console.log(firstLoad, 'first load')
         let q = getQuantity()
         if (q!==quantity)
         {
             setQuantity(q)
         }
+        if (firstLoad)
+            setFirstLoad(false)
+        //get cart item corresponding to this menu item
+        let cartCopy = [...cart]
+        let i = cartCopy.findIndex((cartItem)=>{return cartItem.menuItemID===props.id})
+        
+        if (i!==-1){
+            console.log(JSON.stringify(cartCopy[i].customizations), 'sep ', JSON.stringify(customizations),'verain')
+            if (firstLoad){
+                setCustomizations(structuredClone(cartCopy[i].customizations))
+            }
+            else if (JSON.stringify(cartCopy[i].customizations)!==JSON.stringify(customizations) && quantity>0)
+            {   
+                //update cart item
+                setCart((prev)=>{
+                    let cartCopy = [...prev]
+                    cartCopy[i].customizations = structuredClone(customizations)
+                    return cartCopy
+                })
+            }
+            else if (quantity===0 && cartCopy[i].customizations.length===0){
+                //remove from cart
+                
+                setCart((prev)=>(
+                  prev.filter((cartItem)=>{return cartItem.menuItemID!==props.id})
+                ))
+            }
+
+        }
+        else if (quantity>0){
+            
+            setCart((prev)=>(
+                [...prev, {
+                    menuItemID: props.id,
+                    menuItemName: props.name,
+                    restaurantID: props.restaurantID,
+                    customizations: structuredClone(customizations),
+                }
+                ]
+            ))
+        }
+
     })
 
     const decreaseQuantity = ()=>{

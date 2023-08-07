@@ -1,6 +1,5 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Message from './views/messageModal';
@@ -38,15 +37,14 @@ const App = () => {
 })
   const [login, setLogin] = useState({login:false, user:{}})
   const [searchBar, setSearchBar] = useState(false)
-  const [cart,setCart] = useStorage('cart')
+  const [cart,setCart] = useStorage('cart',[])
   const navigation = useNavigation()
 
   useEffect(()=>{
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
-    if (cart === null){ 
-      setCart([])
-    }
+    
+    console.log(cart)
   })
 
   return (
@@ -63,7 +61,7 @@ const App = () => {
       <Message />
       <Review />
       <Header />
-      
+
       {navigation.state === 'loading'&&
         <LoadingScreen />
       }

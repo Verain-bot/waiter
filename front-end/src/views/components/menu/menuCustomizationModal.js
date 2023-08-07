@@ -55,7 +55,7 @@ export const MenuCustomizationModal = (props)=>{
 
         }
         
-    },[selectedCustomizations.length, modal.show, customizations.length])
+    },[selectedCustomizations.length, modal.show, customizations.length,JSON.stringify(props.customizations)])
 
     useEffect(()=>{
         if(customizations.length===0)
@@ -113,7 +113,7 @@ export const MenuCustomizationModal = (props)=>{
             
         }
         props.setCustomizations(x)
-    },[modal.show, qty])
+    })
     
     if (screen==0)
     return(

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Error from './views/error'
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, RouterProvider, createBrowserRouter} from 'react-router-dom';
 import RouteList from './routeList'
@@ -11,6 +12,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const router = createBrowserRouter([{
   path: '/',
   element: <App />,
+  errorElement: <Error />,
   children: RouteList.map(({path, element, ldr}) => ({
     path: path,
     element: element,

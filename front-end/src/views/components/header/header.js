@@ -7,6 +7,7 @@ import { SearchBarContext } from '../../../App';
 
 export const Header = (props) =>{
     const searchBar = useRef()
+
     const [searchBarState, setSearchBarState] = useContext(SearchBarContext)    
 
     return(
@@ -23,6 +24,19 @@ export const Header = (props) =>{
 
                 </ul>
             </nav>
+
+        </header>
+        <SideBar />
+        </>
+    )
+}
+
+export const ErrHeader = (props) =>{
+    return(
+        <>
+        <header id="header" class="header fixed-top d-flex align-items-center">
+
+            <ToggleSideBar />
 
         </header>
         <SideBar />
