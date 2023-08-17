@@ -5,7 +5,7 @@ import App from './App';
 import Error from './views/error'
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, RouterProvider, createBrowserRouter} from 'react-router-dom';
-import RouteList from './routeList'
+import RouteList from './utilities/routeList';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

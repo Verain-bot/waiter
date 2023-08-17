@@ -1,0 +1,82 @@
+import  {useState} from 'react'
+import { QuantityModifier } from '../menu/menuItem'
+import { CartItemType, CustomizationsType } from '../../context/CartContext'
+
+type CartItemPropsType = CustomizationsType & Omit<CartItemType , 'customizations'>
+
+export const CartItem = (props : CartItemPropsType)=>{
+
+    const [quantity, setQuantity] = useState(props.quantity)
+    
+    const BasePrice =  props.customizations.reduce((a,b)=>a+ b.Options.reduce((c,d)=>c+d.price,0),props.menuItemPrice)
+
+    const custString = props.customizations.map(c =>{
+        const optString  = c.Options.map( o => `${o.name} (+${o.price})`).join(', ')
+        return `${c.CustomizationName} : ${optString}`
+    }).join('; ')
+
+    return(
+        <div className='list-group-item pointer'>
+            <div className='row'>
+                <div className='col-6 d-flex flex-column justify-content-center'>
+                    <span className='card-text py-0 my-0'>
+                        {props.menuItemName}
+                    </span>
+                    <span className='card-text small py-0 my-0 text-secondary mb-2'>
+                        <strong>
+                        Rs. {BasePrice}
+                        </strong>
+                    </span>
+                    <span className='card-text text-muted small'>
+                    {custString}
+                    </span>        
+                </div>
+                <div className='col-6 d-flex flex-row-reverse'>
+                    <div className='d-flex align-items-center'>
+                        
+                        
+                        <span className='card-text mx-2 medium'>
+                            <strong>
+                                {BasePrice*quantity}
+                            </strong>
+
+                        </span>
+                        <QuantityModifier value={quantity} changeQuantity={setQuantity} />
+                        
+                    </div>
+
+                </div>
+            </div>
+            
+        </div>
+    )
+}
+
+
+type CartTotalItemPropsType = {
+    name: string;
+    amount: string;
+    small?: boolean;
+    strong?: boolean;
+}
+
+export const CartTotalItem = (props : CartTotalItemPropsType) =>{
+    return(
+        <div className='row m-0 p-0'>
+            <div className='col-6 p-0 m-0'>
+                <span className={`card-text ${props.small?'small':'medium'} m-0 p-0`}>
+                    
+                    {props.strong?<strong>{props.name}</strong>:props.name}
+                    
+                </span>
+            </div>
+
+            <div className='col-6 p-0 m-0 text-end'>
+                <span className={`card-text ${props.small?'small':'medium'} m-0 p-0`}>
+                    {props.strong?<strong>{props.amount}</strong>:props.amount}
+                </span>
+            </div>
+
+        </div>
+    )
+}
