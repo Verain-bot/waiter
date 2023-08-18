@@ -31,6 +31,8 @@ export enum CartActions {
   DECREASE_QUANTITY,
   ADD_OR_UPDATE,
   INCREASE_QUANTITY,
+  INCREASE_CUSTOMIZATION_QUANTITY,
+  DECREASE_CUSTOMIZATION_QUANTITY
 }
 
 type ClearAction = {
@@ -42,16 +44,21 @@ type DecreaseQuantityAction = {
   menuItemID: number
 }
 
-type AddOrUpdateAction = CartItemType & {
-  type: CartActions.ADD_OR_UPDATE,
+export type AddOrUpdateAction = CartItemType & {
+  type: CartActions.ADD_OR_UPDATE
 }
 
 type IncreaseQuantityAction = Omit<CartItemType, 'customizations'> & {
   type: CartActions.INCREASE_QUANTITY,
 }
 
+type IncreaseOrDecreaseCustomizationQuantityAction = {
+  type: CartActions.INCREASE_CUSTOMIZATION_QUANTITY | CartActions.DECREASE_CUSTOMIZATION_QUANTITY,
+  menuItemID: number,
+  index: number
+}
 
-type CartActionType = AddOrUpdateAction | ClearAction | DecreaseQuantityAction | IncreaseQuantityAction
+type CartActionType = AddOrUpdateAction | ClearAction | DecreaseQuantityAction | IncreaseQuantityAction | IncreaseOrDecreaseCustomizationQuantityAction
 
   
 const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType>] | undefined>(undefined);
@@ -71,9 +78,16 @@ const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType
         const itemIndex = newState.findIndex((item) => item.menuItemID === action.menuItemID);
         if (itemIndex >= 0) {
           var item = newState.splice(itemIndex, 1)
-          if(item[0].customizations.length > 0 && item[0].customizations[0].quantity > 1){
-            item[0].customizations[0].quantity -= 1
+          const l = item[0].customizations.length
+          if(l > 0 && item[0].customizations[l-1].quantity > 1){
+            item[0].customizations[l-1].quantity -= 1
             newState.push(item[0])
+          }
+          else if(l>0){
+            item[0].customizations.splice(l-1,1)
+
+            if(item[0].customizations.length !== 0)
+              newState.push(item[0])
           }
         }
         break
@@ -86,20 +100,6 @@ const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType
         
 
         if (itemIndex >= 0) {
-          var done = false
-
-          newState[itemIndex].customizations.forEach((customization1, index)=>{
-            action.customizations.forEach((customization2, index)=>{
-              if(JSON.stringify(customization1.customizations) == JSON.stringify(customization2.customizations))
-              {
-                customization1.quantity += customization2.quantity
-                done = true
-              }
-            })
-          })
-
-          if(done)
-            break
 
           var item = newState.splice(itemIndex, 1)
           if(item[0].customizations.length > 0 && action.customizations){
@@ -139,6 +139,30 @@ const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType
           }]
           newState.push(newItem1 as CartItemType)
         }
+        break
+      }
+
+      case CartActions.INCREASE_CUSTOMIZATION_QUANTITY:{
+        const itemIndex = newState.findIndex((item) => item.menuItemID === action.menuItemID)
+        if (itemIndex >= 0) {
+          newState[itemIndex].customizations[action.index].quantity += 1
+        }
+        break
+      }
+
+      case CartActions.DECREASE_CUSTOMIZATION_QUANTITY:{
+        const itemIndex = newState.findIndex((item) => item.menuItemID === action.menuItemID)
+        if (itemIndex >= 0) {
+          newState[itemIndex].customizations[action.index].quantity -= 1
+
+          if(newState[itemIndex].customizations[action.index].quantity === 0){
+            newState[itemIndex].customizations.splice(action.index,1)
+          }
+          if(newState[itemIndex].customizations.length === 0){
+            newState.splice(itemIndex,1)
+          }
+        }
+        break
       }
 
       default:
@@ -150,6 +174,27 @@ const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType
         return item.restaurantID == action.restaurantID
       });
     }
+    
+    
+    for(let i = 0; i<newState.length ; i++)
+      for(let j=0; j<newState[i].customizations.length ; j++)
+      {
+        var move = false
+        for(let k=j; k<newState[i].customizations.length ; k++)
+        {
+          //compare JSON.stringify(customizations)
+          if(j!==k && JSON.stringify(newState[i].customizations[j].customizations) === JSON.stringify(newState[i].customizations[k].customizations) )
+          {
+            newState[i].customizations[k].quantity += newState[i].customizations[j].quantity
+            newState[i].customizations.splice(j,1)
+            move = true
+            break
+          }
+        }
+        if (move)
+          break
+      }
+      
     
     localStorage.setItem('cart', JSON.stringify(newState))
     return newState;

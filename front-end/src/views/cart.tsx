@@ -8,17 +8,17 @@ import Table  from '../components/table/table';
 import { TableHeading, TableItem } from '../components/table/tableItems';
 import { Link, useNavigate } from 'react-router-dom';
 import { CartItemType, CustomizationsType, useCartContext } from '../context/CartContext';
-
+import EmptyCart from '../components/cart/emptyCart';
 
 
 const App = ()=>{
     const [cart, setCart] = useCartContext()
     const getItems = ()=>{
-        let items : (CustomizationsType & Omit<CartItemType, 'customizations'>)[]  = []
+        let items : (CustomizationsType & Omit<CartItemType, 'customizations'> & {index: number})[]  = []
         cart.forEach(i=>{
-            i.customizations.forEach(customization=>{
+            i.customizations.forEach((customization,ind)=>{
                 var cpy = structuredClone(i)
-                items.push({ ...cpy, ...customization})
+                items.push({ ...cpy, ...customization, index: ind})
             })
         })
         return items
@@ -26,7 +26,11 @@ const App = ()=>{
 
     const items = getItems()
     
+    console.log(cart.length, cart)
 
+    if (cart.length==0)
+        return <EmptyCart />
+    else
     return(
         <>
         
@@ -35,7 +39,7 @@ const App = ()=>{
             <div className='row card shadow'>
                 <h5 className='card-title'>Cart</h5>
                 <div className='list-group list-group-flush'>
-                    {items.map(item=><CartItem {...item}  />)}
+                    {items.map((item,key)=><CartItem {...item} key={key} />)}
                     
                 </div>
             </div>

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import useScrollDirection from "../../hooks/useScrollDirection"
 import { MenuModal } from "./menuModal"
-
+import { CartActions } from "../../context/CartContext"
 import { Link } from "react-router-dom"
 import { useCartContext } from "../../context/CartContext"
 import { getCartQuantity } from "../../utilities/getCartQuantity"
@@ -12,19 +12,37 @@ export const MenuCartFooter = () => {
 
     const qty = getCartQuantity(cart)
     
+    const clearCart = ()=>{
+        dispatch({
+            type: CartActions.CLEAR
+        })
+    }
+
     return(
-        <Link to={'/cart'}>
-            <div className={`card p-2 rounded fixed-bottom mx-auto my-0 bg-danger col-12 menu-cart-footer text-white ${qty===0?'hidden':''}`}>
-                <div className='container'>
-                    <div className='row menu-footer-row'>
-                        <div className='col-12 text-center'>
+        
+            <div className={`card p-2 rounded fixed-bottom mx-auto my-0 bg-danger col-12 menu-cart-footer text-white ${qty === 0 ? 'hidden' : ''}`}>
+            <div className='container'>
+                <div className='row menu-footer-row'>
+                <div className='col-12 d-flex justify-content-center align-items-center'>
+                    <div className="me-auto" >
+                        <i className='bi bi-x-circle' style={{ fontSize: '20px', fontWeight: 'bolder' }} onClick={clearCart}></i>
+                    </div>
+                    <Link to={'/cart'}>
+
+                    <div className="text-center text-white" >
                         <i className='bi bi-cart'></i>
-                            <b> View Cart </b>({qty})
-                        </div>
+                        <b> View Cart </b>({qty})
+                    </div>
+                    </Link>
+                    <div className="ms-auto">
+                    
                     </div>
                 </div>
+                </div>
             </div>
-        </Link>
+            </div>
+
+        
     )
 }
 

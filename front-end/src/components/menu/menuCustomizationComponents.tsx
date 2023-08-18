@@ -176,7 +176,12 @@ export const Form = memo((props : FormProps) => {
                     }                    
             })
             }
-            props.setSelected(selectedCpy)
+            let r = structuredClone(selectedCpy)
+            r.forEach(item=>{
+                item.Options.sort((a,b)=>a.id-b.id)
+            })
+            
+            props.setSelected(r)
         }
         console.log(selectedCpy, 'selected', props.index)
 

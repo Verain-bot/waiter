@@ -41,7 +41,7 @@ type MenuCustomizationModalProps = {
     id: string;
     menuItemID: number;
     customizations: CustomizationsType[];
-    setCustomizations: React.Dispatch<React.SetStateAction<CustomizationsType[]>>
+    addOrUpdate: (c: CustomizationsType[]) => void
 }
 
 export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
@@ -164,7 +164,7 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
             }
             
         }
-        props.setCustomizations(x)
+        props.addOrUpdate(x)
     },[qty, selectedCustomizations])
     
     if (screen==0)

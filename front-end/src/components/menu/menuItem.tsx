@@ -3,7 +3,7 @@ import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
 
 import { MenuItemListFetch } from "../../views/menu"
-import { useCartContext } from "../../context/CartContext"
+import { AddOrUpdateAction, useCartContext } from "../../context/CartContext"
 import { CartActions, CustomizationsType } from "../../context/CartContext"
 import { getCartItemQuantity as getCartQuantity } from "../../utilities/getCartQuantity"
 
@@ -15,82 +15,53 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
     const modalId = `menu-itemcutomizationModal-${props.id}`
     const [cart, dispatch] = useCartContext()
     const [customizations, setCustomizations] = useState<CustomizationsType[]>([])
-    const [firstLoad, setFirstLoad] = useState(true)
     
     const quantity = getCartQuantity(customizations)
 
     useEffect(()=>{        
         console.log(cart, 'as')
 
-        if (firstLoad)
-            setFirstLoad(false)
-
         let cartCopy = [...cart]
         let i = cartCopy.findIndex((cartItem)=>{return cartItem.menuItemID===props.id})
-        if (i!==-1 && firstLoad){
+
+        if (i!==-1 && JSON.stringify(customizations)!==JSON.stringify(cartCopy[i].customizations)){
             setCustomizations(structuredClone(cartCopy[i].customizations))
         }
+        if(i==-1 && customizations.length>0)
+            setCustomizations([])
 
-        const newObj = {
-            type: CartActions.ADD_OR_UPDATE,
-            menuItemID: props.id,
-            menuItemName: props.name,
-            menuItemPrice: props.price,
-            restaurantID: props.restaurantID,
-            customizations: structuredClone(customizations),
-        }
-
-        if (i!==-1 ){
-            
-            
-            if (JSON.stringify(cartCopy[i].customizations)!==JSON.stringify(customizations) && quantity>0)
-            {   
-                dispatch(newObj)
-            }
-            else if (quantity===0)
-            {
-                dispatch({
-                    type: CartActions.DECREASE_QUANTITY,
-                    menuItemID: props.id,
-                })
-            }
-        }
-        else if (quantity>0)
-        {
-            dispatch(newObj)
-        }
-        
 
     })
 
+    const AddOrUpdate = (customizations: CustomizationsType[]) => {
+        const newObj: AddOrUpdateAction = {
+          type: CartActions.ADD_OR_UPDATE,
+          menuItemID: props.id,
+          menuItemName: props.name,
+          menuItemPrice: props.price,
+          restaurantID: props.restaurantID,
+          customizations: structuredClone(customizations),
+        };
+      
+        dispatch(newObj);
+      };
+      
+
     const decreaseQuantity = ()=>{
-        let customizationsCopy = [...customizations]
-        let last = customizationsCopy[customizationsCopy.length-1]
-        if (last.quantity>1)
-        {
-            last.quantity--
-        }
-        else{
-            customizationsCopy.pop()
-        }
-        setCustomizations(customizationsCopy)
+        dispatch({
+            type: CartActions.DECREASE_QUANTITY,
+            menuItemID: props.id
+        })
     }
 
     const increaseQuantity = ()=>{
-        
-        if(customizations.length===0)
-        {
-            setCustomizations([{
-                quantity: 1,
-                customizations: [],
-            }])
-        }
-        else{
-            let customizationsCopy = [...customizations]
-            customizationsCopy[customizationsCopy.length-1].quantity++
-            setCustomizations(customizationsCopy)
-        }
-
+        dispatch({
+            type: CartActions.INCREASE_QUANTITY,
+            menuItemID: props.id,
+            menuItemName: props.name,
+            menuItemPrice: props.price,
+            restaurantID: props.restaurantID
+        })
     }
 
 
@@ -150,7 +121,7 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
             id={`${modalId}`} 
             menuItemID = {props.id} 
             customizations={customizations}
-            setCustomizations = {setCustomizations}
+            addOrUpdate = {AddOrUpdate}
         />}
     </>
     )

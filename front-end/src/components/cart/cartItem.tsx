@@ -1,19 +1,40 @@
 import  {useState} from 'react'
 import { QuantityModifier } from '../menu/menuItem'
-import { CartItemType, CustomizationsType } from '../../context/CartContext'
+import { CartActions, CartItemType, CustomizationsType, useCartContext } from '../../context/CartContext'
 
-type CartItemPropsType = CustomizationsType & Omit<CartItemType , 'customizations'>
+type CartItemPropsType = CustomizationsType & Omit<CartItemType , 'customizations'> & {
+    index: number;
+}
 
 export const CartItem = (props : CartItemPropsType)=>{
 
-    const [quantity, setQuantity] = useState(props.quantity)
-    
+    const quantity = props.quantity
     const BasePrice =  props.customizations.reduce((a,b)=>a+ b.Options.reduce((c,d)=>c+d.price,0),props.menuItemPrice)
-
     const custString = props.customizations.map(c =>{
         const optString  = c.Options.map( o => `${o.name} (+${o.price})`).join(', ')
         return `${c.CustomizationName} : ${optString}`
     }).join('; ')
+
+    const [cart, dispatch] = useCartContext()
+
+    const increase = ()=>{
+        //console.log(props.index, props.menuItemID)
+        console.log('increased')
+        dispatch({
+            type: CartActions.INCREASE_CUSTOMIZATION_QUANTITY,
+            menuItemID: props.menuItemID,
+            index: props.index
+        })
+    }
+
+    const decrease = ()=>{
+        console.log('decreased')
+        dispatch({
+            type: CartActions.DECREASE_CUSTOMIZATION_QUANTITY,
+            menuItemID: props.menuItemID,
+            index: props.index
+        })
+    }
 
     return(
         <div className='list-group-item pointer'>
@@ -32,16 +53,18 @@ export const CartItem = (props : CartItemPropsType)=>{
                     </span>        
                 </div>
                 <div className='col-6 d-flex flex-row-reverse'>
-                    <div className='d-flex align-items-center'>
+                    <div className='d-flex flex-column-reverse align-items-end'>
                         
                         
-                        <span className='card-text mx-2 medium'>
+                        <span className='card-text medium mt-2'>
                             <strong>
+
                                 {BasePrice*quantity}
                             </strong>
+                            
 
                         </span>
-                        <QuantityModifier value={quantity} changeQuantity={setQuantity} />
+                         <QuantityModifier value={quantity} increase={increase} decrease={decrease} />
                         
                     </div>
 
