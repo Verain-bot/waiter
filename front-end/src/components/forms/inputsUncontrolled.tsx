@@ -5,6 +5,7 @@ type InputPropsUncontrolled = {
     prepend? : string;
     type?: string;
     maxLength?: number;
+    placeholder?: string;
 }
 
 export const Input = (props:InputPropsUncontrolled) => {
@@ -12,8 +13,10 @@ export const Input = (props:InputPropsUncontrolled) => {
     return (
         <div className="col-12">
             <label className="form-label">{props.name}</label>
+            <div className="input-group">
+
             {props.prepend && <span className="input-group-text" id="inputGroupPrepend">{props.prepend}</span>}
-            <div className="input-group has-validation">
+            
                 <input
                     type={props.type || "text"}
                     className="form-control"
@@ -21,7 +24,9 @@ export const Input = (props:InputPropsUncontrolled) => {
                     required
                     disabled={props.disabled}
                     maxLength={props.maxLength}
-                />
+                    placeholder={props.placeholder}
+                    />
+            
             </div>
         </div>
     );

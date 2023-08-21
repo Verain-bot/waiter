@@ -83,7 +83,7 @@ const App = ()=>{
             <SearchResultMessage />
             {
                 filteredRestaurants.map((item)=>{
-                    return <Link to={`/restaurant/${item.id}/menu`}><RestaurantListItem name={item.name} type={item.type} img={item.img} /></Link>
+                    return <RestaurantListItem id={item.id} key={item.id} name={item.name} type={item.type} img={item.img} />
                 })
             }
             

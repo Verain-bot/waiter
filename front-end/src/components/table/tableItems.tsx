@@ -31,12 +31,13 @@ type TableItemProps = {
     width: number;
     left?: React.ReactNode;
     right?: React.ReactNode;
+    nohr?: boolean;
 };
 
 const TableItem: React.FC<TableItemProps> = (props) => {
     return (
         <div className='row'>
-            <hr className='p-0 m-0' />
+            {!props.nohr && <hr className='p-0 m-0' />}
             <div className='col-12 p-0 m-0'>
                 <div className='row p-2'>
                     <div className={`col-${String(props.width)}`}>

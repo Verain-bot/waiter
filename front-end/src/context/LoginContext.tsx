@@ -1,10 +1,14 @@
-import {ReactNode,useContext, createContext, useState } from "react";
+import {ReactNode,useContext, createContext, useState, useEffect, useCallback } from "react";
+import { makeRequest } from "../utilities/fetchData";
+import { fetchUserData } from "../utilities/fetchUser";
 
-type UserContextType = {
-    // Define user properties here
+type UserContextType = null | {
+    name: string,
+    email: string,
+    phone: string,
   };
   
-  type LoginContextType = {
+export type LoginContextType = {
     login: boolean;
     user: UserContextType;
   };
@@ -12,7 +16,33 @@ type UserContextType = {
 const LoginContext = createContext<[LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>] | undefined>(undefined);
 
 export const LoginContextProvider = ({ children }: { children: ReactNode }) => {
-    const [login, setLogin] = useState<LoginContextType>({ login: false, user: {} });
+    const [login, setLogin] = useState<LoginContextType>({ login: false, user: null });
+    const abortSignal = new AbortController();
+
+
+    const getUser = useCallback(async () =>{
+      
+      const {json,response} = await fetchUserData()
+
+      if (response.ok) {
+        setLogin({login: true, user: {
+          name: json.name,
+          email: json.email,
+          phone: json.phone
+        }})
+      }
+
+      else{
+        setLogin({login: false, user: null})
+      }
+
+      console.log(login, 'login')
+    },[])
+    
+    useEffect(()=>{
+      getUser()
+      
+    }, [])
 
     return(
         <LoginContext.Provider value={[login, setLogin]}>

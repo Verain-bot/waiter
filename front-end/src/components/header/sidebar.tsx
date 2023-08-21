@@ -1,6 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import RouteList, { NAV } from '../../utilities/routeList';
+import { useLoginContext } from '../../context/LoginContext';
+import LogoutButton from '../forms/logoutButton';
 
 type SideBarItemProps = {
     name: string;
@@ -32,12 +34,22 @@ const SideBarItem: React.FC<SideBarItemProps> = (props) => {
 type SideBarProps = {};
 
 export const SideBar: React.FC<SideBarProps> = (props) => {
+    const [login, setLogin] = useLoginContext()
     return (
         <aside id="sidebar" className="sidebar">
             <ul className="sidebar-nav" id="sidebar-nav">
                 {RouteList.filter((item) => item.nav.includes(NAV)).map((item, key) => (
                     <SideBarItem name={item.name} iconName={`bi-${item.icon}`} link={item.path} key={key} />
                 ))}
+
+                    {login.login && <li className="nav-item">
+                        <LogoutButton className='nav-link collapsed'>
+
+                            <i className={`bi bi-box-arrow-right`}></i>
+                            <span>Logout</span>
+                        </LogoutButton>
+                        </li>}
+
             </ul>
         </aside>
     );

@@ -2,6 +2,7 @@ import { json } from 'react-router-dom'
 
 export const BASEUrl = 'http://localhost:8000/'
 
+
 export const getData : (url: string, signal: AbortSignal ) => Promise<Response> = async (url,signal) =>{
 let response = new Response('',{statusText: 'Something went wrong.', status: 500})
     try{
@@ -37,3 +38,60 @@ let response = new Response('',{statusText: 'Something went wrong.', status: 500
 
     return response
 }
+
+export const makeRequest = async (url: string, request: Request, data: FormData) =>{
+    var response : Response | null = null
+    
+    if(request.method == 'GET'){
+
+        response = await fetch(BASEUrl+url,{
+            method: request.method,
+            signal: request.signal,
+            headers: {
+                'Accept': 'application/json',
+                
+            },
+            credentials: 'include'
+        })
+    }
+        
+    else{
+
+        response = await fetch(BASEUrl+url,{
+            method: request.method,
+            signal: request.signal,
+            body: data,
+            headers: {
+                'Accept': 'application/json',
+                
+            },
+            credentials: 'include'
+        })
+    }
+    
+    var json = null
+    try{
+        json = await response.json()
+    }
+    catch(err : any){
+        throw new Response('JSON Parse error',{statusText: 'Unable to parse JSON.', status: response.status})
+    }
+
+    let message = ''
+
+    if (!response.ok){
+        try{
+            
+            if( 'type' in json && json.type && json.type == 'error')
+                message = json.message
+            else
+                message = json.detail       
+        }
+        catch(err : any){
+            message = 'Bad error, contact admin.'
+        }
+    }
+    alert('fetch')
+    return {json, message, response}
+}
+

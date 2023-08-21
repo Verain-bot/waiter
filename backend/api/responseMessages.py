@@ -8,8 +8,13 @@ USER_LOGGED_OUT = {
     'type' : 'success'
 }
 
+USER_ALREADY_LOGGED_IN = {
+    'message' : 'You are already logged in',
+    'type' : 'error'
+}
+
 PHONE_NOT_FOUND = {
-    'message' : 'Phone number not found',
+    'message' : 'Could not find user with this phone number. Please register first',
     'type' : 'error'
 }
 

@@ -1,14 +1,22 @@
 import React from 'react';
 import { Stars } from '../menu/stars';
-
+import { Link } from 'react-router-dom';
+import { PATHS } from '../../utilities/routeList';
 type RestaurantListItemProps = {
     img: string;
     name: string;
     type: string;
+    id : number | string;
 };
 
+
+
 const RestaurantListItem: React.FC<RestaurantListItemProps> = (props) => {
+    const href = PATHS.MENU.replace(':restaurantID', String(props.id))
+
     return (
+        <Link to={href}>
+
         <div className="col-12 card pointer p-2 mb-3 d-flex flex-row shadow align-items-center m-md-3">
             <div className="row">
                 <div className="col-4">
@@ -26,6 +34,7 @@ const RestaurantListItem: React.FC<RestaurantListItemProps> = (props) => {
                 </div>
             </div>
         </div>
+        </Link>
     );
 };
 

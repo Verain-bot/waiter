@@ -48,9 +48,10 @@ class RestaurantListSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'logo','url']
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
+    phone = serializers.IntegerField(read_only=True)
     class Meta:
         model = Customer
-        fields = '__all__'
+        fields = [ 'name', 'phone', 'email' ]
 
 class CustomerListSerializer(serializers.ModelSerializer):
     class Meta:

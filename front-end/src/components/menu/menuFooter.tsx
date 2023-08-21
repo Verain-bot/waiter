@@ -5,6 +5,7 @@ import { CartActions } from "../../context/CartContext"
 import { Link } from "react-router-dom"
 import { useCartContext } from "../../context/CartContext"
 import { getCartQuantity } from "../../utilities/getCartQuantity"
+import { PATHS } from "../../utilities/routeList"
 
 export const MenuCartFooter = () => {
 
@@ -27,7 +28,7 @@ export const MenuCartFooter = () => {
                     <div className="me-auto" >
                         <i className='bi bi-x-circle' style={{ fontSize: '20px', fontWeight: 'bolder' }} onClick={clearCart}></i>
                     </div>
-                    <Link to={'/cart'}>
+                    <Link to={PATHS.CART}>
 
                     <div className="text-center text-white" >
                         <i className='bi bi-cart'></i>

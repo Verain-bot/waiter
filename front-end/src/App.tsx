@@ -24,7 +24,11 @@ const App = () => {
   useEffect(() => {
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
-  })
+  },[])
+
+  useEffect(()=>{
+    console.log(navigation.location?.pathname)
+  },[navigation.location])
 
   return (
     <main id="main" className="main">
@@ -33,7 +37,6 @@ const App = () => {
 
           <SearchContextProvider>
             <RatingContextProvider>
-                <LoginContextProvider>
                   <SearchBarContextProvider>
                     <CartContextProvider>
                       <MessageProvider>
@@ -51,7 +54,6 @@ const App = () => {
                       </MessageProvider>
                     </CartContextProvider>
                   </SearchBarContextProvider>
-                </LoginContextProvider>
               </RatingContextProvider>
             </SearchContextProvider>
 

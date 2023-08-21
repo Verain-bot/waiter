@@ -11,6 +11,7 @@ type InputControlledProps = {
 type IntegerInputControlledProps = InputControlledProps & {
     maxlen?: number;
     prepend?: string;
+    inputName?: string;
 }
 
 
@@ -22,7 +23,7 @@ export const TextInput = (props: InputControlledProps) => {
     return (
         <div className="col-12">
             <label className="form-label">{props.name}</label>
-            <div className="input-group has-validation">
+            
                 <input
                     type={props.type || "text"}
                     className="form-control"
@@ -30,8 +31,9 @@ export const TextInput = (props: InputControlledProps) => {
                     value={props.value}
                     onChange={handleChange}
                     disabled={props.disabled}
+                    name={props.name}
                 />
-            </div>
+            
         </div>
     );
 };
@@ -48,19 +50,18 @@ export const IntegerInput = (props: IntegerInputControlledProps) => {
     return (
         <div className="col-12">
             <label className="form-label">{props.name}</label>
-            <div className="input-group has-validation">
+            
                 {props.prepend && <span className="input-group-text" id="inputGroupPrepend">{props.prepend}</span>}
                 <input
                     type="number"
                     pattern="[0-9]*"
-                    name="username"
+                    name={props.inputName}
                     className="form-control"
-                    id="yourUsername"
                     required
                     value={props.value}
                     onChange={handleChange}
                 />
-            </div>
+            
         </div>
     );
 };
@@ -87,7 +88,7 @@ export const OutlinedCheck = (props: {name: string; onClick: React.ChangeEventHa
 };
 
 
-export const Button = (props: {disabled?: boolean; onClick: (e: React.MouseEvent<HTMLButtonElement>)=>void; name: string }) => {
+export const Button = (props: {disabled?: boolean; onClick?: (e: React.MouseEvent<HTMLButtonElement>)=>void; name: string }) => {
     return (
         <div className="col-12">
             <button className="btn btn-primary w-100" type="submit" disabled={props.disabled} onClick={props.onClick}>{props.name}</button>

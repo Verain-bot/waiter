@@ -9,6 +9,7 @@ import { TableHeading, TableItem } from '../components/table/tableItems';
 import { Link, useNavigate } from 'react-router-dom';
 import { CartItemType, CustomizationsType, useCartContext } from '../context/CartContext';
 import EmptyCart from '../components/cart/emptyCart';
+import { PATHS } from '../utilities/routeList';
 
 
 const App = ()=>{
@@ -49,7 +50,7 @@ const App = ()=>{
                 <TableItem left='Use Credits' right={<Check name='Use Credits' inputName='usecredits' />}  width={8}/>
             </Table>
             
-            <Link to='/address' className='link text-dark'>
+            <Link to={PATHS.ADDRESS} className='link text-dark'>
                 <Table title='Address' subTitle='Please select your delivery address'>
                     <TableItem left='Delivering to:' right={<Address name='Verain' address='10 N Model Town, Hisar' />}  width={5}/>
                     <TableItem left={<span className='small'>Tap to change your delivery address</span>}  width={11}/>

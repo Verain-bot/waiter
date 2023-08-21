@@ -71,6 +71,9 @@ class VerifyOTP(views.APIView):
         if 'phone' not in request.session or 'is_verified' not in request.session:
             return Response(msg.OTP_NOT_GENERATED, 400)
 
+        if 'phone' in request.session and 'is_verified' in request.session and request.session['is_verified']:
+            return Response(msg.USER_ALREADY_LOGGED_IN, 400)
+
         phone = request.session['phone']
         otp = int(request.data['otp'])
         cacheData = cache.get(phone)
