@@ -9,14 +9,14 @@ type UserContextType = null | {
   };
   
 export type LoginContextType = {
-    login: boolean;
+    login: boolean | null
     user: UserContextType;
   };
 
 const LoginContext = createContext<[LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>] | undefined>(undefined);
 
 export const LoginContextProvider = ({ children }: { children: ReactNode }) => {
-    const [login, setLogin] = useState<LoginContextType>({ login: false, user: null });
+    const [login, setLogin] = useState<LoginContextType>({ login: null, user: null });
     const abortSignal = new AbortController();
 
 

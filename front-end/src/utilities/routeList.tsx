@@ -14,15 +14,18 @@ import { LoginContextType } from '../context/LoginContext';
 import AccountDetailsView, { accountDetailsLoader } from '../views/accountDetails';
 import AccountDetailsEdit, { accountDetailsEditAction } from '../views/accountDetailsEdit';
 
-export const LOGGED_IN = 'LOGGED_IN'
-export const LOGGED_OUT = 'LOGGED_OUT'
-export const NAV = 'NAV'
+export enum PathType{
+    LOGGED_IN,
+    LOGGED_OUT,
+    NAVBAR
+}
+
 
 type CustomRouteType = {
     path: PATHS,
     element: JSX.Element,
     name: string,
-    nav: string[],
+    pathType: PathType[],
     icon: string,
     ldr?: LoaderFunction,
     action?: (val : [LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction
@@ -51,15 +54,16 @@ const list : CustomRouteType[] = [
       path: PATHS.LOGIN,
       element: <Login />,
       name: 'Login',
-      nav: [LOGGED_OUT, NAV],
+      pathType: [PathType.LOGGED_OUT, PathType.NAVBAR],
       icon: "person-fill",
-      action: loginAction
+      action: loginAction,
+      
     },
     {
       path: PATHS.MENU,
       element: <Menu />,
       name: 'Menu',
-      nav: [LOGGED_IN, NAV, LOGGED_OUT],
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "grid-fill",
       ldr: MenuListLoader,
     },
@@ -67,7 +71,7 @@ const list : CustomRouteType[] = [
       path: PATHS.RESTAURANT_LIST,
       element: <RestaurantList />,
       name: 'Restaurants',
-      nav: [LOGGED_IN, NAV, LOGGED_OUT],
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
       icon: "house-door-fill",
       ldr: RestaurantListLoader,
     },
@@ -75,42 +79,42 @@ const list : CustomRouteType[] = [
       path: PATHS.LOADING,
       element: <Loading />,
       name: 'Loading',
-      nav: [LOGGED_IN, LOGGED_OUT],
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "hourglass-split"
     },
     {
       path: PATHS.CART,
       element: <Cart />,
       name: 'Cart',
-      nav: [LOGGED_IN, NAV],
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "cart-fill"
     },
     {
       path: PATHS.ORDER_DETAIL,
       element: <OrderDetail />,
       name: 'Order Detail',
-      nav: [LOGGED_IN],
+      pathType: [PathType.LOGGED_IN],
       icon: "file-earmark-text-fill"
     },
     {
       path: PATHS.ORDER_LIST,
       element: <OrderList />,
-      name: 'OrderList',
-      nav: [LOGGED_IN, NAV],
+      name: 'Orders',
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "list-ul"
     },
     {
       path: PATHS.CREDITS,
       element: <Credits />,
       name: 'Credits',
-      nav: [LOGGED_IN, NAV],
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "credit-card-fill"
     },
     {
       path: PATHS.OTP,
       element: <OTP />,
       name: 'OTP',
-      nav: [LOGGED_OUT],
+      pathType: [PathType.LOGGED_OUT],
       icon: "key-fill",
       action: otpAction,
       
@@ -119,28 +123,28 @@ const list : CustomRouteType[] = [
       path: PATHS.REGISTER, 
       element: <Register />,
       name: 'Register',
-      nav: [LOGGED_OUT, NAV],
+      pathType: [PathType.LOGGED_OUT, PathType.NAVBAR],
       icon: "person-plus-fill"
     },
     {
       path: PATHS.ADDRESS,
       element: <Address />,
       name: 'Address',
-      nav: [LOGGED_IN],
+      pathType: [PathType.LOGGED_IN],
       icon: "geo-alt-fill"
     },
     {
       path: PATHS.ACCOUNT_DETAILS,
       element: <AccountDetailsView />,
       name: 'Account Details',
-      nav: [LOGGED_IN],
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "person-circle",
       ldr: accountDetailsLoader,
     },{
       path: PATHS.ACCOUNT_DETAILS_EDIT,
       element: <AccountDetailsEdit />,
       name: 'Account Details ',
-      nav: [LOGGED_IN],
+      pathType: [PathType.LOGGED_IN],
       icon: "person-circle",
       action: accountDetailsEditAction,
     }

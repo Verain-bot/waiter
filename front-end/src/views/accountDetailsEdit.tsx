@@ -1,4 +1,4 @@
-import { ActionFunction, redirect, useNavigate } from "react-router-dom"
+import { ActionFunction, Link, redirect, useNavigate } from "react-router-dom"
 import { FormCard } from "../components/forms/formCard"
 import { Button, LinkFooter } from "../components/forms/inputsControlled"
 import { Input } from "../components/forms/inputsUncontrolled"
@@ -10,12 +10,7 @@ import { PATHS } from "../utilities/routeList"
 const App = ()=>{
     const err = useActionError()
     const [login, setLogin] = useLoginContext()
-    const navigate = useNavigate()
-
-    const handleCancel = ()=>{
-        navigate(-1)
-    }
-
+    
     return(
         <div className='col-12 col-md-6'>
             <FormCard title='Account' subtitle="Edit your account information" method="PATCH" error={err} >
@@ -24,9 +19,9 @@ const App = ()=>{
                 <Button name='Save' />
                 <div className="col-12">
 
-                <button className="btn btn-danger w-100" onClick={handleCancel}>
+                <Link className="btn btn-danger w-100" to={PATHS.ACCOUNT_DETAILS}>
                     Cancel
-                </button>
+                </Link>
                 </div>
                 <LinkFooter text='*Your phone number cannot be modified.' linkText='' />
             </FormCard>

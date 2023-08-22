@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react"
 import { FormCard } from "../components/forms/formCard"
 import { Button, LinkFooter } from "../components/forms/inputsControlled"
 import { Input } from "../components/forms/inputsUncontrolled"
-import { ActionFunction } from "react-router-dom"
+import { ActionFunction, redirect } from "react-router-dom"
 import { ActionErrorDataType, useActionError } from "../hooks/useActionError"
 import { makeRequest } from "../utilities/fetchData"
 import { LoginContextType } from "../context/LoginContext"
 import { fetchUserData } from "../utilities/fetchUser"
+import { PATHS } from "../utilities/routeList"
 
-const App = ()=>{
+const App = ()=>{ 
     const error = useActionError()
 
     return(
@@ -61,7 +61,7 @@ export const otpAction : (val : [LoginContextType, React.Dispatch<React.SetState
         }})
     
     
-    return null
+    return redirect(PATHS.RESTAURANT_LIST)
 }
 
 export default App

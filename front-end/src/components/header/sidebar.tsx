@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import RouteList, { NAV } from '../../utilities/routeList';
+import RouteList, { PathType } from '../../utilities/routeList';
 import { useLoginContext } from '../../context/LoginContext';
 import LogoutButton from '../forms/logoutButton';
 
@@ -34,11 +34,22 @@ const SideBarItem: React.FC<SideBarItemProps> = (props) => {
 type SideBarProps = {};
 
 export const SideBar: React.FC<SideBarProps> = (props) => {
-    const [login, setLogin] = useLoginContext()
+    const [login, setLogin]  = useLoginContext()
+
+    const Items = RouteList.filter(item=>{
+        if(login.login && item.pathType.includes(PathType.LOGGED_IN) && item.pathType.includes(PathType.NAVBAR))
+            return true
+
+        else if((!login.login || login.user == null) && item.pathType.includes(PathType.LOGGED_OUT) && item.pathType.includes(PathType.NAVBAR))
+            return true
+
+        return false
+    })
+
     return (
         <aside id="sidebar" className="sidebar">
             <ul className="sidebar-nav" id="sidebar-nav">
-                {RouteList.filter((item) => item.nav.includes(NAV)).map((item, key) => (
+                {Items.map((item, key) => (
                     <SideBarItem name={item.name} iconName={`bi-${item.icon}`} link={item.path} key={key} />
                 ))}
 

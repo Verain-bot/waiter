@@ -6,7 +6,12 @@ import Error from './views/error'
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter as Router, RouterProvider, createBrowserRouter} from 'react-router-dom';
 import RouteList from './utilities/routeList';
+import { MessageProvider } from './context/MessageContext';
+import { SearchBarContextProvider } from './context/SearchBarContext';
+import { SearchContextProvider } from './context/SearchContext';
+import { RatingContextProvider } from './context/RatingContext';
 import { LoginContextProvider, useLoginContext } from './context/LoginContext';
+import { CartContextProvider } from './context/CartContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -35,9 +40,23 @@ const MainApp = ()=>{
 
 root.render(
   <React.StrictMode>
+  <MessageProvider>
+
+  <SearchContextProvider>
+            <RatingContextProvider>
+                  <SearchBarContextProvider>
+                    <CartContextProvider>
+
     <LoginContextProvider>
       <MainApp />
     </LoginContextProvider>
+
+    </CartContextProvider>
+                  </SearchBarContextProvider>
+              </RatingContextProvider>
+            </SearchContextProvider>
+
+  </MessageProvider>
   </React.StrictMode>
 );
 

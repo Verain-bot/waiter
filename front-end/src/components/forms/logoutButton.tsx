@@ -1,6 +1,8 @@
 import React from 'react'
 import { useLoginContext } from '../../context/LoginContext'
 import { makeRequest } from '../../utilities/fetchData'
+import { useNavigate } from 'react-router-dom'
+import { PATHS } from '../../utilities/routeList'
 
 type LogoutButtonProps = {
     className: string
@@ -9,6 +11,7 @@ type LogoutButtonProps = {
 
 export const LogoutButton = (props: LogoutButtonProps ) => {
     const [login, setLogin] = useLoginContext()
+    const navigate = useNavigate()
 
     const logout = async ()=>{
         const request = new Request('api/login/', {
@@ -23,6 +26,7 @@ export const LogoutButton = (props: LogoutButtonProps ) => {
 
         if (response.ok) {
             setLogin({login: false, user: null})
+            navigate(PATHS.LOGIN)
         }
 
         else{
