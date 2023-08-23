@@ -3,11 +3,12 @@ import { FormCard } from '../components/forms/formCard';
 import {  Button, IntegerInput, LinkFooter } from '../components/forms/inputsControlled';
 import { Check, Input } from '../components/forms/inputsUncontrolled';
 import { useMessageContext } from '../context/MessageContext';
-import { ActionFunction, Form, RedirectFunction, redirect } from 'react-router-dom';
+import { ActionFunction, Form, RedirectFunction, redirect, useParams } from 'react-router-dom';
 import { ActionErrorDataType, useActionError } from '../hooks/useActionError';
 import { makeRequest } from '../utilities/fetchData';
 import { LoginContextType } from '../context/LoginContext';
 import { PATHS } from '../utilities/routeList';
+import { checkPhone } from '../utilities/formChecks';
 
 const App = () => {
     const err = useActionError()
@@ -20,7 +21,7 @@ const App = () => {
                 <Input name='Phone'  type={'number'} prepend={'+91'} maxLength={10} inputName='phone' />
                 <Check name='Remember me' inputName='remember' />
                 <Button name='Login'  />
-                <LinkFooter text={'Don\'t have an account?'} linkText='Register' />
+                <LinkFooter text={'Don\'t have an account?'} linkText='Register' href={PATHS.REGISTER} />
         </FormCard> 
         </div>
         
@@ -32,15 +33,11 @@ export const loginAction : ( val:[LoginContextType, React.Dispatch<React.SetStat
 
     const data = await request.formData()
     const phone  = String(data.get('phone'))
-    const regex = new RegExp('^[0-9]{10}$')
-    // if (!regex.test(phone)){
-    //     return {
-    //         heading:'Invalid Phone Number',
-    //         body:'Please enter a valid phone number',
-    //         type:'error',
-    //         errors:['Please enter a valid phone number']
-    //     }
-    // }
+    const [chk, phMsg] = checkPhone(phone)
+
+    if (!chk){
+        return phMsg
+    }
     
     const {json, message, response} = await makeRequest('api/login/', request, data)
 
@@ -51,6 +48,7 @@ export const loginAction : ( val:[LoginContextType, React.Dispatch<React.SetStat
             type: 'error',
         }
     }
+
     alert(`OTP sent to ${json.phone}`)
     return redirect(PATHS.OTP)
 }

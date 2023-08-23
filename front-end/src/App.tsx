@@ -6,7 +6,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import Message from './views/messageModal';
 import './styles.sass'
 import { useEffect } from 'react';
-import {Outlet, useMatches, useNavigate, useNavigation} from 'react-router-dom';
+import {Outlet, useLocation, useMatches, useNavigate, useNavigation} from 'react-router-dom';
 import Review from './views/ratingModal'
 import { Header } from './components/header/header';
 import LoadingScreen from './views/loading'
@@ -22,14 +22,13 @@ const App = () => {
   const [message, setMessage] = useMessageContext()
 
 
-
   useEffect(() => {
     const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
     const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
-  },[])
+  })
 
   useEffect(()=>{
-    console.log(matches)
+    console.log(navigation)
 
     if(matches.length > 0 && login.login !== null)
       {
@@ -49,11 +48,6 @@ const App = () => {
         else if(RouteList[index].pathType.includes(PathType.LOGGED_OUT)  && !RouteList[index].pathType.includes(PathType.LOGGED_IN) && (login.login == true || login.user != null))
         {
           navigate(PATHS.RESTAURANT_LIST)
-          setMessage({
-            heading: 'Already Logged In',
-            body: 'You are already logged in. If you wish to view this page, please logout.',
-            type: 'error'
-          })
         }
 
       }

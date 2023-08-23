@@ -36,7 +36,7 @@ export const LogoutButton = (props: LogoutButtonProps ) => {
     }
 
     return (
-        <a className={props.className} onClick={logout} >
+        <a className={props.className + ' pointer'} onClick={logout} >
             {props.children}
         </a>
     )

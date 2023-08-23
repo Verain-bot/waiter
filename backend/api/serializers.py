@@ -48,10 +48,16 @@ class RestaurantListSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'logo','url']
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
-    phone = serializers.IntegerField(read_only=True)
+    #phone number cannot be updated once created
+
     class Meta:
         model = Customer
         fields = [ 'name', 'phone', 'email' ]
+
+    def update(self, instance, validated_data):
+        validated_data.pop('phone', None)
+        return super().update(instance, validated_data)
+    
 
 class CustomerListSerializer(serializers.ModelSerializer):
     class Meta:

@@ -102,6 +102,7 @@ class UpdateAccount(generics.RetrieveUpdateAPIView):
         self.check_object_permissions(self.request, obj)
         return obj
 
+
 class OrderList(generics.ListAPIView):
     #queryset contains all the orders of the customer
     queryset = Order.objects.all()

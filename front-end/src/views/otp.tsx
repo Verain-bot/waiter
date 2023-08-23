@@ -16,7 +16,7 @@ const App = ()=>{
         <FormCard title='Verify Phone' subtitle='Please enter the OTP sent to your phone' method="POST" error={error} action={'/otp'}>
             <Input name='OTP' type={'number'} maxLength={4} inputName="otp" />
             <Button name='Submit' />
-            <LinkFooter text="Didn't recieve OTP?" linkText="Resend OTP" />
+            <LinkFooter text="Didn't recieve OTP?" linkText="Resend OTP" href={PATHS.LOGIN} />
         </FormCard>
         </div>
     )

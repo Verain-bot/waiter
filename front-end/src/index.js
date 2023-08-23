@@ -40,23 +40,23 @@ const MainApp = ()=>{
 
 root.render(
   <React.StrictMode>
-  <MessageProvider>
 
-  <SearchContextProvider>
-            <RatingContextProvider>
-                  <SearchBarContextProvider>
-                    <CartContextProvider>
+    <MessageProvider>
+      <SearchContextProvider>
+        <RatingContextProvider>
+          <SearchBarContextProvider>
+            <CartContextProvider>
 
-    <LoginContextProvider>
-      <MainApp />
-    </LoginContextProvider>
+              <LoginContextProvider>
+                <MainApp />
+              </LoginContextProvider>
+      
+            </CartContextProvider>
+          </SearchBarContextProvider>
+        </RatingContextProvider>
+      </SearchContextProvider>
+    </MessageProvider>
 
-    </CartContextProvider>
-                  </SearchBarContextProvider>
-              </RatingContextProvider>
-            </SearchContextProvider>
-
-  </MessageProvider>
   </React.StrictMode>
 );
 

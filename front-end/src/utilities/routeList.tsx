@@ -7,7 +7,7 @@ import OrderDetail from '../views/orderDetail';
 import OrderList from '../views/orderList';
 import Credits from '../views/credits'
 import OTP, { otpAction } from '../views/otp';
-import Register from '../views/register';
+import Register, { registerAction } from '../views/register';
 import Address from '../views/deliveryAddress'
 import { ActionFunction, LoaderFunction } from 'react-router-dom';
 import { LoginContextType } from '../context/LoginContext';
@@ -124,7 +124,8 @@ const list : CustomRouteType[] = [
       element: <Register />,
       name: 'Register',
       pathType: [PathType.LOGGED_OUT, PathType.NAVBAR],
-      icon: "person-plus-fill"
+      icon: "person-plus-fill",
+      action: registerAction
     },
     {
       path: PATHS.ADDRESS,

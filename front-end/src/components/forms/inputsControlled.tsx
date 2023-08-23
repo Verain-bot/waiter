@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
+import { Link, useNavigation } from "react-router-dom";
 
 type InputControlledProps = {
     name: string;
@@ -89,18 +90,27 @@ export const OutlinedCheck = (props: {name: string; onClick: React.ChangeEventHa
 
 
 export const Button = (props: {disabled?: boolean; onClick?: (e: React.MouseEvent<HTMLButtonElement>)=>void; name: string }) => {
+    const navigation = useNavigation()
+    const disabled = props.disabled?true:(navigation.state=='idle'?false:true)
+    const name = navigation.state=='idle'?props.name:navigation.state=='submitting'?'Submitting...':'Submitted'
+
     return (
         <div className="col-12">
-            <button className="btn btn-primary w-100" type="submit" disabled={props.disabled} onClick={props.onClick}>{props.name}</button>
+            <button className="btn btn-primary w-100" type="submit" disabled={disabled} onClick={props.onClick}>
+            {navigation.state != 'idle' && <span className="spinner-border spinner-border-sm mx-2" role="status" aria-hidden="true"></span>}
+                <span>
+                    {name}
+                </span>
+            </button>
         </div>
     );
 };
 
-export const LinkFooter = (props: { text: string; linkText: string }) => {
+export const LinkFooter = (props: { text: string; linkText: string, href?: string }) => {
     return (
         <span>
             {props.text}&nbsp;
-            <a href="#" className="link-primary">{props.linkText}</a>
+            <Link to={props.href || ''} className="link-primary">{props.linkText}</Link>
         </span>
     );
 };

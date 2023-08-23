@@ -1,3 +1,5 @@
+import { useNavigation } from "react-router-dom";
+
 type InputPropsUncontrolled = {
     name: string;
     inputName: string;
@@ -6,10 +8,13 @@ type InputPropsUncontrolled = {
     type?: string;
     maxLength?: number;
     placeholder?: string;
+    defaultValue?: string;
 }
 
 export const Input = (props:InputPropsUncontrolled) => {
-    
+    const navigation = useNavigation()
+    const disabled = props.disabled?true:navigation.state=='idle'?false:true
+
     return (
         <div className="col-12">
             <label className="form-label">{props.name}</label>
@@ -22,9 +27,10 @@ export const Input = (props:InputPropsUncontrolled) => {
                     className="form-control"
                     name={props.inputName}
                     required
-                    disabled={props.disabled}
+                    disabled={disabled}
                     maxLength={props.maxLength}
                     placeholder={props.placeholder}
+                    defaultValue={props.defaultValue}
                     />
             
             </div>
@@ -34,10 +40,22 @@ export const Input = (props:InputPropsUncontrolled) => {
 
 
 export const Check = (props: InputPropsUncontrolled) => {
+    const navigation = useNavigation()
+    const disabled = props.disabled?true:navigation.state=='idle'?false:true
+
     return (
         <div className="form-check">
-            <input className={`form-check-input ${props.name === null ? "m-0" : ""}`} type="checkbox" name={props.inputName} id={`checkboxInput${props.inputName}`} />
+
+            <input 
+                className={`form-check-input ${props.name === null ? "m-0" : ""}`} 
+                type="checkbox" 
+                name={props.inputName} 
+                id={`checkboxInput${props.inputName}`} 
+                disabled={disabled}
+                />
+
             <label className="form-check-label" htmlFor={`checkboxInput${props.inputName}`}>{props.name}</label>
+
         </div>
     );
 };
