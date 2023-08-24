@@ -1,3 +1,5 @@
+import { useId } from "react";
+import { Form } from "react-bootstrap";
 import { useNavigation } from "react-router-dom";
 
 type InputPropsUncontrolled = {
@@ -7,31 +9,38 @@ type InputPropsUncontrolled = {
     prepend? : string;
     type?: string;
     maxLength?: number;
-    placeholder?: string;
     defaultValue?: string;
+    required?: boolean;
+    invalidText?: string;
 }
 
 export const Input = (props:InputPropsUncontrolled) => {
     const navigation = useNavigation()
     const disabled = props.disabled?true:navigation.state=='idle'?false:true
+    const id = useId()
 
     return (
         <div className="col-12">
-            <label className="form-label">{props.name}</label>
-            <div className="input-group">
+            
+            <div className="input-group mb-3">
 
             {props.prepend && <span className="input-group-text" id="inputGroupPrepend">{props.prepend}</span>}
+            <div className="form-floating">
             
                 <input
                     type={props.type || "text"}
                     className="form-control"
                     name={props.inputName}
-                    required
+                    required = {true}
                     disabled={disabled}
                     maxLength={props.maxLength}
-                    placeholder={props.placeholder}
+                    placeholder={props.name}
+
                     defaultValue={props.defaultValue}
+                    id={id}
                     />
+            <label className="form-label" htmlFor={id}>{props.name}</label>
+            </div>
             
             </div>
         </div>
@@ -42,20 +51,24 @@ export const Input = (props:InputPropsUncontrolled) => {
 export const Check = (props: InputPropsUncontrolled) => {
     const navigation = useNavigation()
     const disabled = props.disabled?true:navigation.state=='idle'?false:true
-
     return (
-        <div className="form-check">
+        // <div className="form-check">
+            <Form.Group>
 
-            <input 
-                className={`form-check-input ${props.name === null ? "m-0" : ""}`} 
-                type="checkbox" 
-                name={props.inputName} 
-                id={`checkboxInput${props.inputName}`} 
+            <Form.Check 
+                className={` ${props.name === null ? "m-0" : ""}`}
+                required={props.required}
+                label={props.name}
+                name={props.inputName}
+                feedback={props.invalidText}
+                feedbackType="invalid"
                 disabled={disabled}
                 />
 
-            <label className="form-check-label" htmlFor={`checkboxInput${props.inputName}`}>{props.name}</label>
+            </Form.Group>
 
-        </div>
+            // {/* <label className="form-check-label" htmlFor={`checkboxInput${props.inputName}`}>{props.name}</label> */}
+
+        // </div>
     );
 };

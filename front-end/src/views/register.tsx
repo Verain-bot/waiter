@@ -14,13 +14,13 @@ const App = ()=>{
     const err = useActionError()
 
     return(
-        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center" style={{'height':'80vh'}}>
+        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center">
         <FormCard title='Register' subtitle='Please enter your details to register' error={err} method="POST">
             <Input name='First Name' type={'text'} inputName="firstName" />
             <Input name='Last Name' type={'text'} inputName="lastName" />
-            <Input name='Email' type={'text'} inputName="email" />
+            <Input name='Email' type={'email'} inputName="email" />
             <Input name='Phone' type={'number'} maxLength={10} prepend={'+91'} inputName="phone" />
-            <Check name='I agree to the Terms and Conditions' inputName="tnc" />
+            <Check name='I agree to the Terms and Conditions' inputName="tnc" required invalidText='Please accept to continue' />
             <Button name='Submit' />
             <LinkFooter text="Already registered?" linkText="Login" href={PATHS.LOGIN} />
         </FormCard>

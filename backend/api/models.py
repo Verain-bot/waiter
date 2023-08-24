@@ -17,6 +17,7 @@ class Customer(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
 
 class Tables(models.Model):
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_table',blank=True,on_delete=models.CASCADE)

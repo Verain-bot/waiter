@@ -68,7 +68,7 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
     return(
 <>
     <div className="row my-0 d-flex align-items-center justify-content-center">
-        <div className="col-12 col-md-9 col-xl-8 mx-0 p-0 menu-item">
+        <div className="col-12 mx-0 p-0 menu-item">
 
             <div className="row d-flex align-items-center justify-content-center">
                 <div className="col-4 mx-auto">

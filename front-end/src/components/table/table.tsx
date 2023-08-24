@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import * as bootstrap from 'bootstrap';
 
 type TableProps = {
     title: string;
@@ -8,6 +9,13 @@ type TableProps = {
 };
 
 const Table: React.FC<TableProps> = (props) => {
+    const popover = useRef<HTMLButtonElement>(null)
+
+    useEffect(()=>{
+        if(popover.current)
+            new bootstrap.Popover(popover.current)
+    },[popover.current])
+
     return (
         <div className='row card p-2 shadow'>
             <div className='col-12'>
@@ -25,6 +33,7 @@ const Table: React.FC<TableProps> = (props) => {
                                 data-bs-toggle="popover"
                                 data-bs-placement="left"
                                 data-bs-content={props.info}
+                                ref={popover}
                             >
                                 <i className='bi bi-info-circle pointer' />
                             </button>

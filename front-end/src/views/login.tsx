@@ -19,7 +19,7 @@ const App = () => {
         <FormCard title='Login' subtitle='Please enter your phone for verification' method='POST' error={err} >
 
                 <Input name='Phone'  type={'number'} prepend={'+91'} maxLength={10} inputName='phone' />
-                <Check name='Remember me' inputName='remember' />
+                <Check name='Remember me' inputName='remember'  />
                 <Button name='Login'  />
                 <LinkFooter text={'Don\'t have an account?'} linkText='Register' href={PATHS.REGISTER} />
         </FormCard> 

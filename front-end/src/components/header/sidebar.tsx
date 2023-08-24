@@ -12,7 +12,9 @@ type SideBarItemProps = {
 
 const SideBarItem: React.FC<SideBarItemProps> = (props) => {
     const toggle = () => {
-        document.body.classList.toggle('toggle-sidebar');
+        //toggle only when screen size is small
+        if (window.innerWidth < 768)
+            document.body.classList.toggle('toggle-sidebar');
     };
 
     return (

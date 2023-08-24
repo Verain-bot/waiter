@@ -1,5 +1,4 @@
 import './App.css';
-import * as bootstrap from 'bootstrap';
 //import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -21,11 +20,6 @@ const App = () => {
   const navigate = useNavigate()
   const [message, setMessage] = useMessageContext()
 
-
-  useEffect(() => {
-    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
-    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
-  })
 
   useEffect(()=>{
     console.log(navigation)

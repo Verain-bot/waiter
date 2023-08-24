@@ -16,7 +16,7 @@ const App = ()=>{
         <div className='col-12 col-md-6'>
             <FormCard title='Account' subtitle="Edit your account information" method="PATCH" error={err} >
                 <Input name='Name' inputName="name" defaultValue={login.user?.name}  />
-                <Input name='Email' inputName="email" defaultValue={login.user?.email} />
+                <Input name='Email' inputName="email" defaultValue={login.user?.email} type="email" />
                 <Button name='Save' />
                 <div className="col-12">
 
