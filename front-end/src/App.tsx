@@ -1,9 +1,10 @@
-import './App.css';
 //import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/App.css'
+import './style.sass'
+//import './styles/custom.sass'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Message from './views/messageModal';
-import './styles.sass'
 import { useEffect } from 'react';
 import {Outlet, useLocation, useMatches, useNavigate, useNavigation} from 'react-router-dom';
 import Review from './views/ratingModal'
@@ -19,6 +20,7 @@ const App = () => {
   const matches = useMatches()
   const navigate = useNavigate()
   const [message, setMessage] = useMessageContext()
+
 
 
   useEffect(()=>{

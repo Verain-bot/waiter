@@ -38,7 +38,7 @@ const App = ()=>{
         <div className='col-12 col-md-6'>
 
             <div className='row card shadow'>
-                <h5 className='card-title'>Cart</h5>
+                <h5 className='card-title px-2'>Cart</h5>
                 <div className='list-group list-group-flush'>
                     {items.map((item,key)=><CartItem {...item} key={key} />)}
                     
