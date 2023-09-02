@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import *
+from OTPAuth.serializers import CustomerListSerializer
 
 class CustomatizationOptionsSerializer(serializers.ModelSerializer):
     customization = serializers.CharField(source='customization.name', read_only=True)
@@ -47,23 +48,6 @@ class RestaurantListSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = ['id', 'name', 'logo','url']
 
-class CustomerDetailSerializer(serializers.ModelSerializer):
-    #phone number cannot be updated once created
-
-    class Meta:
-        model = Customer
-        fields = [ 'name', 'phone', 'email' ]
-
-    def update(self, instance, validated_data):
-        validated_data.pop('phone', None)
-        return super().update(instance, validated_data)
-    
-
-class CustomerListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ['id', 'name']
-
 class QuantitySerializer(serializers.ModelSerializer):
     option = CustomatizationOptionsSerializer(read_only=True,many=True)
     class Meta:
@@ -102,10 +86,6 @@ class OrderDetailsSerializer(serializers.ModelSerializer):
         model = Order
         fields = '__all__'
 
-class TableSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tables
-        fields = '__all__'
 
 class CartSerializer(serializers.Serializer):
     #get menu item from primary key

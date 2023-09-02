@@ -3,9 +3,30 @@ USER_LOGGED_IN = lambda phone: {
     'message' : 'User currently logged in ',
     'type' : 'success'
     }
+
+USER_ALREADY_LOGGED_IN = {
+    'message' : 'User already logged in',
+    'type' : 'error'
+}
+
+USER_NOT_VERIFIED = {
+    'message' : 'User not verified',
+    'type' : 'error'
+}
+
 USER_LOGGED_OUT = {
     'message' : 'You have successfully logged out',
     'type' : 'success'
+}
+
+USER_REGISTERED = {
+    'message' : 'You have successfully registered',
+    'type' : 'success'
+}
+
+USER_ALREADY_REGISTERED = {
+    'message' : 'You are already registered',
+    'type' : 'error'
 }
 
 USER_ALREADY_VERIFIED = {
@@ -31,6 +52,11 @@ INVALID_REQUEST = {
 
 OTP_NOT_GENERATED = {
     'message' : 'OTP not generated, please try again',
+    'type' : 'error'
+}
+
+OTP_EXPIRED = {
+    'message' : 'OTP expired, please try again',
     'type' : 'error'
 }
 

@@ -1,8 +1,5 @@
 from django.core.cache import cache
 
-def sendOTPtoPhone(phone):
-    return 1234
-
 #Set table data using cache
 def setTableData(data, restaurant):
     cache.set('tableData'+str(restaurant.id), data, timeout=60*60*24)

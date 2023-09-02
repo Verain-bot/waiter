@@ -1,38 +1,15 @@
 from typing import Iterable, Optional
 from django.db import models
 from django.utils.timezone import now
-# Create your models here.
+from django.contrib.auth import get_user_model
+
+Customer = get_user_model()
 
 def MenuUploadTo(instance, filename):
     return f"menu/{instance.restaurant.id}/{filename}"
 
 def restaurantUploadTo(instance, filename):
     return f"restaurant/{instance.id}/{filename}"
-
-class Customer(models.Model):
-    name = models.CharField(max_length=50, blank= True)
-    phone = models.PositiveBigIntegerField(unique= True, blank=True)
-    email = models.EmailField(blank=True, unique=True)
-    location = models.CharField(max_length= 50, blank=True)
-
-    def __str__(self) -> str:
-        return self.name
-    
-
-class Tables(models.Model):
-    restaurant = models.ForeignKey('Restaurant', related_name='restaurant_table',blank=True,on_delete=models.CASCADE)
-    tableNumber = models.PositiveSmallIntegerField(default= 0)
-    capacity = models.PositiveSmallIntegerField(default= 0)
-    status = models.CharField(max_length= 50, default= 'Available')
-    customersSitting = models.ManyToManyField(Customer, related_name='customer_sitting', blank=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['restaurant', 'tableNumber'], name='unique_table')
-        ]
-
-    def __str__(self) -> str:
-        return self.restaurant.__str__() + " Table No. " + self.tableNumber.__str__()
 
 class ItemType(models.Model):
     name = models.CharField(max_length=50)
@@ -77,7 +54,7 @@ class Order(models.Model):
     customers = models.ManyToManyField(Customer, related_name='customerList', blank=True, through=SubOrder)
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_order',blank=True,on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default = 0)
-    time = models.DateTimeField(default= now())
+    time = models.DateTimeField(default= now)
     tableNumber = models.PositiveSmallIntegerField(default= 0)
     tip = models.PositiveSmallIntegerField(default=0)
     orderStatus = models.CharField(max_length=10, blank = True)
@@ -89,6 +66,8 @@ class Order(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['id', 'restaurant'], name='unique_order')
         ]
+
+        ordering = ['-time']
 
     def __str__(self) -> str:
         return " ".join(self.customers.all().values_list('name', flat=True)) + ' ' + str(self.id)
@@ -116,7 +95,7 @@ class MenuItem(models.Model):
 class CustomerVisit(models.Model):
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    lastVisit = models.DateField(default=now().date())
+    lastVisit = models.DateField(default=now)
     totalVisits = models.PositiveSmallIntegerField(default=0)
     storeCredit = models.PositiveIntegerField(default = 0)
     customerRating = models.PositiveSmallIntegerField(blank=True, null=True)
@@ -137,7 +116,7 @@ class CustomatizationOptions(models.Model):
     customization = models.ForeignKey(MenuItemCustomization, related_name='customization_options', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=True)
     price = models.PositiveIntegerField(default=0)
-    dependencies = models.ManyToManyField('self', related_name='dependencies', blank=True)
+    dependencies = models.ManyToManyField('self', blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -156,14 +135,11 @@ class Restaurant(models.Model):
     location = models.CharField(max_length=30,blank=True)
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)
-    joinDate = models.DateField(default=now())
+    joinDate = models.DateField(default=now)
     tables = models.PositiveSmallIntegerField(default=10)
     
     def __str__(self) -> str:
         return self.name
     
-    #create tables when restaurant is created
-    def save(self, *args, **kwargs):
-        super(Restaurant, self).save(*args, **kwargs)
-        for i in range(1, self.tables+1):
-            Tables.objects.create(restaurant=self, tableNumber=i)
+    class Meta:
+        ordering = ['name']

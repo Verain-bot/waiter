@@ -48,8 +48,6 @@ class OrderAdmin(nested_admin.NestedModelAdmin):
 class SubOrderAdmin(nested_admin.NestedModelAdmin):
     inlines = [itemDetailInLine]
 
-
-admin.site.register(Customer)
 admin.site.register(ItemType)
 admin.site.register(SpecialItem)
 admin.site.register(Order, OrderAdmin)
@@ -61,4 +59,3 @@ admin.site.register(ItemDetail, ItemDetailAdmin)
 admin.site.register(Quantity)
 admin.site.register(CustomatizationOptions)
 admin.site.register(MenuItemCustomization, MenuItemCustomizationAdmin)
-admin.site.register(Tables)

@@ -18,9 +18,17 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+import enum
+
+class URL_FOR_APPS(enum.StrEnum):
+    ADMIN = 'admin/'
+    API = 'api/'
+    OTP_AUTH = 'api/account/'
+    
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/',include('api.urls')),
-    path(r'^_nested_admin/', include('nested_admin.urls')),
+    path(URL_FOR_APPS.ADMIN, admin.site.urls),
+    path(URL_FOR_APPS.API,include('api.urls')),
+    path(URL_FOR_APPS.OTP_AUTH,include('OTPAuth.urls'),name='otp-auth'),
+    path('_nested_admin/', include('nested_admin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
