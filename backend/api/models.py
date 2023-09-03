@@ -70,7 +70,7 @@ class Order(models.Model):
         ordering = ['-time']
 
     def __str__(self) -> str:
-        return " ".join(self.customers.all().values_list('name', flat=True)) + ' ' + str(self.id)
+        return " ".join(self.customers.all().values_list('first_name', flat=True)) + ' ' + str(self.id)
 
 class MenuItem(models.Model):
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='restaurant', null=True)
@@ -102,7 +102,7 @@ class CustomerVisit(models.Model):
     customerComment = models.CharField(max_length=200, blank = True, null=True)
 
     def __str__(self) -> str:
-        return self.customer.name + " " + self.restaurant.name + "Restaurant Visit"
+        return f"{self.customer.first_name} {self.customer.last_name} {self.restaurant.name} Restaurant Visit" 
 
 class MenuItemCustomization(models.Model):
     item = models.ForeignKey(MenuItem, related_name='item_customization', on_delete=models.CASCADE)
@@ -116,7 +116,6 @@ class CustomatizationOptions(models.Model):
     customization = models.ForeignKey(MenuItemCustomization, related_name='customization_options', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=True)
     price = models.PositiveIntegerField(default=0)
-    dependencies = models.ManyToManyField('self', blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -131,7 +130,7 @@ class Restaurant(models.Model):
     primColor = models.CharField(max_length=10, blank=True)
     secColor = models.CharField(max_length=10, blank=True)
     logo = models.ImageField(upload_to=restaurantUploadTo, blank=True)
-    owner = models.CharField(max_length=50, blank = True)
+    owner = models.ForeignKey(Customer, related_name='owner', on_delete=models.CASCADE)
     location = models.CharField(max_length=30,blank=True)
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)

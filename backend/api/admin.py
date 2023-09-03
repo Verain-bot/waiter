@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 import nested_admin
+from .mixins import CustomAdminMixin
 
 class QuantityInLine(nested_admin.NestedTabularInline):
     model = Quantity
@@ -30,23 +31,64 @@ class SubOrderInLine(nested_admin.NestedTabularInline):
     inlines = [itemDetailInLine]
     extra = 1
 
-class MenuItemCustomizationAdmin(nested_admin.NestedModelAdmin):
-    inlines = [CustomatizationOptionsInLine]
 
-class MenuItemAdmin(nested_admin.NestedModelAdmin):
+class MenuItemCustomizationAdmin(CustomAdminMixin):
+    inlines = [CustomatizationOptionsInLine]
+    
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(item__restaurant__owner=request.user) 
+
+class MenuItemAdmin(CustomAdminMixin):
     inlines = [MenuItemCustomizationInLine]
 
-class RestaurantAdmin(nested_admin.NestedModelAdmin):
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(restaurant__owner=request.user)
+
+
+class RestaurantAdmin(CustomAdminMixin):
     inlines = [MenuItemInLine]
     
-class ItemDetailAdmin(nested_admin.NestedModelAdmin):
-    inlines = [QuantityInLine]
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(owner=request.user)
 
-class OrderAdmin(nested_admin.NestedModelAdmin):
+
+class ItemDetailAdmin(CustomAdminMixin):
+    inlines = [QuantityInLine]
+    
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(suborder__order__restaurant__owner=request.user)
+    
+class OrderAdmin(CustomAdminMixin):
     inlines = [SubOrderInLine]
 
-class SubOrderAdmin(nested_admin.NestedModelAdmin):
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(restaurant__owner=request.user)
+
+class SubOrderAdmin(CustomAdminMixin):
     inlines = [itemDetailInLine]
+
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(order__restaurant__owner=request.user)
+
+class QuantityAdmin(CustomAdminMixin):
+
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(itemDetail__suborder__order__restaurant__owner=request.user)
+
+class CustomatizationOptionsAdmin(CustomAdminMixin):
+    
+    @CustomAdminMixin.get_queryset_decorator
+    def get_queryset(self, request, qs):
+        return qs.filter(customization__item__restaurant__owner=request.user)
+    
+
 
 admin.site.register(ItemType)
 admin.site.register(SpecialItem)
@@ -56,6 +98,6 @@ admin.site.register(CustomerVisit)
 admin.site.register(Restaurant, RestaurantAdmin)
 admin.site.register(SubOrder, SubOrderAdmin)
 admin.site.register(ItemDetail, ItemDetailAdmin)
-admin.site.register(Quantity)
-admin.site.register(CustomatizationOptions)
+admin.site.register(Quantity, QuantityAdmin)
+admin.site.register(CustomatizationOptions, CustomatizationOptionsAdmin)
 admin.site.register(MenuItemCustomization, MenuItemCustomizationAdmin)

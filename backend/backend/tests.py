@@ -3,6 +3,10 @@ from api.models import *
 from rest_framework.test import APIClient
 from django.core.cache import cache
 from OTPAuth.urls import URL_FOR_OTPAuth as URL
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission
+
 #Testing views
 class TestBase(TestCase):
 
@@ -17,9 +21,64 @@ class TestBase(TestCase):
         self.table = 111
         self.client2 = Client()
 
+        restaurant_content_type = ContentType.objects.get_for_model(Restaurant)
+        menu_content_type = ContentType.objects.get_for_model(MenuItem)
+        order_content_type = ContentType.objects.get_for_model(Order)
+        suborder_content_type = ContentType.objects.get_for_model(SubOrder)
+        itemdetail_content_type = ContentType.objects.get_for_model(ItemDetail)
+        customization_content_type = ContentType.objects.get_for_model(MenuItemCustomization)
+        customization_options_content_type = ContentType.objects.get_for_model(CustomatizationOptions)
+        item_type_content_type = ContentType.objects.get_for_model(ItemType)
+        special_item_content_type = ContentType.objects.get_for_model(SpecialItem)
+        quantity_content_type = ContentType.objects.get_for_model(Quantity)
+
+        #Create groups
+        ownerGroup = Group.objects.create(name='RestaurantOwner')
+        
+        #Add permissions to groups
+        
+        ownerGroup.permissions.add(Permission.objects.get(codename='change_restaurant', content_type=restaurant_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_restaurant', content_type=restaurant_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='change_menuitem', content_type=menu_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_menuitem', content_type=menu_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='add_menuitem', content_type=menu_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='delete_menuitem', content_type=menu_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_order', content_type=order_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_suborder', content_type=suborder_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_itemdetail', content_type=itemdetail_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='change_menuitemcustomization', content_type=customization_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_menuitemcustomization', content_type=customization_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='add_menuitemcustomization', content_type=customization_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='delete_menuitemcustomization', content_type=customization_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='change_customatizationoptions', content_type=customization_options_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_customatizationoptions', content_type=customization_options_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='add_customatizationoptions', content_type=customization_options_content_type))
+        ownerGroup.permissions.add(Permission.objects.get(codename='delete_customatizationoptions', content_type=customization_options_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_itemtype', content_type=item_type_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_specialitem', content_type=special_item_content_type))
+
+        ownerGroup.permissions.add(Permission.objects.get(codename='view_quantity', content_type=quantity_content_type))
+
+        #add permissions to group
+
         Customer.objects.create_user(username='1', first_name= 'Verain', email = 'test1@test.com', password='test')
         Customer.objects.create_user(username='2', first_name= 'Rahul', email = 'test2@test.com', password='test')
         Customer.objects.create_user(username='3', first_name= 'Raj', email = 'test3@test.com', password='test')
+
+        Owner1 = Customer.objects.create_user(username='101', first_name= 'Owner1', email = 'owner1@owner.com', password='test', is_staff=True)
+        Owner2 = Customer.objects.create_user(username='102', first_name= 'Owner1', email = 'owner2@owner.com', password='test', is_staff=True)
+        Owner1.groups.add(ownerGroup)
+        Owner2.groups.add(ownerGroup)
+
+        Customer.objects.create_superuser(username='verain', first_name= 'Gr8', email = '', password='1')
 
         ItemType.objects.create(name='Beverage')
         ItemType.objects.create(name='Food')
@@ -27,8 +86,8 @@ class TestBase(TestCase):
         SpecialItem.objects.create(name='Bestseller', color='red')
         SpecialItem.objects.create(name='Popular', color='blue')
 
-        Restaurant.objects.create(name='Bar', phone='1234567890')
-        Restaurant.objects.create(name='Pizza', phone='1234567891')
+        Restaurant.objects.create(name='Bar', phone='1234567890', owner=Owner1)
+        Restaurant.objects.create(name='Pizza', phone='1234567891', owner=Owner2)
 
         MenuItem.objects.create(name='LIIT', price=100, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Beverage'), category=SpecialItem.objects.get(name='Bestseller'))
         MenuItem.objects.create(name='Beer', price=200, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Beverage'))
