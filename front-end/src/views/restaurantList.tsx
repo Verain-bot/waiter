@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { SearchResultMessage } from "../components/header/search"
 import RestaurantListItem  from "../components/restaurantList/restaurantListItem"
 import { getData } from "../utilities/fetchData"
+import APIRoutes from "../utilities/APIRoutes"
 import Search from "../utilities/search"
 import useSearchBar from "../hooks/useSearchBar"
 import { Link, useLoaderData, useOutletContext } from "react-router-dom"
@@ -93,7 +94,7 @@ const App = ()=>{
 
 
 export const RestaurantListLoader = async ({request }: {request: Request}) =>{
-    const data = await getData('api/restaurants',request.signal)
+    const data = await getData(APIRoutes.RESTAURANT_LIST,request.signal)
     return data.json()
 }
 

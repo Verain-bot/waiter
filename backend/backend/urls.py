@@ -19,12 +19,15 @@ from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
 import enum
+from .mixins import URLEnumMixin
 
-class URL_FOR_APPS(enum.StrEnum):
+class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
     ADMIN = 'admin/'
     API = 'api/'
     OTP_AUTH = 'api/account/'
     
+    BASE = ''
+
 
 urlpatterns = [
     path(URL_FOR_APPS.ADMIN, admin.site.urls),

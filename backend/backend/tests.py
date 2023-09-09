@@ -206,7 +206,7 @@ class TestBase(TestCase):
             phone = self.TEST_PHONE
 
         self.verifyUser(client, phone)
-        response = client.post(URL.LOGIN.fullUrl())
+        response = client.post(URL.LOGIN.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
         
@@ -214,14 +214,14 @@ class TestBase(TestCase):
     def logout(self, client = None):
         if client == None:
             client = self.client
-        client.get(URL.LOGOUT.fullUrl())
+        client.get(URL.LOGOUT.getURL())
         
 
     def sendOTP(self, client, phone):
         data = {
             'phone' : phone,
         }
-        response = client.post(URL.SEND_OTP.fullUrl(), data=data)
+        response = client.post(URL.SEND_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 200)
         response = response.json()
         
@@ -231,8 +231,9 @@ class TestBase(TestCase):
         data = {
             'otp' : self.TEST_OTP,
         }
-        response = client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 200)
         response = response.json()
         
-
+    def checkUserExists(self, phone):
+        return Customer.objects.filter(username=phone).exists()

@@ -25,8 +25,8 @@ export const AccountDropDown: React.FC<AccountDropDownProps> = (props) => {
             )}
             {login.login&& <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                 <li className="dropdown-header">
-                    <h6>{login.user?.name}</h6>
-                    <span>{login.user?.phone? `+91 ${login.user.phone}` : ''}</span>
+                    <h6>{`${login.user?.first_name} ${login.user?.last_name}`}</h6>
+                    <span>{login.user?.username? `+91 ${login.user.username}` : ''}</span>
                 </li>
                 <li>
                     <hr className="dropdown-divider"/>

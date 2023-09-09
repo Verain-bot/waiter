@@ -4,26 +4,16 @@ from . import views
 from backend.urls import URL_FOR_APPS
 import enum
 import re
-
-class API_URLS(enum.StrEnum):
+from backend.mixins import URLEnumMixin
+class API_URLS(URLEnumMixin,enum.StrEnum):
+    
     RESTAURANT_LIST = 'restaurants/'
     RESTAURANT_DETAILS = 'restaurants/details/<int:pk>'
     MENU_DETAILS = 'menu/details/<int:pk>'
     ORDER_LIST = 'account/orders/'
     ORDER_DETAILS = 'account/orders/details/<int:pk>'
 
-    def getURL(self, **kwargs):
-        x = self.value
-
-        for key, value in kwargs.items():
-            x = re.sub(f'<...:{key}>', str(value), x)
-
-        return '/'+URL_FOR_APPS.API+x
-    
-    def getTestURL(self, **kwargs):
-        x = self.getURL(**kwargs)
-        return 'http://testserver'+x
-
+    BASE = URL_FOR_APPS.API
 
 urlpatterns = [
     path(API_URLS.RESTAURANT_LIST, views.RestraurantList.as_view(), name='restaurant-list'),

@@ -3,6 +3,8 @@ import { useLoginContext } from '../../context/LoginContext'
 import { makeRequest } from '../../utilities/fetchData'
 import { useNavigate } from 'react-router-dom'
 import { PATHS } from '../../utilities/routeList'
+import APIRoutes from '../../utilities/APIRoutes'
+import { useMessageContext } from '../../context/MessageContext'
 
 type LogoutButtonProps = {
     className: string
@@ -12,17 +14,25 @@ type LogoutButtonProps = {
 export const LogoutButton = (props: LogoutButtonProps ) => {
     const [login, setLogin] = useLoginContext()
     const navigate = useNavigate()
+    const [msg, setMsg]  = useMessageContext()
 
     const logout = async ()=>{
-        const request = new Request('api/login/', {
-            method: 'POST',
+        const request = new Request(APIRoutes.LOGOUT, {
+            method: 'GET',
         })
 
         const data = new FormData()
+        let r
+        try{
+            r = await makeRequest(APIRoutes.LOGOUT, request, data)
+        }
+        catch(error){
+            console.log(error)
+            setMsg({heading:'Error', body:'Something went wrong', type:'error'})
+            return
+        }
 
-        data.append('logout', 'true')
-
-        const {json, message, response} = await makeRequest('api/login/', request, data)
+        const {json, message, response} = r
 
         if (response.ok) {
             setLogin({login: false, user: null})
@@ -31,6 +41,7 @@ export const LogoutButton = (props: LogoutButtonProps ) => {
 
         else{
             console.log(message)
+            setMsg({heading:'Error', body:message, type:'error'})
         }
         console.log(json)
     }

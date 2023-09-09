@@ -86,5 +86,3 @@ class TestViews(TestBase):
         self.login()
         response = self.client.get(API_URLS.ORDER_DETAILS.getURL(pk=2))
         self.assertEquals(response.status_code, 403)
-
-        

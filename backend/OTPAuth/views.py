@@ -25,8 +25,9 @@ class CustomerLogout(views.APIView):
 class SendOTPView(views.APIView):
     permission_classes = [IsLoggedOut]
     def post(self, request, *args, **kwargs):
-        if request.session.get(Ath.PHONE, None) and request.session.get(Ath.IS_VERIFIED, False) == True:
-            return Response(msg.USER_ALREADY_VERIFIED, 400)
+        # if request.session.get(Ath.PHONE, None) and request.session.get(Ath.IS_VERIFIED, False) == True:
+        #     existingUser = Customer.objects.filter(username=request.session[Ath.PHONE]).exists()
+        #     return Response(msg.USER_ALREADY_VERIFIED(existingUser), 200)
 
         if 'phone' in request.data:
             try:
@@ -60,8 +61,9 @@ class VerifyOTPView(views.APIView):
     def post(self, request, *args, **kwargs):
         phone = request.session.get(Ath.PHONE, False)
 
-        if request.session.get(Ath.IS_VERIFIED, False) == True:
-            return Response(msg.USER_ALREADY_VERIFIED, 400)
+        if request.session.get(Ath.IS_VERIFIED, False) == True and phone:
+            existingUser = Customer.objects.filter(username=phone).exists()
+            return Response(msg.USER_ALREADY_VERIFIED(existingUser), 200)
 
         if not phone:
             return Response(msg.OTP_NOT_GENERATED, 400)
@@ -86,7 +88,8 @@ class VerifyOTPView(views.APIView):
             
             if otp == cacheData['otp']:
                 request.session[Ath.IS_VERIFIED] = True
-                return Response(msg.OTP_VERIFICATION_COMPLETE)
+                existingUser = Customer.objects.filter(username=phone).exists()
+                return Response(msg.OTP_VERIFICATION_COMPLETE(existingUser))
             else:
                 return Response(msg.WRONG_OTP, status=400)
 

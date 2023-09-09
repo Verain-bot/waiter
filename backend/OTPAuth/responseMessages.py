@@ -29,9 +29,10 @@ USER_ALREADY_REGISTERED = {
     'type' : 'error'
 }
 
-USER_ALREADY_VERIFIED = {
+USER_ALREADY_VERIFIED = lambda existingUser: {
     'message' : 'You are already verified',
-    'type' : 'error'
+    'existingUser' : existingUser,
+    'type' : 'error',
 }
 
 PHONE_NOT_FOUND = {
@@ -65,8 +66,9 @@ OTP_TOO_MANY_ATTEMPTS = {
     'type' : 'error'
 }
 
-OTP_VERIFICATION_COMPLETE = {
+OTP_VERIFICATION_COMPLETE =lambda existingUser: {
     'message' : 'OTP verified successfully',
+    'existingUser' : existingUser,
     'type' : 'success'
 }
 

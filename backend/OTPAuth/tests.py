@@ -19,7 +19,7 @@ class TestViews(TestBase):
         data = {
             'phone' : self.TEST_PHONE,
         }
-        response = self.client.post(URL.SEND_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response, msg.OTP_SENT(self.TEST_PHONE))
@@ -28,7 +28,7 @@ class TestViews(TestBase):
         data = {
             'phone' : '',
         }
-        response = self.client.post(URL.SEND_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.INVALID_REQUEST)
@@ -37,7 +37,7 @@ class TestViews(TestBase):
         data = {
             'phosne' : 'abc',
         }
-        response = self.client.post(URL.SEND_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.INVALID_REQUEST)
@@ -47,16 +47,17 @@ class TestViews(TestBase):
         data = {
             'phone' : self.TEST_PHONE,
         }
-        response = self.client.post(URL.SEND_OTP.fullUrl(), data=data)
-        self.assertEquals(response.status_code, 400)
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response, msg.USER_ALREADY_VERIFIED)
+        existingUser = self.checkUserExists(self.TEST_PHONE)
+        self.assertEquals(response, msg.OTP_SENT(existingUser))
 
     def test_send_OTP_DELETE(self):
         self.verifyUser(self.client, self.TEST_PHONE)
 
         #self.sendOTP(self.client, self.TEST_PHONE)
-        response = self.client.delete(URL.SEND_OTP.fullUrl())
+        response = self.client.delete(URL.SEND_OTP.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response, msg.GENERAL_SUCCESS)
@@ -68,7 +69,7 @@ class TestViews(TestBase):
         data = {
             'phone' : self.TEST_PHONE,
         }
-        response = self.client.post(URL.SEND_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 403)
         
 
@@ -85,10 +86,11 @@ class TestViews(TestBase):
         data = {
             'otp' : self.TEST_OTP,
         }
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response, msg.OTP_VERIFICATION_COMPLETE)
+        existingUser = self.checkUserExists(self.TEST_PHONE)
+        self.assertEquals(response, msg.OTP_VERIFICATION_COMPLETE(existingUser))
 
     
     def test_Enter_OTP_POST_wrong_otp(self):
@@ -96,7 +98,7 @@ class TestViews(TestBase):
         data = {
             'otp' : '1222',
         }
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.WRONG_OTP)
@@ -106,7 +108,7 @@ class TestViews(TestBase):
         data = {
             'otp' : '',
         }
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.INVALID_REQUEST)
@@ -115,7 +117,7 @@ class TestViews(TestBase):
         data = {
             'otp' : self.TEST_OTP,
         }
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.OTP_NOT_GENERATED)
@@ -124,7 +126,7 @@ class TestViews(TestBase):
         data = {
             'otp' : '',
         }
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.OTP_NOT_GENERATED)
@@ -134,10 +136,11 @@ class TestViews(TestBase):
         data = {
             'otp' : self.TEST_OTP,
         }
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
-        self.assertEquals(response.status_code, 400)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
+        self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response, msg.USER_ALREADY_VERIFIED)
+        existingUser = self.checkUserExists(self.TEST_PHONE)
+        self.assertEquals(response, msg.USER_ALREADY_VERIFIED(existingUser))
     
     def test_Enter_OTP_POST_too_many_attempts(self):
         self.sendOTP(self.client, self.TEST_PHONE)
@@ -145,17 +148,17 @@ class TestViews(TestBase):
             'otp' : '1222',
         }
         for i in range(4):
-            response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+            response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
             self.assertEquals(response.status_code, 400)
             response = response.json()
             self.assertEquals(response, msg.WRONG_OTP)
         
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.OTP_TOO_MANY_ATTEMPTS)
 
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.OTP_NOT_GENERATED)
@@ -166,7 +169,7 @@ class TestViews(TestBase):
         data = {
             'otp' : self.TEST_OTP,
         }
-        response = self.client.post(URL.ENTER_OTP.fullUrl(), data=data)
+        response = self.client.post(URL.ENTER_OTP.getURL(), data=data)
         self.assertEquals(response.status_code, 403)
 
     """
@@ -179,23 +182,23 @@ class TestViews(TestBase):
 
     def test_Login_POST(self):
         self.verifyUser(self.client, self.TEST_PHONE)
-        response = self.client.post(URL.LOGIN.fullUrl())
+        response = self.client.post(URL.LOGIN.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response, msg.USER_LOGGED_IN(self.TEST_PHONE))
     
     def test_Login_POST_already_logged_in(self):
         self.login(self.client, self.TEST_PHONE)
-        response = self.client.post(URL.LOGIN.fullUrl())
+        response = self.client.post(URL.LOGIN.getURL())
         self.assertEquals(response.status_code, 403)
         
     def test_Login_POST_not_verified(self):
-        response = self.client.post(URL.LOGIN.fullUrl())
+        response = self.client.post(URL.LOGIN.getURL())
         self.assertEquals(response.status_code, 403)
         
     def test_Login_POST_Not_registered(self):
         self.verifyUser(self.client, self.TEST_PHONE_REGISTERED)
-        response = self.client.post(URL.LOGIN.fullUrl())
+        response = self.client.post(URL.LOGIN.getURL())
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.USER_NOT_FOUND)
@@ -209,14 +212,14 @@ class TestViews(TestBase):
     """
 
     def test_Logout_GET(self):
-        response = self.client.get(URL.LOGOUT.fullUrl())
+        response = self.client.get(URL.LOGOUT.getURL())
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.USER_LOGGED_OUT)
     
     def test_Logout_GET_logged_in(self):
         self.login(self.client, self.TEST_PHONE)
-        response = self.client.get(URL.LOGOUT.fullUrl())
+        response = self.client.get(URL.LOGOUT.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response, msg.USER_LOGGED_OUT)
@@ -245,7 +248,7 @@ class TestViews(TestBase):
         data = {
             'phone' : self.TEST_PHONE_REGISTERED,
         }
-        response = self.client.post(URL.CREATE.fullUrl(), data=data)
+        response = self.client.post(URL.CREATE.getURL(), data=data)
         self.assertEquals(response.status_code, 403)
     
     def test_Register_POST_verify(self):
@@ -256,7 +259,7 @@ class TestViews(TestBase):
             'first_name': 'testing',
             'email': 'asdads@gmail.com'
         }
-        response = self.client.post(URL.CREATE.fullUrl(), data=data)
+        response = self.client.post(URL.CREATE.getURL(), data=data)
         self.assertEquals(response.status_code, 201)
         
     def test_Register_POST_VerifyWrong(self):
@@ -267,7 +270,7 @@ class TestViews(TestBase):
             'first_name': 'testing',
             'email': 'rand@asd.com',
         }
-        response = self.client.post(URL.CREATE.fullUrl(), data=data)
+        response = self.client.post(URL.CREATE.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.INVALID_REQUEST)
@@ -280,7 +283,7 @@ class TestViews(TestBase):
             'first_name': 'testing',
             'email': 'asd@fasd.com'
         }
-        response = self.client.post(URL.CREATE.fullUrl(), data=data)
+        response = self.client.post(URL.CREATE.getURL(), data=data)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.USER_ALREADY_REGISTERED)
@@ -292,7 +295,7 @@ class TestViews(TestBase):
             'first_name': 'testing',
             'email': 'ads@asdasd.com',
         }
-        response = self.client.post(URL.CREATE.fullUrl(), data=data)
+        response = self.client.post(URL.CREATE.getURL(), data=data)
         self.assertEquals(response.status_code, 403)
 
     """
@@ -305,14 +308,14 @@ class TestViews(TestBase):
 
     def test_Profile_GET(self):
         self.login(self.client, self.TEST_PHONE)
-        response = self.client.get(URL.ACCOUNT_VIEW_UPDATE.fullUrl())
+        response = self.client.get(URL.ACCOUNT_VIEW_UPDATE.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
 
         self.assertEquals(int(response['username']), self.TEST_PHONE)
     
     def test_Profile_GET_not_logged_in(self):
-        response = self.client.get(URL.ACCOUNT_VIEW_UPDATE.fullUrl())
+        response = self.client.get(URL.ACCOUNT_VIEW_UPDATE.getURL())
         self.assertEquals(response.status_code, 403)
     
     def test_Profile_PATCH(self):
@@ -320,7 +323,7 @@ class TestViews(TestBase):
         data = {
             'first_name': 'testing',
         }
-        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.fullUrl(), data=data,content_type='application/json')
+        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.getURL(), data=data,content_type='application/json')
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response['first_name'], 'testing')
@@ -330,7 +333,7 @@ class TestViews(TestBase):
         data = {
             'first_name': 'testing',
         }
-        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.fullUrl(), data=data,content_type='application/json')
+        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.getURL(), data=data,content_type='application/json')
         self.assertEquals(response.status_code, 403)
     
     def test_Profile_PATCH_wrong_data(self):
@@ -338,7 +341,7 @@ class TestViews(TestBase):
         data = {
             'first_nameasd': 123,
         }
-        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.fullUrl(), data=data,content_type='application/json')
+        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.getURL(), data=data,content_type='application/json')
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(int(response['username']), self.TEST_PHONE)
@@ -348,7 +351,7 @@ class TestViews(TestBase):
         data = {
             'username': 123,
         }
-        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.fullUrl(), data=data,content_type='application/json')
+        response = self.client.patch(URL.ACCOUNT_VIEW_UPDATE.getURL(), data=data,content_type='application/json')
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(int(response['username']), self.TEST_PHONE)

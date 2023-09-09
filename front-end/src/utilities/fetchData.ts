@@ -1,6 +1,6 @@
 import { json } from 'react-router-dom'
 
-export const BASEUrl = 'http://localhost:8000/'
+export const BASEUrl = 'http://localhost:8000'
 
 
 export const getData : (url: string, signal: AbortSignal ) => Promise<Response> = async (url,signal) =>{
@@ -41,35 +41,48 @@ let response = new Response('',{statusText: 'Something went wrong.', status: 500
 
 export const makeRequest = async (url: string, request: Request, data: FormData) =>{
     var response : Response | null = null
+    const cookie = document.cookie
     
-    if(request.method == 'GET'){
+    //get csrf token from cookie
+    const csrfToken = cookie.split(';').find(c => c.trim().startsWith('csrftoken='))?.split('=')[1]
+    console.log(csrfToken)
 
-        response = await fetch(BASEUrl+url,{
-            method: request.method,
-            signal: request.signal,
-            headers: {
-                'Accept': 'application/json',
-                
-            },
-            credentials: 'include'
-        })
-    }
+    try{
+
         
-    else{
+        if(request.method == 'GET'){
 
-        response = await fetch(BASEUrl+url,{
-            method: request.method,
-            signal: request.signal,
-            body: data,
-            headers: {
-                'Accept': 'application/json',
-                
-            },
-            credentials: 'include'
-        })
+            response = await fetch(BASEUrl+url,{
+                method: request.method,
+                signal: request.signal,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRFToken': csrfToken || '',
+                },
+                credentials: 'include'
+            })
+        }
+            
+        else{
+
+            response = await fetch(BASEUrl+url,{
+                method: request.method,
+                signal: request.signal,
+                body: data,
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRFToken': csrfToken || '',
+                },
+                credentials: 'include'
+            })
+        }
     }
-    
+    catch(err : any){
+        throw new Response('Something went wrong. This could be an issue with the server, try again later',{statusText: err.message, status: 500})
+    }
+
     var json = null
+    
     try{
         json = await response.json()
     }

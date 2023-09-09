@@ -1,16 +1,22 @@
 import {ReactNode,useContext, createContext, useState, useEffect, useCallback } from "react";
-import { makeRequest } from "../utilities/fetchData";
 import { fetchUserData } from "../utilities/fetchUser";
 
-type UserContextType = null | {
-    name: string,
+export type UserContextType = null | {
+    first_name: string,
+    last_name: string,
     email: string,
-    phone: string,
+    username: string,
   };
-  
+
+export type LoginTempDataType = {
+    phone?: number,
+    verified?: boolean,
+    isOTPCorrect?: number,
+}
 export type LoginContextType = {
     login: boolean | null
-    user: UserContextType;
+    user: UserContextType
+    temp?: LoginTempDataType
   };
 
 const LoginContext = createContext<[LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>] | undefined>(undefined);
@@ -22,14 +28,10 @@ export const LoginContextProvider = ({ children }: { children: ReactNode }) => {
 
     const getUser = useCallback(async () =>{
       
-      const {json,response} = await fetchUserData()
+      const user = await fetchUserData()
 
-      if (response.ok) {
-        setLogin({login: true, user: {
-          name: json.name,
-          email: json.email,
-          phone: json.phone
-        }})
+      if (user) {
+        setLogin({login: true, user: user})
       }
 
       else{

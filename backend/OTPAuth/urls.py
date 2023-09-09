@@ -2,10 +2,10 @@ from django.urls import path, include
 from rest_framework import routers
 from . import views
 from backend.urls import URL_FOR_APPS
-
+from backend.mixins import URLEnumMixin
 import enum
 
-class URL_FOR_OTPAuth(enum.StrEnum):
+class URL_FOR_OTPAuth(URLEnumMixin,enum.StrEnum):
     CREATE = 'create/'
     LOGIN = 'login/'
     SEND_OTP = 'verify/phone/'
@@ -13,8 +13,7 @@ class URL_FOR_OTPAuth(enum.StrEnum):
     ACCOUNT_VIEW_UPDATE = 'account/'
     LOGOUT = 'logout/'
 
-    def fullUrl(self):
-        return '/'+str(URL_FOR_APPS.OTP_AUTH) + str(self.value)
+    BASE = URL_FOR_APPS.OTP_AUTH
 
 
 urlpatterns = [

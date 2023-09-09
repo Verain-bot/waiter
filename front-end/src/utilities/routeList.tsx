@@ -123,7 +123,7 @@ const list : CustomRouteType[] = [
       path: PATHS.REGISTER, 
       element: <Register />,
       name: 'Register',
-      pathType: [PathType.LOGGED_OUT, PathType.NAVBAR],
+      pathType: [PathType.LOGGED_OUT],
       icon: "person-plus-fill",
       action: registerAction
     },

@@ -4,6 +4,8 @@ import useModal from "../../hooks/useModal"
 import { ModalLayout } from "../modal/modal"
 import {Body, Body2, Body3, Footer} from './menuCustomizationComponents' 
 import { CustomizationsListType, CustomizationsType } from "../../context/CartContext"
+import APIRoutes, { makeURL } from "../../utilities/APIRoutes"
+import { useMessageContext } from "../../context/MessageContext"
 
 export type CustomizationOptionFetch = {
     id: number;
@@ -54,10 +56,17 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
     const modal = useModal(props.id, ()=>{onOpen()}, ()=>{onClose()})
     const controller = new AbortController()
 
+    const [message, setMessage] = useMessageContext()
 
     const getCustomizations = useCallback(async () =>{
-        
-        const response = await getData(`api/menu/details/${props.menuItemID}`, controller.signal)
+        const URLid =String(props.menuItemID)
+        let response
+        try {
+            response = await getData(makeURL(APIRoutes.MENU_DETAILS, {pk : URLid}), controller.signal)
+        } catch (error) {
+            setMessage({heading:'Error', body:'Something went wrong', type:'error'})
+            return
+        }
         const json : MenuItemDetailFetch = await response.json()
         const cust = json.customizations
         setCustomizations(cust)

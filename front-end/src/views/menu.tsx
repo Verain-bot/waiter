@@ -7,6 +7,7 @@ import { useLoaderData, useParams, LoaderFunction } from "react-router-dom";
 import { getData } from "../utilities/fetchData";
 import Search from "../utilities/search";
 import { SearchResultMessage } from "../components/header/search";
+import APIRoutes, { makeURL } from "../utilities/APIRoutes";
 
 export type MenuItemListFetch = {
     id: number;
@@ -66,7 +67,8 @@ const App = () =>{
 
 
 export const MenuListLoader  : LoaderFunction = async ({params, request})=>{
-    const data = await getData(`api/restaurants/details/${params.restaurantID}`, request.signal)
+    let id = params.restaurantID as string
+    const data = await getData(makeURL(APIRoutes.RESTAURANT_DETAILS, {"pk" : id}), request.signal)
     return data.json()
 }
 
