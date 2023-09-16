@@ -2,6 +2,7 @@ import React from 'react';
 import { Stars } from '../menu/stars';
 import { Link } from 'react-router-dom';
 import { PATHS } from '../../utilities/routeList';
+import { makeURL } from '../../utilities/APIRoutes';
 type RestaurantListItemProps = {
     img: string;
     name: string;
@@ -12,7 +13,7 @@ type RestaurantListItemProps = {
 
 
 const RestaurantListItem: React.FC<RestaurantListItemProps> = (props) => {
-    const href = PATHS.MENU.replace(':restaurantID', String(props.id))
+    const href = makeURL(PATHS.MENU, {'restaurantID' : props.id})
 
     return (
         <Link to={href}>

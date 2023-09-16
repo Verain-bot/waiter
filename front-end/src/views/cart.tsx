@@ -14,6 +14,7 @@ import { PATHS } from '../utilities/routeList';
 
 const App = ()=>{
     const [cart, setCart] = useCartContext()
+    console.log(JSON.stringify(cart))
     const getItems = ()=>{
         let items : (CustomizationsType & Omit<CartItemType, 'customizations'> & {index: number})[]  = []
         cart.forEach(i=>{

@@ -3,8 +3,8 @@ import Menu, { MenuListLoader } from '../views/menu';
 import RestaurantList, { RestaurantListLoader } from '../views/restaurantList';
 import Loading from '../views/loading';
 import Cart from '../views/cart'
-import OrderDetail from '../views/orderDetail';
-import OrderList from '../views/orderList';
+import OrderDetail, { orderDetailLoader } from '../views/orderDetail';
+import OrderList, { orderListLoader } from '../views/orderList';
 import Credits from '../views/credits'
 import OTP, { otpAction } from '../views/otp';
 import Register, { registerAction } from '../views/register';
@@ -38,8 +38,8 @@ export enum PATHS {
     RESTAURANT_LIST = '/restaurants',
     LOADING = '/loading',
     CART = '/cart',
-    ORDER_DETAIL = '/order/detail',
-    ORDER_LIST = '/orderList',
+    ORDER_DETAIL = '/orders/details/:orderID', // :orderID is a parameter
+    ORDER_LIST = '/orders/list',
     CREDITS = '/credits',
     OTP = '/otp',
     REGISTER = '/register',
@@ -94,14 +94,16 @@ const list : CustomRouteType[] = [
       element: <OrderDetail />,
       name: 'Order Detail',
       pathType: [PathType.LOGGED_IN],
-      icon: "file-earmark-text-fill"
+      icon: "file-earmark-text-fill",
+      ldr: orderDetailLoader
     },
     {
       path: PATHS.ORDER_LIST,
       element: <OrderList />,
       name: 'Orders',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
-      icon: "list-ul"
+      icon: "list-ul",
+      ldr: orderListLoader,
     },
     {
       path: PATHS.CREDITS,

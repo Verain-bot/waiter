@@ -72,7 +72,7 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
 
             <div className="row d-flex align-items-center justify-content-center">
                 <div className="col-4 mx-auto">
-                    <img className='rounded img-thumbnail shadow-sm border-0' src={String(props.itemPhoto)} />
+                    <img className='rounded img-thumbnail shadow-sm border-0' loading="lazy" src={String(props.itemPhoto)} />
                 </div>
                 <div className="col-8 mx-0 mt-2 px-0">
                     <div className='row'>
@@ -94,7 +94,7 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
                             </div>
                         </div>
 
-                        <div className='col-4 d-flex flex-column align-items-center justify-content-center'>
+                        <div className='col-4 d-flex flex-column align-items-center justify-content-center' >
                             
                             <div className='row'>
                                 {props.hasCustomization && quantity===0 && <i className='bi bi-cart-plus add-to-cart-btn'  data-bs-toggle="modal" data-bs-target={`#${modalId}`}></i>}

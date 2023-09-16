@@ -4,6 +4,7 @@ from OTPAuth.serializers import CustomerListSerializer
 
 class CustomatizationOptionsSerializer(serializers.ModelSerializer):
     customization = serializers.CharField(source='customization.name', read_only=True)
+    customizationID = serializers.IntegerField(source='customization.id', read_only=True)
     class Meta:
         model = CustomatizationOptions
         fields = '__all__'
@@ -73,10 +74,10 @@ class SubOrderSerializer(serializers.ModelSerializer):
 class OrderListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='order-details')
     restaurant = RestaurantListSerializer(read_only=True)
-
+    
     class Meta:
         model = Order
-        fields = ['id', 'url', 'restaurant']
+        fields = ['id', 'url', 'restaurant', 'price', 'time']
 
 class OrderDetailsSerializer(serializers.ModelSerializer):
     restaurant = RestaurantListSerializer(read_only=True)

@@ -12,3 +12,10 @@ class IsCustomerOrder(permissions.BasePermission):
         #Check if customer is in list of customers
         return request.user in obj.customers.all()
     
+class IsAcceptingOrder(permissions.BasePermission):
+    message = 'This restaurant is not accepting orders at the moment'
+
+    def has_permission(self, request, view):
+        restaurantID = request.data.get('restaurantID')
+        restaurant = get_object_or_404(Restaurant, pk=restaurantID)
+        return restaurant.acceptingOrders

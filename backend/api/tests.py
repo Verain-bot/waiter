@@ -13,7 +13,7 @@ class TestViews(TestBase):
         response = self.client.get(API_URLS.RESTAURANT_LIST.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['count'], 2)
+        self.assertEquals(response['count'], Restaurant.objects.count())
         self.assertEquals(response['results'][0]['name'], 'Bar')
         
         #check if json contains url

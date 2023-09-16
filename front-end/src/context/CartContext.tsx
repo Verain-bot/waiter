@@ -15,9 +15,7 @@ export type CustomizationsType = {
     customizations: CustomizationsListType[];
   }
   
-
-
- export type CartItemType = {
+export type CartItemType = {
     menuItemID : number;
     menuItemName: string;
     restaurantID: number;

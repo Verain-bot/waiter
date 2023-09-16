@@ -7,25 +7,25 @@ import Search from "../utilities/search"
 import useSearchBar from "../hooks/useSearchBar"
 import { Link, useLoaderData, useOutletContext } from "react-router-dom"
 
-type RestaurantListItemFetch = {
+export type RestaurantListItemFetch = {
     id: number;
     name: string;
     logo: string | null;
     url: string;
   };
   
-type ArrayResponseFetch = {
+export type ArrayResponseFetch<T> = {
     count: number;
     next: string | null;
     previous: string | null;
-    results: RestaurantListItemFetch[];
+    results: T[];
   };
   
   
 
 const App = ()=>{
     
-    const data = useLoaderData() as ArrayResponseFetch
+    const data = useLoaderData() as ArrayResponseFetch<RestaurantListItemFetch>
     const search = useSearchBar()
     const filteredRestaurants = Search(data.results,search,'name')
     

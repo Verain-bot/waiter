@@ -8,6 +8,7 @@ let response = new Response('',{statusText: 'Something went wrong.', status: 500
     try{
         response = await fetch(BASEUrl+url,{
             signal: signal,    
+            credentials: 'include'
         })
     }
     catch(err : any){

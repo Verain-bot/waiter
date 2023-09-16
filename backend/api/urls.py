@@ -12,6 +12,8 @@ class API_URLS(URLEnumMixin,enum.StrEnum):
     MENU_DETAILS = 'menu/details/<int:pk>'
     ORDER_LIST = 'account/orders/'
     ORDER_DETAILS = 'account/orders/details/<int:pk>'
+    ORDER_CREATE = 'account/orders/create/'
+
 
     BASE = URL_FOR_APPS.API
 
@@ -21,4 +23,5 @@ urlpatterns = [
     path(API_URLS.MENU_DETAILS, views.MenuDetails.as_view(), name='menu-details'),
     path(API_URLS.ORDER_LIST, views.OrderList.as_view(), name='order-list'),
     path(API_URLS.ORDER_DETAILS, views.OrderDetails.as_view(), name='order-details'),
+    path(API_URLS.ORDER_CREATE, views.OrderCreate.as_view(), name='order-create'),
 ]

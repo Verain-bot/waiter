@@ -6,6 +6,7 @@ import {Body, Body2, Body3, Footer} from './menuCustomizationComponents'
 import { CustomizationsListType, CustomizationsType } from "../../context/CartContext"
 import APIRoutes, { makeURL } from "../../utilities/APIRoutes"
 import { useMessageContext } from "../../context/MessageContext"
+import { PlaceHolder } from "../../views/loading"
 
 export type CustomizationOptionFetch = {
     id: number;
@@ -54,15 +55,18 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
     const [selectedCustomizations, setSelectedCustomizations] = useState<CustomizationsListType[]>([])
     const [screen, setScreen] = useState(1)
     const modal = useModal(props.id, ()=>{onOpen()}, ()=>{onClose()})
+    const [isLoading,setIsLoading] = useState(true)
     const controller = new AbortController()
-
+    
     const [message, setMessage] = useMessageContext()
 
     const getCustomizations = useCallback(async () =>{
         const URLid =String(props.menuItemID)
         let response
         try {
+            setIsLoading(true)
             response = await getData(makeURL(APIRoutes.MENU_DETAILS, {pk : URLid}), controller.signal)
+            setIsLoading(false)
         } catch (error) {
             setMessage({heading:'Error', body:'Something went wrong', type:'error'})
             return
@@ -176,6 +180,15 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
         props.addOrUpdate(x)
     },[qty, selectedCustomizations])
     
+    if(isLoading)
+        return(
+        <ModalLayout 
+            id = {props.id}
+            title = 'Customizations'
+            body = {<PlaceHolder />}            
+        />
+        )
+
     if (screen==0)
     return(
         <ModalLayout 

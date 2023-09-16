@@ -27,7 +27,6 @@ class SpecialItem(models.Model):
 class ItemDetail(models.Model):
     suborder = models.ForeignKey('SubOrder', related_name='suborder',blank=True,on_delete=models.CASCADE)
     item = models.ForeignKey('MenuItem', related_name='item',blank=True,on_delete=models.CASCADE)
-    price = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return self.suborder.__str__() + " " + self.item.__str__()
@@ -36,6 +35,7 @@ class Quantity(models.Model):
     itemDetail = models.ForeignKey('ItemDetail', related_name='itemDetail',blank=True,on_delete=models.CASCADE)
     option = models.ManyToManyField('CustomatizationOptions', related_name='option',blank=True)
     qty = models.PositiveSmallIntegerField()
+    price = models.PositiveIntegerField(default = 0)
 
     def __str__(self) -> str:
         return self.itemDetail.__str__() + " Quantity"
@@ -50,14 +50,24 @@ class SubOrder(models.Model):
     def __str__(self) -> str:
         return self.customer.__str__() + " Order No. " + self.order.id.__str__()
 
+
 class Order(models.Model):
+    class OrderStatusChoices(models.TextChoices):
+        NOT_CONFIRMED = 'NOT_CONFIRMED', 'Awaiting Confirmation'
+        CONFIRMED = 'CONFIRMED', 'Confirmed'
+        PREPARING = 'PREPARING', 'Preparing'
+        DISPATCHING = 'DISPATCHING', 'Dispatching'
+        READY = 'READY', 'Ready'
+        COMPLETE = 'COMPLETE', 'Complete'
+        CANCELLED = 'CANCELLED', 'Cancelled'
+
     customers = models.ManyToManyField(Customer, related_name='customerList', blank=True, through=SubOrder)
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_order',blank=True,on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default = 0)
     time = models.DateTimeField(default= now)
     tableNumber = models.PositiveSmallIntegerField(default= 0)
+    orderStatus = models.CharField(max_length=15, choices=OrderStatusChoices.choices, default=OrderStatusChoices.NOT_CONFIRMED)
     tip = models.PositiveSmallIntegerField(default=0)
-    orderStatus = models.CharField(max_length=10, blank = True)
     rating = models.SmallIntegerField(blank = True,null=True)
     comment = models.TextField(max_length=500, blank = True)
     takeawayOrDinein = models.SmallIntegerField(default = 0)
@@ -136,6 +146,7 @@ class Restaurant(models.Model):
     email = models.EmailField(blank=True)
     joinDate = models.DateField(default=now)
     tables = models.PositiveSmallIntegerField(default=10)
+    acceptingOrders = models.BooleanField(default=True)
     
     def __str__(self) -> str:
         return self.name
