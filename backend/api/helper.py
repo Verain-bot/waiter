@@ -34,6 +34,12 @@ def validateCartData(cartJSON, restaurantID):
     
     dataToReturn['restaurant'] = restaurant
     dataToReturn['items'] = []
+    dataToReturn['price'] = 0
+    
+    menuItemSet = set()
+
+    if len(cart) < 1:
+        return False
 
     for item in cart:
         #get the menu item
@@ -44,6 +50,11 @@ def validateCartData(cartJSON, restaurantID):
 
         menuItem = menuItem.first()
         
+        if menuItem.pk in menuItemSet:
+            return False
+        
+        menuItemSet.add(menuItem.pk)
+
         menuItemData = {
             'menuItem': menuItem,
             'customizations': [],
@@ -53,10 +64,14 @@ def validateCartData(cartJSON, restaurantID):
         if menuItem.restaurant != restaurant:
             return False
         
+        if 'customizations' not in item or len(item['customizations']) < 1:
+            return False
+
         #create the quantity
         for customization in item['customizations']:
             q = int(customization['quantity'])
-            
+            customizationIDSet = set()
+            optionIDSet = set()
             menuItemCustomizationData = {
                 'quantity': q,
                 'options': [],
@@ -65,10 +80,17 @@ def validateCartData(cartJSON, restaurantID):
             if q < 1:
                 return False
             
+            dataToReturn['price']  += q*menuItem.price
+
             customizations = customization['customizations']
             
             for customizationDetails in customizations:
                 custID = customizationDetails['CustomizationID']
+
+                if custID in customizationIDSet:
+                    return False
+                
+                customizationIDSet.add(custID)
 
                 custObj = MenuItemCustomization.objects.filter(pk=custID)
                 if not custObj.exists():
@@ -81,9 +103,18 @@ def validateCartData(cartJSON, restaurantID):
                 if custObj.customizationType == 'radio':
                     if len(options) != 1:
                         return False
-                    
+                
+                elif len(options) < 1:
+                    return False
+                
                 for option in options:
                     optionID = option['id']
+
+                    if optionID in optionIDSet:
+                        return False
+                    
+                    optionIDSet.add(optionID)
+
                     optionObj = CustomatizationOptions.objects.filter(pk=optionID)
                     if not optionObj.exists():
                         return False
@@ -94,10 +125,11 @@ def validateCartData(cartJSON, restaurantID):
                     if optionObj.customization != custObj:
                         return False
 
+                    dataToReturn['price'] += q*optionObj.price
                     menuItemCustomizationData['options'].append(optionObj)
                 
         
-        menuItemData['customizations'].append(menuItemCustomizationData)
+            menuItemData['customizations'].append(menuItemCustomizationData)
         
         dataToReturn['items'].append(menuItemData)
     

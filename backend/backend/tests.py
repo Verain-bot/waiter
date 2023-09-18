@@ -11,14 +11,14 @@ from PIL import Image
 from django.core.files import File
 import os
 from django.conf import settings
-
+import json
 def getMenuItems():
     d = '../Resources/food/'
     for file_path in os.listdir(d):
         if file_path == '.DS_Store':
             continue
         name = ' '.join([x.capitalize() for x in file_path.split('.')[0].split('_')])
-        print(name)
+        #print(name)
         t = random.randint(1,5)
         p = random.randint(1,20)*50
         yield d+file_path, name, t, p
@@ -280,14 +280,14 @@ class TestBase(TestCase):
         suborder2_order_pizza = SubOrder.objects.create(customer=Raj, order=order_pizza)
 
         # Create ItemDetail objects
-        item_detail1_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=liit_mi, price=100)
-        item_detail2_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=beer_mi, price=400)
-        item_detail3_suborder2_order1_bar = ItemDetail.objects.create(suborder=suborder2_order1_bar, item=snacks_mi, price=100)
-        item_detail4_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=beer_mi, price=100)
-        item_detail5_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=liit_mi, price=400)
-        item_detail6_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=pizza_mi, price=100)
-        item_detail7_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=coke_mi, price=400)
-        item_detail8_suborder2_order_pizza = ItemDetail.objects.create(suborder=suborder2_order_pizza, item=pizza_mi, price=100)
+        item_detail1_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=liit_mi)
+        item_detail2_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=beer_mi)
+        item_detail3_suborder2_order1_bar = ItemDetail.objects.create(suborder=suborder2_order1_bar, item=snacks_mi)
+        item_detail4_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=beer_mi)
+        item_detail5_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=liit_mi)
+        item_detail6_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=pizza_mi)
+        item_detail7_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=coke_mi)
+        item_detail8_suborder2_order_pizza = ItemDetail.objects.create(suborder=suborder2_order_pizza, item=pizza_mi)
 
         # Create Quantity objects
         q1_item_detail1_suborder1_order1_bar = Quantity.objects.create(itemDetail=item_detail1_suborder1_order1_bar, qty=2)
@@ -318,15 +318,15 @@ class TestBase(TestCase):
         #create restaurant with many Menu Items
         manny_res = Restaurant.objects.create(name='Manny\'s', phone='1234567892', owner=Owner1)
         fp = os.path.join(settings.MEDIA_ROOT, 'menu','3')
-        if os.path.exists(fp):
-            return
+        add_media = not os.path.exists(fp)
 
         for f, name, t, p in getMenuItems():
             mi = MenuItem.objects.create(name=name, itemPhoto = f, restaurant=manny_res, itemType=ItemType.objects.get(pk=t), price=p)
             
-            with open(f, 'rb') as file:
-                asd = File(file)
-                mi.itemPhoto.save(name+'.jpg', asd, save=True)
+            if add_media:
+                with open(f, 'rb') as file:
+                    asd = File(file)
+                    mi.itemPhoto.save(name+'.jpg', asd, save=True)
 
             mic = MenuItemCustomization.objects.create(item=mi, name='Size', customizationType='radio')
             CustomatizationOptions.objects.create(customization=mic, name='Small', price=0)
@@ -342,8 +342,115 @@ class TestBase(TestCase):
             CustomatizationOptions.objects.create(customization=mic2, name='Extra Veggies', price=50)
 
 
+    class Cart:
+        def __init__(self, restaurantID) -> None:
+            self.items = []
+            self.restaurantID = restaurantID
+            self.price = 0
 
-    
+        def addItem(self, id : int, restaurantID : int = None):
+            d = {
+                'menuItemID' : id,
+                'restaurantID': self.restaurantID if restaurantID==None else restaurantID,
+                'customizations': [],
+            }
+            self.items.append(d) 
+            return self
+        
+        def __getitem__(self, index):
+            return self.items[index]
+        
+        def addItemDetails(self, qty):
+            self.items[-1]['customizations'].append({
+                'quantity' : qty,
+                'customizations' : [],
+            })
+            self.price += qty * MenuItem.objects.get(pk=self.items[-1]['menuItemID']).price
+            return self
+        
+        def addCustomization(self, id):
+            d = {
+                'CustomizationID': id,
+                'Options': [],
+            }
+            self.items[-1]['customizations'][-1]['customizations'].append(d)
+            return self
+
+        def addOption(self, id):
+            d = {
+                'id' : id,
+            }
+            self.items[-1]['customizations'][-1]['customizations'][-1]['Options'].append(d)
+            self.price += self.items[-1]['customizations'][-1]['quantity'] *CustomatizationOptions.objects.get(pk=id).price
+            return self
+
+        def toJSON(self):
+            d = {
+                'restaurantID' : self.restaurantID,
+                'cart' : self.items
+            }
+            return json.dumps(d)
+        
+        def toFormData(self):
+            d = {
+                'restaurantID' : self.restaurantID,
+                'cart' : json.dumps(self.items)
+            }
+            return d
+
+        def getPrice(self):
+            return self.price
+
+        def getRestaurantItems(self, restID = None):
+            if restID == None:
+                restID = self.restaurantID
+
+            restaurant = Restaurant.objects.get(pk=restID)
+            menuItems = list(map(lambda x: x.pk,MenuItem.objects.filter(restaurant=restaurant)))
+            return menuItems
+        
+        @staticmethod
+        def getMenuCustomizations(menuItemID):
+            menuItem = MenuItem.objects.get(pk=menuItemID)
+            customizations = list(map(lambda x: (x.pk, x.customizationType), MenuItemCustomization.objects.filter(item=menuItem)))
+            
+            return customizations
+        
+        @staticmethod
+        def getCustomizationOptions(customizationID):
+            customization = MenuItemCustomization.objects.get(pk=customizationID)
+            options = list(map(lambda x: x.pk, CustomatizationOptions.objects.filter(customization=customization)))
+            return options
+        
+        @staticmethod
+        def getPK():
+            order = Order.objects.latest('pk')
+            return order.pk
+        
+        @staticmethod
+        def getLastOrder():
+            order = Order.objects.latest('pk')
+            return order
+
+        @staticmethod
+        def getOrderItems(orderID):
+            order = Order.objects.get(pk=orderID)
+            suborders = SubOrder.objects.filter(order=order)
+            itemDetails = ItemDetail.objects.filter(suborder__in=suborders)
+            return itemDetails
+
+        @staticmethod
+        def getItemQuantity(itemDetailID) :
+            itemDetail = ItemDetail.objects.get(pk=itemDetailID)
+            quantity = Quantity.objects.filter(itemDetail=itemDetail)
+            return quantity
+        
+        @staticmethod
+        def getQuantityOptions( quantityID) :
+            quantity = Quantity.objects.get(pk=quantityID)
+            options = quantity.option.all()
+            return options
+        
     #reset cache
     def reset_cache(self):
         cache.clear()

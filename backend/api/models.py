@@ -24,6 +24,7 @@ class SpecialItem(models.Model):
     def __str__(self) -> str:
         return self.name
 
+#seems to be redundant
 class ItemDetail(models.Model):
     suborder = models.ForeignKey('SubOrder', related_name='suborder',blank=True,on_delete=models.CASCADE)
     item = models.ForeignKey('MenuItem', related_name='item',blank=True,on_delete=models.CASCADE)

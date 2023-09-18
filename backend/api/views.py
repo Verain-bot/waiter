@@ -85,7 +85,7 @@ class OrderCreate(views.APIView):
         order.save()
         suborder.save()
 
-        return Response('created', status=200)
+        return Response(msg.ORDER_CREATED(x['price'],order.pk), status=200)
         
         
         # cart = json.loads(request.data.get('cart'))
@@ -142,3 +142,16 @@ class OrderCreate(views.APIView):
         #     order.save()
         #     suborder.save()
         # return Response('done', status=200)
+
+class CartTotalPriceView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        
+        x = validateCartData(request.data.get('cart'), request.data.get('restaurantID'))
+
+        if (not x):
+            return Response(msg.INVALID_REQUEST, status=400)
+
+        price = x['price']
+        return Response(price, status=200)
