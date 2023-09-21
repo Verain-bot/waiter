@@ -161,8 +161,28 @@ REST_FRAMEWORK = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://localhost:6379",
+        "LOCATION": "redis://localhost:6379/0",
     }
 }
 
+#CELERY SETTINGS
 
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+
+#set result backend as python database
+# CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+#CELERY_IMPORTS  = ('api.tasks',)
+CELERY_WORKER_DEDUPLICATE_SUCCESSFUL_TASKS = True
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERYD_PREFETCH_MULTIPLIER = 4
+CELERY_SEND_SENT_EVENT = True
+CELERY_TASK_TRACK_STARTED = True
+CELERYD_CONCURRENCY = 4
+CELERYD_POOL = 'prefork'
+
+# worker command 
+# celery -A backend worker -l INFO

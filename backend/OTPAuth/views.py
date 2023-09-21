@@ -11,6 +11,7 @@ from . import responseMessages as msg
 from .enums import Ath
 from django.contrib.auth import login, logout
 from rest_framework.permissions import IsAuthenticated
+from .tasks import sendOTP
 
 class CustomerLogout(views.APIView):
     def get(self, request, *args, **kwargs):
@@ -35,15 +36,10 @@ class SendOTPView(views.APIView):
             except:
                 return Response(msg.INVALID_REQUEST, status=400)
             
-            cacheData = {
-                'otp' : sendOTPtoPhone(phone),
-                'tries' : 0,
-            }
-            
+            sendOTP.delay(phone)
+
             request.session[Ath.PHONE] = phone
             request.session[Ath.IS_VERIFIED] = False
-
-            cache.set(phone, cacheData, timeout=120)
 
             return Response(msg.OTP_SENT(phone))
         
@@ -79,7 +75,7 @@ class VerifyOTPView(views.APIView):
             
             cacheData = cache.get(phone)
             cacheData['tries'] += 1
-            cache.set(phone, cacheData, timeout=15)
+            cache.set(phone, cacheData, timeout=120)
 
             if cacheData['tries'] >= 5:
                 cache.delete(request.session[Ath.PHONE])

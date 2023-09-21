@@ -25,8 +25,9 @@ class CustomAdminMixin( nested_admin.NestedModelAdmin):
     
     @classmethod
     def get_queryset_decorator(self, fn):
+        
         def wrapper(self, request):
-            qs = super(self).get_queryset(request)
+            qs = super().get_queryset(request)
             if request.user.is_superuser:
                 return qs
 

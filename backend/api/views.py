@@ -9,20 +9,25 @@ from .permissions import *
 from . import responseMessages as msg
 from rest_framework.permissions import IsAuthenticated
 from .helper import validate_cart_data
+from .tasks import cancel_order_if_not_accepted
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 def index(request):
     return HttpResponse('First')
 
 # Create your views here.
-
+@method_decorator(cache_page(60 * 10), name='dispatch')
 class RestraurantList(generics.ListAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantListSerializer
 
+@method_decorator(cache_page(60 * 10), name='dispatch')
 class RestaurantDetail(generics.RetrieveAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantDetailsSerializer
 
+@method_decorator(cache_page(60 * 10), name='dispatch')
 class MenuDetails(generics.RetrieveAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuDetailsSerializer
@@ -50,7 +55,6 @@ class OrderCreate(views.APIView):
         
         x = validate_cart_data(request.data.get('cart'), request.data.get('restaurantID'))
         
-
         if (not x):
             return Response(msg.INVALID_REQUEST, status=400)
 
@@ -88,64 +92,10 @@ class OrderCreate(views.APIView):
         order.save()
         suborder.save()
 
+        cancel_order_if_not_accepted.apply_async((order.pk,), countdown=120)
+
         return Response(msg.ORDER_CREATED(x['price'],order.pk), status=200)
         
-        
-        # cart = json.loads(request.data.get('cart'))
-        # restaurantID = request.data.get('restaurantID')
-
-        # #check if all the items in the cart are from the same restaurant
-        # if any(int(item['restaurantID']) != int(restaurantID) for item in cart):
-        #     return Response(msg.INVALID_REQUEST, status=400)
-        
-        # #check if the restaurant exists
-        # restaurant = get_object_or_404(Restaurant, pk=restaurantID)
-
-        # orderPrice = 0
-
-
-        # #create the order
-        # order = Order.objects.create(restaurant=restaurant)
-        # suborder = SubOrder.objects.create(order=order, customer=request.user)
-        
-        # for item in cart:
-        #     #get the menu item
-        #     menuItem = get_object_or_404(MenuItem, pk=item['menuItemID'])
-            
-        #     #create the item detail
-        #     itemDetail = ItemDetail.objects.create(suborder=suborder, item=menuItem)
-            
-        #     #create the quantity
-        #     for customization in item['customizations']:
-        #         q = customization['quantity']
-        #         customizations = customization['customizations']
-                
-        #         quantity = Quantity.objects.create(itemDetail=itemDetail, qty=q)
-        #         qtyPrice = (menuItem.price)*q
-
-        #         for customizationDetails in customizations:
-        #             custID = customizationDetails['CustomizationID']
-
-        #             options = customizationDetails['Options']
-        #             for option in options:
-        #                 optionID = option['id']
-        #                 optionObj = get_object_or_404(CustomatizationOptions, pk=optionID)
-
-        #                 #add the option to the quantity
-        #                 quantity.option.add(optionObj)
-        #                 qtyPrice += optionObj.price*q
-                
-        #         quantity.price = qtyPrice
-        #         quantity.save()
-        #         orderPrice += qtyPrice
-            
-
-        #     suborder.price = orderPrice
-        #     order.price = orderPrice
-        #     order.save()
-        #     suborder.save()
-        # return Response('done', status=200)
-
 class CartTotalPriceView(views.APIView):
     permission_classes = [IsAuthenticated]
 
@@ -158,3 +108,4 @@ class CartTotalPriceView(views.APIView):
 
         price = x['price']
         return Response(price, status=200)
+    

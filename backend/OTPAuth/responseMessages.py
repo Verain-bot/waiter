@@ -77,65 +77,12 @@ WRONG_OTP = {
     'type' : 'error'
 }
 
-TABLE_ALREADY_ASSIGNED = {
-    'message' : 'Table already assigned to you',
-    'type' : 'error',
-}
-
-TABLENO_NOT_PROVIDED = {
-    'message' : 'Table number not provided',
-    'type' : 'error',
-}
-
-TABLE_ALREADY_OCCUPIED = {
-    'message' : 'Table already occupied',
-    'type' : 'error',
-}
-
-TABLE_ASSIGNED_SUCCESS = {
-    'message' : 'Table assigned successfully',
-    'type' : 'success',
-}
-
-TABLE_NOT_REQUESTED = {
-    'message' : 'Table not requested',
-    'type' : 'error',
-}
-
-TABLE_ALREADY_REQUESTED = {
-    'message' : 'Table already requested',
-    'type' : 'error',
-}
-
-TABLE_NOT_OCCUPIED = {
-    'message' : 'Table not occupied',
-    'type' : 'error',
-}
-
-TABLE_JOIN_REQUESTED = {
-    'message' : 'You will join when someone approves your request',
-    'type' : 'success',
-}
-
-TABLE_REQUEST_DELETED = {
-    'message' : 'Table request deleted',
-    'type' : 'success',
-}
 
 USER_NOT_FOUND = {
     'message' : 'User not found',
     'type' : 'error',
 }
 
-USER_ACCEPTED = {
-    'message' : 'User accepted',
-    'type' : 'success',
-}
-
-TABLE_NOT_ASSIGNED = {
-    'message' : 'Table not assigned',
-    'type' : 'error',
-}
 
 GENERAL_SUCCESS = {
     'message' : 'Success',

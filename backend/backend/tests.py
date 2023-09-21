@@ -1,4 +1,5 @@
 import random
+from django.http.response import HttpResponse
 from django.test import TestCase, Client, TransactionTestCase
 from api.models import *
 from rest_framework.test import APIClient
@@ -28,7 +29,6 @@ def getMenuItems():
         p = random.randint(1,20)*50
         yield d+file_path, name, t, p
 
-#Testing views
 class TestBase(TestCase):
 
     APIClient = APIClient()
