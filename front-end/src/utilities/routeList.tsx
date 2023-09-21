@@ -2,7 +2,7 @@ import Login, { loginAction } from '../views/login';
 import Menu, { MenuListLoader } from '../views/menu';
 import RestaurantList, { RestaurantListLoader } from '../views/restaurantList';
 import Loading from '../views/loading';
-import Cart from '../views/cart'
+import Cart, { cartLoader } from '../views/cart'
 import OrderDetail, { orderDetailLoader } from '../views/orderDetail';
 import OrderList, { orderListLoader } from '../views/orderList';
 import Credits from '../views/credits'
@@ -87,7 +87,8 @@ const list : CustomRouteType[] = [
       element: <Cart />,
       name: 'Cart',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
-      icon: "cart-fill"
+      icon: "cart-fill",
+      ldr: cartLoader,
     },
     {
       path: PATHS.ORDER_DETAIL,

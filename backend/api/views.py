@@ -107,5 +107,5 @@ class CartTotalPriceView(views.APIView):
             return Response(msg.INVALID_REQUEST, status=400)
 
         price = x['price']
-        return Response(price, status=200)
+        return Response(msg.CART_PRICE(price), status=200)
     

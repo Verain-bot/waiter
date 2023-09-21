@@ -9,7 +9,9 @@ export const APIRoutes = {
     "RESTAURANT_DETAILS": "/api/restaurants/details/:pk",
     "MENU_DETAILS": "/api/menu/details/:pk",
     "ORDER_LIST": "/api/account/orders/",
-    "ORDER_DETAILS": "/api/account/orders/details/:pk"
+    "ORDER_DETAILS": "/api/account/orders/details/:pk",
+    "ORDER_CREATE" : '/api/account/orders/create/',
+    "CART_PRICE" : '/api/account/orders/cart/verify/',
 }
 
 export const makeURL = (route: string, params: Record<string, string | number>) => {

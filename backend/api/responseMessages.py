@@ -14,3 +14,9 @@ ORDER_CREATED = lambda  price, orderID: {
     'type' : 'success',
     'orderID' : orderID
 }
+
+CART_PRICE = lambda price: {
+    'message' : 'Cart is Valid',
+    'price': price,
+    'type' : 'success',
+}
