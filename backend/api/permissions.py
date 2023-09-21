@@ -1,7 +1,8 @@
-from rest_framework import permissions
+from rest_framework import permissions, exceptions
 from api.models import *
 from OTPAuth.models import *
 from django.shortcuts import get_object_or_404
+from . import responseMessages as msg
 #Permission to check if session has phone number and is verified
 
 #Permission to check if order belongs to the customer
@@ -16,6 +17,9 @@ class IsAcceptingOrder(permissions.BasePermission):
     message = 'This restaurant is not accepting orders at the moment'
 
     def has_permission(self, request, view):
-        restaurantID = request.data.get('restaurantID')
+        try:
+            restaurantID = int(request.data.get('restaurantID'))
+        except:
+            raise exceptions.ValidationError
         restaurant = get_object_or_404(Restaurant, pk=restaurantID)
         return restaurant.acceptingOrders

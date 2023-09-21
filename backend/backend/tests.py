@@ -1,5 +1,5 @@
 import random
-from django.test import TestCase, Client
+from django.test import TestCase, Client, TransactionTestCase
 from api.models import *
 from rest_framework.test import APIClient
 from django.core.cache import cache
@@ -12,7 +12,12 @@ from django.core.files import File
 import os
 from django.conf import settings
 import json
+import time
+
+
+
 def getMenuItems():
+
     d = '../Resources/food/'
     for file_path in os.listdir(d):
         if file_path == '.DS_Store':
@@ -26,17 +31,25 @@ def getMenuItems():
 #Testing views
 class TestBase(TestCase):
 
-    TEST_PHONE = 1
+    APIClient = APIClient()
+    client = Client()
+    client2 = Client()
+    table = 111
     TEST_PHONE_2 = 2
-    TEST_OTP = '1234'
+    TEST_PHONE = 1
     TEST_PHONE_REGISTERED = 2192
+    TEST_OTP = '1234'
 
-    def setUp(self):
-        self.client = Client()
-        self.APIClient = APIClient()
-        self.table = 111
-        self.client2 = Client()
 
+    @classmethod
+    def setUpTestData(cls):
+
+        if Restaurant.objects.exists():
+            return
+
+        Verain = Customer.objects.create_user(username='1', first_name= 'Verain', email = 'test1@test.com', password='test')
+        Rahul = Customer.objects.create_user(username='2', first_name= 'Rahul', email = 'test2@test.com', password='test')
+        Raj = Customer.objects.create_user(username='3', first_name= 'Raj', email = 'test3@test.com', password='test')
         restaurant_content_type = ContentType.objects.get_for_model(Restaurant)
         menu_content_type = ContentType.objects.get_for_model(MenuItem)
         order_content_type = ContentType.objects.get_for_model(Order)
@@ -83,131 +96,19 @@ class TestBase(TestCase):
 
         ownerGroup.permissions.add(Permission.objects.get(codename='view_quantity', content_type=quantity_content_type))
 
-        #add permissions to group
-
-        Verain = Customer.objects.create_user(username='1', first_name= 'Verain', email = 'test1@test.com', password='test')
-        Rahul = Customer.objects.create_user(username='2', first_name= 'Rahul', email = 'test2@test.com', password='test')
-        Raj = Customer.objects.create_user(username='3', first_name= 'Raj', email = 'test3@test.com', password='test')
-
         Owner1 = Customer.objects.create_user(username='101', first_name= 'Owner1', email = 'owner1@owner.com', password='test', is_staff=True)
         Owner2 = Customer.objects.create_user(username='102', first_name= 'Owner1', email = 'owner2@owner.com', password='test', is_staff=True)
         Owner1.groups.add(ownerGroup)
         Owner2.groups.add(ownerGroup)
 
         Customer.objects.create_superuser(username='verain', first_name= 'Gr8', email = '', password='1')
-
-        # ItemType.objects.create(name='Beverage')
-        # ItemType.objects.create(name='Food')
-
-        # SpecialItem.objects.create(name='Bestseller', color='red')
-        # SpecialItem.objects.create(name='Popular', color='blue')
-
-        # Bar_Res = Restaurant.objects.create(name='Bar', phone='1234567890', owner=Owner1)
-        # Pizza_Res = Restaurant.objects.create(name='Pizza', phone='1234567891', owner=Owner2)
-
-        # LIIT_MI = MenuItem.objects.create(name='LIIT', price=100, restaurant=Bar_Res, itemType=ItemType.objects.get(name='Beverage'), category=SpecialItem.objects.get(name='Bestseller'))
-        # Beer_MI = MenuItem.objects.create(name='Beer', price=200, restaurant=Bar_Res, itemType=ItemType.objects.get(name='Beverage'))
-        # Snacks_MI = MenuItem.objects.create(name='Snacks', price=300, restaurant=Bar_Res, itemType=ItemType.objects.get(name='Food'))
-
-        # #Similar menu for restaurant 2
-        # Pizza = MenuItem.objects.create(name='Pizza', price=100, restaurant=Pizza_Res, itemType=ItemType.objects.get(name='Food'), category=SpecialItem.objects.get(name='Popular'))
-        # Coke = MenuItem.objects.create(name='Coke', price=300, restaurant=Pizza_Res, itemType=ItemType.objects.get(name='Beverage'))
-
-        # MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='LIIT'), name='Size', customizationType='radio')
-        # MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='LIIT'), name='Ice', customizationType='radio')
-        # MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Beer'), name='Size', customizationType='radio')
-        # MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Snacks'), name='Size', customizationType='radio')
-
-        # #Similar customizations for restaurant 2
-        # MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Pizza'), name='Size', customizationType='radio')
-        # MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Pizza'), name='Toppings', customizationType='checkbox')
-        # MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Coke'), name='Size', customizationType='radio')
-
-        # #Customizations for LIIT
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Small', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Medium', price=50)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Large', price=100)
-
-        # #Ice for LIIT
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Less', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Normal', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='More', price=0)
-
-        # #Customizations for Beer
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Small', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Medium', price=50)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Large', price=100)
-
-        # #Customizations for Snacks
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Small', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Medium', price=50)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Large', price=100)
-
-        # #Customizations for Pizza
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Small', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Medium', price=50)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Large', price=100)
-
-        # #Toppings for Pizza
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Onion', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Capsicum', price=0)
-        # CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Tomato', price=0)
-
-        # #Order1 for person 1 and 2 at Bar
-        # Order.objects.create(restaurant=Restaurant.objects.get(name='Bar'), tableNumber=1)
-        # SubOrder1 = SubOrder.objects.create(customer=Customer.objects.get(pk=1), order=Order.objects.get(tableNumber=1))
-        # SubOrder2 = SubOrder.objects.create(customer=Customer.objects.get(pk=2), order=Order.objects.get(tableNumber=1))
-        # i1 = ItemDetail.objects.create(suborder=SubOrder1, item=MenuItem.objects.get(name='LIIT'), price=100)
-        # i2 = ItemDetail.objects.create(suborder=SubOrder1, item=MenuItem.objects.get(name='Beer'), price=400)
-        # i3 = ItemDetail.objects.create(suborder=SubOrder2, item=MenuItem.objects.get(name='Snacks'), price=100)
-
-        # q1 = Quantity.objects.create(itemDetail=i1,qty=2)
-        # q1.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Medium', price=50))
-        # q1.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Normal', price=0))
-        # Quantity.objects.create(itemDetail=i2, qty=1)
-        # Quantity.objects.create(itemDetail=i3, qty=1)
-
-
-        # #Order2 For Person 3 at Bar
-        # Order.objects.create(restaurant=Restaurant.objects.get(name='Bar'), tableNumber=2)
-        # SubOrder3 = SubOrder.objects.create(customer=Customer.objects.get(pk=3), order=Order.objects.get(tableNumber=2))
-        # i4 = ItemDetail.objects.create(suborder=SubOrder3, item=MenuItem.objects.get(name='Beer'), price=100)
-        # i5 = ItemDetail.objects.create(suborder=SubOrder3, item=MenuItem.objects.get(name='LIIT'), price=400)
-        # Quantity.objects.create(itemDetail=i4, qty=1)
-        # Quantity.objects.create(itemDetail=i5, qty=2)
-
-
-        # #Order3 For Person 1 and 3 at Pizza
-        # Order.objects.create(restaurant=Restaurant.objects.get(name='Pizza'), tableNumber=3)
-        # SubOrder4 = SubOrder.objects.create(customer=Customer.objects.get(pk=1), order=Order.objects.get(tableNumber=3))
-        # SubOrder5 = SubOrder.objects.create(customer=Customer.objects.get(pk=3), order=Order.objects.get(tableNumber=3))
-        # i6 = ItemDetail.objects.create(suborder=SubOrder4, item=MenuItem.objects.get(name='Pizza'), price=100)
-        # i7 = ItemDetail.objects.create(suborder=SubOrder4, item=MenuItem.objects.get(name='Coke'), price=400)
-        # i8 = ItemDetail.objects.create(suborder=SubOrder5, item=MenuItem.objects.get(name='Pizza'), price=100)
-
-        # q6 = Quantity.objects.create(itemDetail=i6, qty=1)
-        # q6.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Medium', price=50))
-        # q6.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Onion', price=0))
-        # q6.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Capsicum', price=0))
-
-        # Quantity.objects.create(itemDetail=i7, qty=1)
-        # Quantity.objects.create(itemDetail=i8, qty=1)
-
-
-        # #All Customer Visits
-        # CustomerVisit.objects.create(customer=Customer.objects.get(pk=2), restaurant=Restaurant.objects.get(name='Bar'))
-        # CustomerVisit.objects.create(customer=Customer.objects.get(pk=1), restaurant=Restaurant.objects.get(name='Bar'))
-        # CustomerVisit.objects.create(customer=Customer.objects.get(pk=3), restaurant=Restaurant.objects.get(name='Bar'))
-        # CustomerVisit.objects.create(customer=Customer.objects.get(pk=1), restaurant=Restaurant.objects.get(name='Pizza'))
-        # CustomerVisit.objects.create(customer=Customer.objects.get(pk=3), restaurant=Restaurant.objects.get(name='Pizza'))
-
-        # Create ItemType objects
         beverage_item_type = ItemType.objects.create(name='Beverage')
         food_item_type = ItemType.objects.create(name='Food')
         snacks_item_type = ItemType.objects.create(name='Snacks')
         MC_item_type = ItemType.objects.create(name='Main Course')
         chinese_item_type = ItemType.objects.create(name='Italian Course')
 
+        item_type_list = [beverage_item_type, food_item_type, snacks_item_type, MC_item_type, chinese_item_type]
 
         # Create SpecialItem objects
         bestseller_special_item = SpecialItem.objects.create(name='Bestseller', color='red')
@@ -266,8 +167,7 @@ class TestBase(TestCase):
         pizza_toppings_onion = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Onion', price=0)
         pizza_toppings_capsicum = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Capsicum', price=0)
         pizza_toppings_tomato = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Tomato', price=0)
-
-        # Create Order objects
+        
         order1_bar = Order.objects.create(restaurant=bar_res, tableNumber=1)
         order2_bar = Order.objects.create(restaurant=bar_res, tableNumber=2)
         order_pizza = Order.objects.create(restaurant=pizza_res, tableNumber=3)
@@ -321,7 +221,7 @@ class TestBase(TestCase):
         add_media = not os.path.exists(fp)
 
         for f, name, t, p in getMenuItems():
-            mi = MenuItem.objects.create(name=name, itemPhoto = f, restaurant=manny_res, itemType=ItemType.objects.get(pk=t), price=p)
+            mi = MenuItem.objects.create(name=name, itemPhoto = f, restaurant=manny_res, itemType=item_type_list[t-1], price=p)
             
             if add_media:
                 with open(f, 'rb') as file:
@@ -340,8 +240,11 @@ class TestBase(TestCase):
             CustomatizationOptions.objects.create(customization=mic2, name='Extra Toppings', price=50)
             CustomatizationOptions.objects.create(customization=mic2, name='Extra Meat', price=50)
             CustomatizationOptions.objects.create(customization=mic2, name='Extra Veggies', price=50)
-
-
+    
+    def setUp(self):
+        pass
+        
+        
     class Cart:
         def __init__(self, restaurantID) -> None:
             self.items = []
@@ -451,6 +354,25 @@ class TestBase(TestCase):
             options = quantity.option.all()
             return options
         
+        def print(self):
+            print('\n\n\n',self.toJSON(), '\n\n\n')
+
+        @classmethod
+        def getKeys1(cls):
+            return ['menuItemID', 'restaurantID', 'customizations']
+        
+        @classmethod
+        def getKeys2(cls):
+            return ['quantity', 'customizations']
+        
+        @classmethod
+        def getKeys3(cls):
+            return ['CustomizationID', 'Options']
+        
+        @classmethod
+        def getKeys4(cls):
+            return ['id']
+
     #reset cache
     def reset_cache(self):
         cache.clear()
@@ -502,3 +424,5 @@ class TestBase(TestCase):
         
     def checkUserExists(self, phone):
         return Customer.objects.filter(username=phone).exists()
+    
+    

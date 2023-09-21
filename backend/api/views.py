@@ -8,11 +8,13 @@ from django.core.cache import cache
 from .permissions import *
 from . import responseMessages as msg
 from rest_framework.permissions import IsAuthenticated
-from .helper import validateCartData
+from .helper import validate_cart_data
+
 def index(request):
     return HttpResponse('First')
 
 # Create your views here.
+
 class RestraurantList(generics.ListAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantListSerializer
@@ -46,7 +48,8 @@ class OrderCreate(views.APIView):
 
     def post(self, request, *args, **kwargs):
         
-        x = validateCartData(request.data.get('cart'), request.data.get('restaurantID'))
+        x = validate_cart_data(request.data.get('cart'), request.data.get('restaurantID'))
+        
 
         if (not x):
             return Response(msg.INVALID_REQUEST, status=400)
@@ -148,7 +151,7 @@ class CartTotalPriceView(views.APIView):
 
     def post(self, request, *args, **kwargs):
         
-        x = validateCartData(request.data.get('cart'), request.data.get('restaurantID'))
+        x = validate_cart_data(request.data.get('cart'), request.data.get('restaurantID'))
 
         if (not x):
             return Response(msg.INVALID_REQUEST, status=400)

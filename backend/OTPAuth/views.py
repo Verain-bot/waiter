@@ -79,7 +79,7 @@ class VerifyOTPView(views.APIView):
             
             cacheData = cache.get(phone)
             cacheData['tries'] += 1
-            cache.set(phone, cacheData)
+            cache.set(phone, cacheData, timeout=15)
 
             if cacheData['tries'] >= 5:
                 cache.delete(request.session[Ath.PHONE])

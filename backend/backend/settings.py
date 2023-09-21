@@ -90,9 +90,21 @@ CORS_ALLOW_CREDENTIALS = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'waiter',     
+        'USER': 'root', 
+        'PASSWORD': 'verain123', 
+        'HOST': 'localhost',   
+        'COLLATION': 'utf8_general_ci',
+        'CHARSET': 'utf8',
+        
+        'PORT': '3306',
+        'TEST':{
+            'NAME': 'testing',
+            
+        },
+        
+    },
 }
 
 
@@ -148,7 +160,9 @@ REST_FRAMEWORK = {
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://localhost:6379",
     }
 }
+
+

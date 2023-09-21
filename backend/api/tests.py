@@ -3,6 +3,7 @@ from backend.tests import TestBase
 from .models import *
 from rest_framework.test import APIClient
 from django.core.cache import cache
+from .helper import validate_cart_data
 from . import responseMessages as msg
 from .urls import API_URLS
 #Testing views
@@ -18,7 +19,6 @@ class TestViews(TestBase):
         
         #check if json contains url
         self.assertEquals(response['results'][0]['url'], API_URLS.RESTAURANT_DETAILS.getTestURL(pk=1))
-
 
     def test_restaurant_detail_GET(self):
         response = self.client.get(API_URLS.RESTAURANT_DETAILS.getURL(pk=1))
@@ -44,7 +44,6 @@ class TestViews(TestBase):
         #Check for customization options
         self.assertEquals(len(response['customizations'][0]['customizationOptions']), 3)
 
-    
     #Order list view
     def test_order_list_GET_LoggedOut(self):
         response = self.client.get(API_URLS.ORDER_LIST.getURL())
@@ -58,8 +57,7 @@ class TestViews(TestBase):
         self.assertEquals(response['count'], 2)
         self.assertEquals(response['results'][0]['id'], 3)
         self.assertEquals(response['results'][0]['url'], API_URLS.ORDER_DETAILS.getTestURL(pk=3))
-        
-    
+         
     def test_order_detail_GET_LoggedOut(self):
         response = self.client.get(API_URLS.ORDER_DETAILS.getURL(pk=1))
         self.assertEquals(response.status_code, 403)
@@ -86,6 +84,13 @@ class TestViews(TestBase):
         self.login()
         response = self.client.get(API_URLS.ORDER_DETAILS.getURL(pk=2))
         self.assertEquals(response.status_code, 403)
+
+# ===============================================================
+#
+#                       ORDER CREATE TESTS
+#
+# ===============================================================
+
 
     def test_order_create_POST(self):
         self.login()
@@ -120,6 +125,7 @@ class TestViews(TestBase):
         self.assertEquals(orderItem_Quantity_Options.first().pk, customizationOptions[0])
 
         self.assertEquals(response.json(), msg.ORDER_CREATED(cart.getPrice(), cart.getPK()))
+        cart.print()
     
     def test_order_create_POST_many_Items(self):
         self.login()
@@ -172,7 +178,7 @@ class TestViews(TestBase):
         #add item 3
         cart.addItem(items[4])
         cart.addItemDetails(13)
-        customizations = cart.getMenuCustomizations(items[2])
+        customizations = cart.getMenuCustomizations(items[4])
 
         #radio customization
         optionsGiven.append([])
@@ -285,7 +291,7 @@ class TestViews(TestBase):
         #add item 3
         cart.addItem(items[4])
         cart.addItemDetails(13)
-        customizations = cart.getMenuCustomizations(items[2])
+        customizations = cart.getMenuCustomizations(items[4])
 
         #radio customization
         optionsGiven.append([[]])
@@ -368,7 +374,6 @@ class TestViews(TestBase):
     def test_order_create_POST_No_Items(self):
         self.login()
         cart = self.Cart(2)
-        print(cart.toJSON(),'\n\n\n\n')
         response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
         self.assertEquals(response.status_code, 400)
         self.assertEquals(response.json(), msg.INVALID_REQUEST)
@@ -435,3 +440,285 @@ class TestViews(TestBase):
 
         self.assertEquals(response.status_code, 400)
         self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_Bad_Restaurant_str(self):
+        self.login()
+        cart = self.Cart('Hello')
+        items = cart.getRestaurantItems(1)
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        
+    def test_order_create_POST_Bad_Restaurant_int(self):
+            self.login()
+            cart = self.Cart(321)
+            items = cart.getRestaurantItems(1)
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            
+
+            cart.addCustomization(customizations[0][0])
+            customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(customizationOptions[0])
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+            self.assertEquals(response.status_code, 404)
+              
+    def test_order_create_POST_Bad_MenuItem(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems(2)
+        cart.addItem(items[0], 1)
+        cart.addItemDetails(9)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_bad_cart(self):
+        self.login()
+        cart = self.Cart(2)
+        cart.items = 'verain'
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_bad_customizations(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        cart.items[-1]['customizations'] = 'verain'
+
+        # cart.print()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_bad_customizations2(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+        cart.items[-1]['customizations'][-1]['customizations'] = 'verain'
+
+        # cart.print()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_bad_options(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+        cart.items[-1]['customizations'][-1]['customizations'][-1]['Options'] = 'verain'
+
+        # cart.print()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_missing_field_1(self):
+        self.login()
+
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        x = cart.toFormData()
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(),{
+            'cart': x['cart'],
+        } , content_type='application/json')
+        
+        self.assertEquals(response.status_code, 400)
+        #self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(),{
+            'restaurantID': x['restaurantID'],
+        } , content_type='application/json')
+        
+        self.assertEquals(response.status_code, 400)
+        #self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_missing_field_2(self):
+        self.login()
+
+        for key in self.Cart.getKeys1():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_missing_field_3(self):
+        self.login()
+
+        for key in self.Cart.getKeys2():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1]['customizations'][-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_missing_field_4(self):
+        self.login()
+
+        for key in self.Cart.getKeys3():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1]['customizations'][-1]['customizations'][-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_missing_field_5(self):
+        self.login()
+
+        for key in self.Cart.getKeys4():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1]['customizations'][-1]['customizations'][-1]['Options'][-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_wrong_MenuItem(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems(1)
+        cart.addItem(items[0])
+        cart.addItemDetails(9)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+ 
+    def test_order_create_POST_wrong_customization(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[1])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[1])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_wrong_option(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_wrong_JSON(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        data = cart.toFormData()
+        
+        data['cart'] = data['cart'].replace(',',';')
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), data, content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    
