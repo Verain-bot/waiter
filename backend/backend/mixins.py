@@ -32,3 +32,4 @@ class URLEnumMixin():
             d[app.name] = app.getURL()
         
         return d
+

@@ -2,6 +2,7 @@ from django.test import TestCase
 from backend.tests import TestBase
 # Create your tests here.
 from .urls import URL_FOR_OTPAuth as URL
+import time
 from . import responseMessages as msg
 class TestViews(TestBase):
 
@@ -20,6 +21,7 @@ class TestViews(TestBase):
             'phone' : self.TEST_PHONE,
         }
         response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        time.sleep(0.1)
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response, msg.OTP_SENT(self.TEST_PHONE))
@@ -29,6 +31,7 @@ class TestViews(TestBase):
             'phone' : '',
         }
         response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        time.sleep(0.1)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.INVALID_REQUEST)
@@ -38,6 +41,7 @@ class TestViews(TestBase):
             'phosne' : 'abc',
         }
         response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        time.sleep(0.1)
         self.assertEquals(response.status_code, 400)
         response = response.json()
         self.assertEquals(response, msg.INVALID_REQUEST)
@@ -48,6 +52,7 @@ class TestViews(TestBase):
             'phone' : self.TEST_PHONE,
         }
         response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        time.sleep(0.1)
         self.assertEquals(response.status_code, 200)
         response = response.json()
         existingUser = self.checkUserExists(self.TEST_PHONE)
@@ -58,6 +63,7 @@ class TestViews(TestBase):
 
         #self.sendOTP(self.client, self.TEST_PHONE)
         response = self.client.delete(URL.SEND_OTP.getURL())
+        time.sleep(0.1)
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response, msg.GENERAL_SUCCESS)
@@ -70,6 +76,7 @@ class TestViews(TestBase):
             'phone' : self.TEST_PHONE,
         }
         response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        time.sleep(0.1)
         self.assertEquals(response.status_code, 403)
         
 

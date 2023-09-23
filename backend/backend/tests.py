@@ -1,6 +1,6 @@
 import random
 from django.http.response import HttpResponse
-from django.test import TestCase, Client, TransactionTestCase
+from django.test import  TestCase, Client, TransactionTestCase
 from api.models import *
 from rest_framework.test import APIClient
 from django.core.cache import cache
@@ -11,6 +11,7 @@ from django.contrib.auth.models import Permission
 from PIL import Image
 from django.core.files import File
 import os
+from django.core.cache import cache
 from django.conf import settings
 import json
 import time
@@ -29,6 +30,7 @@ def getMenuItems():
         p = random.randint(1,20)*50
         yield d+file_path, name, t, p
 
+
 class TestBase(TestCase):
 
     APIClient = APIClient()
@@ -41,6 +43,9 @@ class TestBase(TestCase):
     TEST_OTP = '1234'
 
 
+    def setUp(self):
+        cache.clear()
+        
     @classmethod
     def setUpTestData(cls):
 
@@ -241,10 +246,7 @@ class TestBase(TestCase):
             CustomatizationOptions.objects.create(customization=mic2, name='Extra Meat', price=50)
             CustomatizationOptions.objects.create(customization=mic2, name='Extra Veggies', price=50)
     
-    def setUp(self):
-        pass
-        
-        
+    
     class Cart:
         def __init__(self, restaurantID) -> None:
             self.items = []
@@ -409,6 +411,8 @@ class TestBase(TestCase):
             'phone' : phone,
         }
         response = client.post(URL.SEND_OTP.getURL(), data=data)
+        time.sleep(0.1)
+
         self.assertEquals(response.status_code, 200)
         response = response.json()
         
