@@ -34,6 +34,7 @@ class SendOTPView(views.APIView):
             try:
                 phone = int(request.data['phone'])
             except:
+                request.session.flush()
                 return Response(msg.INVALID_REQUEST, status=400)
             
             sendOTP.delay(phone)

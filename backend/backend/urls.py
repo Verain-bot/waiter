@@ -25,7 +25,8 @@ class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
     ADMIN = 'admin/'
     API = 'api/'
     OTP_AUTH = 'api/account/'
-    
+    RES_OWNER = 'restaurant/admin/'
+
     BASE = ''
 
 
@@ -33,5 +34,6 @@ urlpatterns = [
     path(URL_FOR_APPS.ADMIN, admin.site.urls),
     path(URL_FOR_APPS.API,include('api.urls')),
     path(URL_FOR_APPS.OTP_AUTH,include('OTPAuth.urls'),name='otp-auth'),
+    path(URL_FOR_APPS.RES_OWNER,include('ResOwner.urls')),
     path('_nested_admin/', include('nested_admin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

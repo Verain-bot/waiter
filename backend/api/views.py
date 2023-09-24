@@ -12,6 +12,7 @@ from .helper import validate_cart_data
 from .tasks import cancel_order_if_not_accepted
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from ResOwner.helper import setRestaurantOrderAvailable
 
 def index(request):
     return HttpResponse('First')
@@ -92,6 +93,7 @@ class OrderCreate(views.APIView):
         order.save()
         suborder.save()
 
+        setRestaurantOrderAvailable(restaurant.owner.pk, True)
         cancel_order_if_not_accepted.apply_async((order.pk,), countdown=120)
 
         return Response(msg.ORDER_CREATED(x['price'],order.pk), status=200)

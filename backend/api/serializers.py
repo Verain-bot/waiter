@@ -82,10 +82,19 @@ class OrderListSerializer(serializers.ModelSerializer):
 class OrderDetailsSerializer(serializers.ModelSerializer):
     restaurant = RestaurantListSerializer(read_only=True)
     customers = SubOrderSerializer(many=True, read_only=True, source='order')
-
+    
     class Meta:
         model = Order
         fields = '__all__'
+        read_only_fields = ()
+    
+    def update(self, instance, validated_data):
+        #only keep orderStatus in validated data
+        newValidatedData = {}
+        newValidatedData['orderStatus'] = validated_data['orderStatus']
+
+            
+        return super().update(instance, newValidatedData)
 
 
 class CartSerializer(serializers.Serializer):
@@ -94,3 +103,4 @@ class CartSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['itemID', 'quantity', 'customization']
+        
