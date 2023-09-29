@@ -21,7 +21,11 @@ export const OrderContextProvider = ({children}: {children: React.ReactNode})=>{
     const [orders, setOrders] = React.useState<OrderType[]>([])
 
     const setOrderSorted = (newOrders : OrderType[])=>{
-        const sortedOrders = newOrders.sort((a, b)=>{
+        var sortedOrders = newOrders.sort((a, b)=>{
+            return a.id - b.id
+        })
+
+        sortedOrders = sortedOrders.sort((a, b)=>{
             return priotities.indexOf(a.orderStatus) - priotities.indexOf(b.orderStatus)
         })
         setOrders(sortedOrders)

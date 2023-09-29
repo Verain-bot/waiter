@@ -8,6 +8,7 @@ import OrderCard from './components/orderCard'
 //import OrderPlaceHolder from './components/orderCardPlaceholder';
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { useOrderContext } from './Contexts/orderContext';
+import { useEffect } from 'react';
 
 
 type Item = {
@@ -85,7 +86,10 @@ export type OrderStatusType = 'NOT_CONFIRMED'|'CONFIRMED'|'PREPARING'|'DISPATCHI
 const App = ()=> {
 
   const [data, _] = useOrderContext()
-
+  
+  useEffect(()=>{
+    console.log('useEffect')
+  })
 
   return (
     <>
@@ -94,13 +98,15 @@ const App = ()=> {
         <div className="col-12 " >
 
             
-            <ResponsiveMasonry columnsCountBreakPoints={{250: 1, 700: 2, 1000: 3, 1200: 4}}>
+            <ResponsiveMasonry columnsCountBreakPoints={{250: 1, 700: 2, 1000: 3, 1200: 4}} >
               <Masonry >
+              
               {
-                data.map((item , key)=>
-                  <OrderCard {...item} key={key} />
+                data.map((item )=>
+                <OrderCard {...item} key={item.id} />
                 )
               }
+              
             </Masonry>
             </ResponsiveMasonry>
             

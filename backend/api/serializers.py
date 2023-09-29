@@ -91,9 +91,11 @@ class OrderDetailsSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         #only keep orderStatus in validated data
         newValidatedData = {}
-        newValidatedData['orderStatus'] = validated_data['orderStatus']
-        
+        if instance.orderStatus not in [Order.OrderStatusChoices.CANCELLED, Order.OrderStatusChoices.COMPLETE]:
+            newValidatedData['orderStatus'] = validated_data['orderStatus']
+
         return super().update(instance, newValidatedData)
+        
 
 
 class CartSerializer(serializers.Serializer):

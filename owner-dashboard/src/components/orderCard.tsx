@@ -2,6 +2,8 @@ import React, { useRef, useState } from "react"
 import { CustomizationOption, OrderStatusType, OrderType} from "../App"
 import { makeRequest } from "../helper/fetchData"
 import { APIRoutes, makeURL } from "../helper/APIRoutes"
+import { useOrderContext } from "../Contexts/orderContext"
+import { motion } from "framer-motion"
 
 type OrderActionItemType = {
     name: string
@@ -103,7 +105,7 @@ export default function orderCard(props : OrderType) {
     })
 
   return (
-    <div className="col-12 p-0" data-bs-theme='light'>
+    <motion.div layout layoutId={String(props.id)}  transition={{ type: "spring", stiffness: 100, damping: 12}} className="col-12 p-0" data-bs-theme='light'>
       <div className="row card shadow m-2 zoom" style={{cursor: 'pointer'}} onClick={handleClick} onMouseEnter={handleOver} onMouseLeave={handleExit} >
         <div className={`card-header bg-${color}-subtle`} >
             <div className="row" >
@@ -135,7 +137,7 @@ export default function orderCard(props : OrderType) {
 
       </div>
         
-    </div>
+    </motion.div>
   )
 }
 
@@ -167,10 +169,11 @@ type OrderActionItemProps = {
 }
 
 const OrderActionItem = (props: OrderActionItemProps)=>{
+    const [orders , setOrderContext] = useOrderContext()
+
+
     if (props.obj.name == '')
         return <></>
-
-
 
     const handleClick = async ()=>{
         const r = new Request(APIRoutes.ADMIN_UPDATE_ORDER_STATUS, {
@@ -179,6 +182,13 @@ const OrderActionItem = (props: OrderActionItemProps)=>{
         const fd = new FormData()
         fd.append('orderStatus', props.obj.state)
         const {json} = await makeRequest(makeURL(APIRoutes.ADMIN_UPDATE_ORDER_STATUS, {'pk': props.id}), r,fd )
+
+        setOrderContext(orders.map(order=>{
+            if(order.id == props.id)
+                return {...order, orderStatus: json.orderStatus}
+            return order
+        }))
+
         props.setState(json.orderStatus)
     }
 

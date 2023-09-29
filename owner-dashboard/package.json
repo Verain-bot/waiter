@@ -11,11 +11,13 @@
     "buildReact": "react-scripts build"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.0",
     "@popperjs/core": "^2.11.8",
     "@types/bootstrap": "^5.2.7",
     "@types/react-responsive-masonry": "^2.1.0",
     "bootstrap": "latest",
     "bootstrap-icons": "^1.11.1",
+    "framer-motion": "^10.16.4",
     "i": "^0.3.7",
     "npm": "^10.1.0",
     "prop-types": "^15.8.1",
