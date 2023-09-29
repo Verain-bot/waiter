@@ -92,8 +92,7 @@ class OrderDetailsSerializer(serializers.ModelSerializer):
         #only keep orderStatus in validated data
         newValidatedData = {}
         newValidatedData['orderStatus'] = validated_data['orderStatus']
-
-            
+        
         return super().update(instance, newValidatedData)
 
 

@@ -1,13 +1,30 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { APIRoutes } from "../helper/APIRoutes";
+import { getData, makeRequest } from "../helper/fetchData";
 
 export default function App() {
   const doc = document.documentElement;
   const [isTakingOrders, setIsTakingOrders] = useState(true)
   const [fullScreenEnabled, setFullScreenEnabled] = useState(false)
 
-  const handleClickPauseResume = ()=>{
-    setIsTakingOrders(!isTakingOrders)
+  const handleClickPauseResume =async ()=>{
+    const r = new Request(APIRoutes.ADMIN_ACCEPTING_ORDERS, {
+      method: 'POST',
+    })
+    const  {json} = await makeRequest(APIRoutes.ADMIN_ACCEPTING_ORDERS, r, new FormData())
+
+    setIsTakingOrders(json.available)
   }
+
+  const init = async ()=>{
+    const response = await getData(APIRoutes.ADMIN_ACCEPTING_ORDERS, new AbortController().signal)
+    const json = await response.json()
+    setIsTakingOrders(json.available)
+  }
+
+  useEffect(()=>{
+    init()
+  },[])
 
   const setFullScreen = ()=>{
     if(!fullScreenEnabled &&doc.requestFullscreen)
@@ -60,9 +77,9 @@ export default function App() {
           </button>
 
           <ul className="dropdown-menu dropdown-menu-end">
-            <DropDownItem name='View Orders' icon='list'/>
-            <DropDownItem name='Manage Restaurant' icon='gear-wide-connected' />
-            <DropDownItem name='Logout' icon='box-arrow-right'/>
+            <DropDownItem name='View Orders' icon='list' href={APIRoutes.ADMIN_ORDERS_ADMIN} newTab />
+            <DropDownItem name='Manage Restaurant' icon='gear-wide-connected' href={APIRoutes.ADMIN_RESTAURANT_ADMIN} newTab />
+            <DropDownItem name='Logout' icon='box-arrow-right' href={APIRoutes.ADMIN_LOGOUT}/>
             {isTakingOrders?
             <DropDownItem name='Pause Orders' icon='pause-circle' forSmallScreenOnly onClick={handleClickPauseResume}/>:
             <DropDownItem name='Resume Orders' icon='play-circle' forSmallScreenOnly onClick={handleClickPauseResume}/>}
@@ -83,6 +100,8 @@ type DropDownItemProps = {
     icon: string
     forSmallScreenOnly?: boolean
     onClick?: ()=>void
+    href?: string
+    newTab?: boolean
   }
   const DropDownItem = (props : DropDownItemProps)=>{
     const display = props.forSmallScreenOnly?'d-md-none':'d-flex'
@@ -98,7 +117,7 @@ type DropDownItemProps = {
       
         <li>
           
-            <a className={`dropdown-item p-3 align-items-center ${display}`} href="#" onClick={handleClick}>
+            <a className={`dropdown-item p-3 align-items-center ${display}`} href={props.href} onClick={handleClick} target={props.newTab?"_blank":"_self"}>
             <i className={`bi bi-${props.icon} mx-2`} style={{'fontSize': '25px'}}></i>
               <span>
                 {props.name}

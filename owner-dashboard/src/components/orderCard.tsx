@@ -1,18 +1,21 @@
 import React, { useRef, useState } from "react"
-import { act } from "react-dom/test-utils"
+import { CustomizationOption, OrderStatusType, OrderType} from "../App"
+import { makeRequest } from "../helper/fetchData"
+import { APIRoutes, makeURL } from "../helper/APIRoutes"
 
 type OrderActionItemType = {
     name: string
     color: string
-    state: string
-    acceptableStates: string[]
+    state: OrderStatusType
+    acceptableStates: OrderStatusType[]
     orderStatus: string
 }
 
-export default function orderCard() {
+export default function orderCard(props : OrderType) {
     const ref = useRef<HTMLUListElement>(null)
 
-    const handleClick = (e : React.MouseEvent<HTMLDivElement, MouseEvent>)=>{
+    const handleClick = async (_ : React.MouseEvent<HTMLDivElement, MouseEvent>)=>{
+        console.log(JSON.stringify(props))
         if(ref.current){
             ref.current.classList.toggle('show')
         }
@@ -22,41 +25,49 @@ export default function orderCard() {
         {
             name: 'Cancel Order',
             color: 'dark',
-            state: 'cancelled',
+            state: 'CANCELLED',
             acceptableStates: [],
             orderStatus: 'Cancelled'
         },
         {
             name: 'Preparing Order',
             color: 'success',
-            state: 'preparing',
-            acceptableStates: ['cancelled', 'dispatching', 'completed'],
+            state: 'PREPARING',
+            acceptableStates: ['CANCELLED', 'DISPATCHING', 'COMPLETE'],
             orderStatus: 'Preparing'
         },
         {
             name: 'Dispatching Order',
             color: 'warning',
-            state: 'dispatching',
-            acceptableStates: ['completed', 'cancelled'],
+            state: 'DISPATCHING',
+            acceptableStates: ['COMPLETE', 'CANCELLED'],
             orderStatus: 'Dispatching',
         },
         {
             name: 'Complete Order',
             color: 'secondary',
-            state: 'completed',
+            state: 'COMPLETE',
             acceptableStates: [],
             orderStatus: 'Completed'
         },
         {
             name: 'Accept Order',
             color: 'danger',
-            state: 'accepted',
-            acceptableStates: ['cancelled', 'preparing', 'dispatching', 'completed'],
+            state: 'CONFIRMED',
+            acceptableStates: ['CANCELLED', 'PREPARING', 'DISPATCHING', 'COMPLETE'],
             orderStatus: 'Accepted'
+        },
+        {
+            name: '',
+            color: 'info',
+            state: 'NOT_CONFIRMED',
+            acceptableStates: ['CANCELLED', 'CONFIRMED'],
+            orderStatus: 'New Order'
         }
+        
     ]
 
-    const [orderState, setOrderState] = useState('accepted')
+    const [orderState, setOrderState] = useState(props.orderStatus)
     const color = OrderActions.find((action)=>action.state===orderState)?.color || 'dark'
     const selectedAction = OrderActions.find((action)=>action.state===orderState)
     const handleOver = (e: React.MouseEvent<HTMLDivElement, MouseEvent>)=>{
@@ -67,13 +78,37 @@ export default function orderCard() {
         e.currentTarget.classList.remove('shadow-lg')
     }
 
+    const items = props.customers.flatMap(customer=>{
+        return customer.items.flatMap(item=>{
+            const itemDetails = item.item
+            
+            return item.quantity.flatMap(q =>{
+                
+                var d : CustomizationOption[]= []
+                var {price} = q
+                q.option.forEach(o=>{
+                    const index = d.findIndex((element)=>element.customization==o.customization)
+
+                    var s = `${o.name}`
+                    if(index==-1)
+                        d.push({...o, name: `${o.customization} : ${s}`})
+
+                    else
+                        d[index] = {...d[index], name: `${d[index].name}, ${s}`}
+                })
+
+                return { qty: q.qty, itemDetails: itemDetails,option: d.map(x=>x.name).join(' ; '), price: price/q.qty}
+            })
+        })
+    })
+
   return (
-    <div className="col-xl-3 col-md-4 col-sm-6 col-12 p-0" data-bs-theme='light'>
+    <div className="col-12 p-0" data-bs-theme='light'>
       <div className="row card shadow m-2 zoom" style={{cursor: 'pointer'}} onClick={handleClick} onMouseEnter={handleOver} onMouseLeave={handleExit} >
         <div className={`card-header bg-${color}-subtle`} >
-            <div className="row">
+            <div className="row" >
                 <div className={`col-8 text-${color}-emphasis`}>
-                    Order ID: 123876231
+                    Order ID: {props.id}
                 </div>
                 <div className="col-4 text-end">
                 <span className={`badge bg-${color}-subtle border border-${color}-subtle text-${color}-emphasis rounded-pill`} data-bs-theme='dark'>
@@ -83,19 +118,19 @@ export default function orderCard() {
             </div>
         </div>
         <div className="border-1">
-            <ul  className="dropdown-menu dropdown-menu-end" ref={ref}>
+            <ul  className="dropdown dropdown-menu dropdown-menu-end zoom" ref={ref}>
                 {OrderActions.map((action, index)=>(
-                    <OrderActionItem obj={action} setState={setOrderState} currentState={selectedAction} key={index} />
+                    <OrderActionItem obj={action} setState={setOrderState} currentState={selectedAction} key={index} id={props.id} />
                 ))}
                 
             </ul>
         </div>
         <ul className={`list-group list-group-flush bg-${color} pt-2 pb-3 px-0`} >
             
-            <OrderItem/>
-            <OrderItem/>
-            <OrderItem/>
-            <OrderItem/>
+            {items.map((item, index)=>
+                <OrderItem name={item.itemDetails.name} qty={item.qty} customizations={item.option} key={index} />
+            )}
+
         </ul>
 
       </div>
@@ -105,20 +140,20 @@ export default function orderCard() {
 }
 
 type OrderItemProps = {
-    
+    name: string
+    qty: number
+    customizations: string
 }
 
 const OrderItem = (props: OrderItemProps)=>{
-
     
-
     return(
         <li className="list-group-item "  >
             <strong>
-                Food Item #1:
+                {props.qty} x {props.name}
             </strong>
             <span className="text-secondary">
-                1x Chicken Burger, 1x Fries1x Chicken Burger, 1x Fries1x Chicken Burger, 1x Fries
+                : {props.customizations}
             </span>
         </li>
     )   
@@ -126,13 +161,25 @@ const OrderItem = (props: OrderItemProps)=>{
 
 type OrderActionItemProps = {
     obj: OrderActionItemType
-    setState: React.Dispatch<React.SetStateAction<string>>
+    setState: React.Dispatch<React.SetStateAction<OrderStatusType>>
     currentState: OrderActionItemType | undefined
-    
+    id: number
 }
+
 const OrderActionItem = (props: OrderActionItemProps)=>{
-    const handleClick = ()=>{
-        props.setState(props.obj.state)
+    if (props.obj.name == '')
+        return <></>
+
+
+
+    const handleClick = async ()=>{
+        const r = new Request(APIRoutes.ADMIN_UPDATE_ORDER_STATUS, {
+            method: 'PUT',
+        })
+        const fd = new FormData()
+        fd.append('orderStatus', props.obj.state)
+        const {json} = await makeRequest(makeURL(APIRoutes.ADMIN_UPDATE_ORDER_STATUS, {'pk': props.id}), r,fd )
+        props.setState(json.orderStatus)
     }
 
     const disabled = !props.currentState?.acceptableStates.includes(props.obj.state)

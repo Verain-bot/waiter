@@ -2,19 +2,21 @@ from typing import Any
 from django import http
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from api.models import Restaurant, Customer, Order
 from rest_framework import views, generics, permissions
 from api.serializers import OrderDetailsSerializer
 from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from .helper import setRestaurantOrderAvailable, getRestaurantOrderAvailable
+from django.contrib.auth import decorators
+from django.urls import reverse_lazy as reverse
 # Create your views here.
 
 
 class OwnerLoginView(LoginView):
     template_name = 'admin/login.html'
-    next_page = '/api/restaurants'
+    next_page = reverse('owner-order-manage')
     redirect_authenticated_user = True
 
     #Check if the user group is owner
@@ -66,3 +68,23 @@ class UpdateOrderView(generics.RetrieveUpdateAPIView):
         serializer.save()
         setRestaurantOrderAvailable(self.request.user.pk, True)
 
+class OwnerLogoutView(LogoutView):
+    next_page = reverse('owner-login')
+    
+@decorators.login_required(login_url=reverse('owner-login'))
+@decorators.user_passes_test(lambda u: u.groups.filter(name='RestaurantOwner').exists())
+def ManageOrdersView(request):
+    return render(request, 'index.html')
+
+class ToggleViewRestaurantAcceptingOrders(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def post(self, request, *args, **kwargs):
+        restaurant = Restaurant.objects.filter(owner=self.request.user).first()
+        restaurant.acceptingOrders = not restaurant.acceptingOrders
+        restaurant.save()
+        return http.JsonResponse({"available": restaurant.acceptingOrders})
+    
+    def get(self, request, *args, **kwargs):
+        restaurant = Restaurant.objects.filter(owner=self.request.user).first()
+        return http.JsonResponse({"available": restaurant.acceptingOrders})
