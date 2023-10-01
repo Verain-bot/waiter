@@ -42,6 +42,7 @@ type Customer = {
   id: number;
   first_name: string;
   last_name: string;
+  username: string;
 };
 
 type Restaurant = {
@@ -79,6 +80,7 @@ export type OrderType = {
   rating: number | null;
   comment: string;
   takeawayOrDinein: number;
+  address?: string
 };
 
 export type OrderStatusType = 'NOT_CONFIRMED'|'CONFIRMED'|'PREPARING'|'DISPATCHING'|'READY'|'COMPLETE'|'CANCELLED'

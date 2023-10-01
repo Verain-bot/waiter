@@ -8,12 +8,13 @@ import OrderList, { orderListLoader } from '../views/orderList';
 import Credits from '../views/credits'
 import OTP, { otpAction } from '../views/otp';
 import Register, { registerAction } from '../views/register';
-import Address from '../views/deliveryAddress'
+import Address, { addressChangeAction } from '../views/deliveryAddress'
 import { ActionFunction, LoaderFunction } from 'react-router-dom';
 import { LoginContextType } from '../context/LoginContext';
 import AccountDetailsView, { accountDetailsLoader } from '../views/accountDetails';
 import AccountDetailsEdit, { accountDetailsEditAction } from '../views/accountDetailsEdit';
-
+import { cartFooterAction } from '../components/cart/cartFooter';
+import OrderSuccess from '../views/orderSuccess'
 export enum PathType{
     LOGGED_IN,
     LOGGED_OUT,
@@ -45,7 +46,8 @@ export enum PATHS {
     REGISTER = '/register',
     ADDRESS = '/address',
     ACCOUNT_DETAILS = '/account/details',
-    ACCOUNT_DETAILS_EDIT = '/account/edit'
+    ACCOUNT_DETAILS_EDIT = '/account/edit',
+    ORDER_CREATED_SUCCESS = '/order/success/:orderID',
 }
 
 
@@ -89,6 +91,7 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "cart-fill",
       ldr: cartLoader,
+      action: cartFooterAction,
     },
     {
       path: PATHS.ORDER_DETAIL,
@@ -135,7 +138,8 @@ const list : CustomRouteType[] = [
       element: <Address />,
       name: 'Address',
       pathType: [PathType.LOGGED_IN],
-      icon: "geo-alt-fill"
+      icon: "geo-alt-fill",
+      action: addressChangeAction,
     },
     {
       path: PATHS.ACCOUNT_DETAILS,
@@ -144,13 +148,21 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "person-circle",
       ldr: accountDetailsLoader,
-    },{
+    },
+    {
       path: PATHS.ACCOUNT_DETAILS_EDIT,
       element: <AccountDetailsEdit />,
       name: 'Account Details ',
       pathType: [PathType.LOGGED_IN],
       icon: "person-circle",
       action: accountDetailsEditAction,
+    },
+    {
+      path: PATHS.ORDER_CREATED_SUCCESS,
+      element: <OrderSuccess />,
+      name: 'Order Created Successfully ',
+      pathType: [PathType.LOGGED_IN],
+      icon: "person-circle",
     }
   ];
   

@@ -72,6 +72,7 @@ class Order(models.Model):
     rating = models.SmallIntegerField(blank = True,null=True)
     comment = models.TextField(max_length=500, blank = True)
     takeawayOrDinein = models.SmallIntegerField(default = 0)
+    address = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         constraints = [

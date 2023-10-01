@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from .helper import setRestaurantOrderAvailable, getRestaurantOrderAvailable
 from django.contrib.auth import decorators
 from django.urls import reverse_lazy as reverse
+from django.contrib import admin
 # Create your views here.
 
 
@@ -18,7 +19,10 @@ class OwnerLoginView(LoginView):
     template_name = 'admin/login.html'
     next_page = reverse('owner-order-manage')
     redirect_authenticated_user = True
-
+    extra_context = {
+        'site_header': 'Restaurant Owner Login',
+    }
+    
     #Check if the user group is owner
     def post(self, request: HttpRequest, *args: str, **kwargs: Any) -> HttpResponse:
         form = self.get_form()

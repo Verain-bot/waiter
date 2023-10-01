@@ -15,13 +15,16 @@ type OrderActionItemType = {
 
 export default function orderCard(props : OrderType) {
     const ref = useRef<HTMLUListElement>(null)
-
-    const handleClick = async (_ : React.MouseEvent<HTMLDivElement, MouseEvent>)=>{
+    const orderTime = new Date(props.time)
+    const handleClick = async (_ : React.MouseEvent<HTMLUListElement, MouseEvent>)=>{
         console.log(JSON.stringify(props))
         if(ref.current){
             ref.current.classList.toggle('show')
         }
     }
+
+    const [showDetails, setShowDetails] = useState(false)
+
 
     const OrderActions  : OrderActionItemType[]= [
         {
@@ -105,9 +108,9 @@ export default function orderCard(props : OrderType) {
     })
 
   return (
-    <motion.div layout layoutId={String(props.id)}  transition={{ type: "spring", stiffness: 100, damping: 12}} className="col-12 p-0" data-bs-theme='light'>
-      <div className="row card shadow m-2 zoom" style={{cursor: 'pointer'}} onClick={handleClick} onMouseEnter={handleOver} onMouseLeave={handleExit} >
-        <div className={`card-header bg-${color}-subtle`} >
+    <motion.div layout='preserve-aspect' layoutId={String(props.id)}  transition={{ type: "spring", stiffness: 100, damping: 12}} className="col-12 p-0" data-bs-theme='light'>
+      <div className="row card shadow m-2 zoom" style={{cursor: 'pointer'}}  onMouseEnter={handleOver} onMouseLeave={handleExit}  >
+        <div className={`card-header bg-${color}-subtle`}  onClick={()=>{setShowDetails(!showDetails)}} >
             <div className="row" >
                 <div className={`col-8 text-${color}-emphasis`}>
                     Order ID: {props.id}
@@ -127,14 +130,40 @@ export default function orderCard(props : OrderType) {
                 
             </ul>
         </div>
-        <ul className={`list-group list-group-flush bg-${color} pt-2 pb-3 px-0`} >
+
             
-            {items.map((item, index)=>
-                <OrderItem name={item.itemDetails.name} qty={item.qty} customizations={item.option} key={index} />
-            )}
 
-        </ul>
 
+        
+            <ul className={`list-group list-group-flush bg-${color} pt-2 pb-3 px-0 position-relative w-100`} onClick={handleClick} >
+            <div>
+                
+                <li className={`list-group-item d-${showDetails?'block':'none'} `} style={{zIndex: 20, boxSizing: 'border-box'}} >
+                    
+                    <span>
+                    <strong>
+                        Details: 
+                    </strong>
+                    <br/>
+                        Address : {props.address?props.address:'Not Provided'}
+                    <br/>
+                        Time : {orderTime.toLocaleTimeString()}
+                    <br/>
+                        Customer: {props.customers[0].customer.first_name}
+                    <br/>
+                        Phone: {props.customers[0].customer.username}
+                    </span>
+                    
+                </li>
+
+                {items.map((item, index)=>
+                    <OrderItem name={item.itemDetails.name} qty={item.qty} customizations={item.option} key={index} />
+                    
+                    )}
+
+            </div>
+            </ul>
+            
       </div>
         
     </motion.div>

@@ -18,17 +18,17 @@ def index(request):
     return HttpResponse('First')
 
 # Create your views here.
-@method_decorator(cache_page(60 * 10), name='dispatch')
+#@method_decorator(cache_page(60 * 10), name='dispatch')
 class RestraurantList(generics.ListAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantListSerializer
 
-@method_decorator(cache_page(60 * 10), name='dispatch')
+#@method_decorator(cache_page(60 * 10), name='dispatch')
 class RestaurantDetail(generics.RetrieveAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantDetailsSerializer
 
-@method_decorator(cache_page(60 * 10), name='dispatch')
+#@method_decorator(cache_page(60 * 10), name='dispatch')
 class MenuDetails(generics.RetrieveAPIView):
     queryset = MenuItem.objects.all()
     serializer_class = MenuDetailsSerializer
@@ -55,7 +55,7 @@ class OrderCreate(views.APIView):
     def post(self, request, *args, **kwargs):
         
         x = validate_cart_data(request.data.get('cart'), request.data.get('restaurantID'))
-        
+        address = request.data.get('address')
         if (not x):
             return Response(msg.INVALID_REQUEST, status=400)
 
@@ -90,6 +90,9 @@ class OrderCreate(views.APIView):
 
         suborder.price = orderPrice
         order.price = orderPrice
+        if address:
+            order.address = address
+            
         order.save()
         suborder.save()
 

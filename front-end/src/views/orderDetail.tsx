@@ -61,6 +61,7 @@ export type OrderData = {
     orderStatus: string;
     rating: number | null;
     comment: string;
+    address: string;
     takeawayOrDinein: number;
 };
   
@@ -114,6 +115,7 @@ const App = ()=>{
             <TableItem left='Restaurant' right={data.restaurant.name} width={4} nohr/>
             <TableItem left='Time' right={time.toLocaleString()} width={4} nohr />
             <TableItem left='Order ID' right={data.id} width={4} nohr />
+            <TableItem left='Address' right={data.address} width={4} nohr />
             
         </Table>
 

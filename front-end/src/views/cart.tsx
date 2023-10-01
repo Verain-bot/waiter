@@ -11,6 +11,7 @@ import { PATHS } from '../utilities/routeList';
 import { makeRequest } from '../utilities/fetchData';
 import APIRoutes from '../utilities/APIRoutes';
 import { useMessageContext } from '../context/MessageContext';
+import { useLoginContext } from '../context/LoginContext';
 
 
 const App = ()=>{
@@ -18,6 +19,8 @@ const App = ()=>{
     console.log(JSON.stringify(cart))
     const [msg, setMessage] = useMessageContext()
     const loaderData = useLoaderData() as {valid: boolean} | null
+    const [user,setUser] = useLoginContext()
+    const address  = localStorage.getItem('address')
 
     useEffect(()=>{
         if (loaderData !== null){
@@ -88,7 +91,7 @@ const App = ()=>{
             
             <Link to={PATHS.ADDRESS} className='link text-dark'>
                 <Table title='Address' subTitle='Please select your delivery address'>
-                    <TableItem left='Delivering to:' right={<Address name='Verain' address='10 N Model Town, Hisar' />}  width={5}/>
+                    <TableItem left='Delivering to:' right={<Address name={user.user? user.user.first_name : ''} address={address? address: ''} />}  width={5}/>
                     <TableItem left={<span className='small'>Tap to change your delivery address</span>}  width={11}/>
                 </Table>
             </Link>
@@ -123,11 +126,14 @@ export const cartLoader : LoaderFunction = async ({params, request})=>{
     if (!r){
         return null
     }
+    
     const cart = JSON.parse(r) as CartItemType[]
 
     if(cart.length==0)
         return null
 
+    const address = localStorage.getItem('address')
+    
     let p = 0
     cart.forEach((curr)=>{
         curr.customizations.forEach(c=>{
@@ -146,7 +152,7 @@ export const cartLoader : LoaderFunction = async ({params, request})=>{
     const fd = new FormData()
     fd.append('cart', r)
     fd.append('restaurantID', cart[0].restaurantID.toString())
-
+    fd.append('address', address? address: '')
 
     const {json, response, message} = await  makeRequest( APIRoutes.CART_PRICE, req, fd)
     console.log('verain',json)
