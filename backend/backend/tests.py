@@ -42,8 +42,9 @@ class TestBase(TestCase):
     TEST_PHONE_REGISTERED = 2192
     TEST_OTP = '1234'
 
-
     def setUp(self):
+        self.owner1 = Customer.objects.get(username='101')
+        self.owner2 = Customer.objects.get(username='102')
         cache.clear()
         
     @classmethod

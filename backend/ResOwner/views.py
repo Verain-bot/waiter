@@ -12,6 +12,7 @@ from .helper import setRestaurantOrderAvailable, getRestaurantOrderAvailable
 from django.contrib.auth import decorators
 from django.urls import reverse_lazy as reverse
 from django.contrib import admin
+from rest_framework.response import Response
 # Create your views here.
 
 
@@ -68,9 +69,25 @@ class UpdateOrderView(generics.RetrieveUpdateAPIView):
         else:
             raise http.Http404()
     
-    def perform_update(self, serializer):
-        serializer.save()
+
+    def update(self, request, *args, **kwargs):
+        newOrderStatus = request.data.get('orderStatus', None)
+        instance = self.get_object()
+        reqData = {}
+        if instance.orderStatus not in [Order.OrderStatusChoices.CANCELLED, Order.OrderStatusChoices.COMPLETE]:
+            reqData['orderStatus'] = newOrderStatus    
+
+        partial = kwargs.pop('partial', False)
+        serializer = self.get_serializer(instance, data=reqData, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
         setRestaurantOrderAvailable(self.request.user.pk, True)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 class OwnerLogoutView(LogoutView):
     next_page = reverse('owner-login')

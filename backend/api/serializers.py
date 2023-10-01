@@ -88,13 +88,6 @@ class OrderDetailsSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ()
     
-    def update(self, instance, validated_data):
-        #only keep orderStatus in validated data
-        newValidatedData = {}
-        if instance.orderStatus not in [Order.OrderStatusChoices.CANCELLED, Order.OrderStatusChoices.COMPLETE]:
-            newValidatedData['orderStatus'] = validated_data['orderStatus']
-
-        return super().update(instance, newValidatedData)
         
 
 
