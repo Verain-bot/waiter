@@ -37,8 +37,32 @@ export const OrderContextProvider = ({children}: {children: React.ReactNode})=>{
         setOrderSorted(j.results)
     }
 
+    const updateData = async()=>{
+        try{
+            const x = await getData(APIRoutes.ADMIN_ORDERS_AVAILABLE, new AbortController().signal)
+            const j = await  x.json()
+            const isAvailable = j.available
+            console.log('df1')
+            if (isAvailable){
+                loadData()
+                console.log('df2')
+                
+            }
+        }
+        catch(e){
+            alert('Something went wrong. Please try to reload the page.')
+            console.log(e)
+        }
+    }
+    
     useEffect(()=>{
         loadData()
+        const interval = setInterval(updateData, 5000)
+
+        return()=>{
+            clearInterval(interval)
+        }
+
     },[])
 
     return(

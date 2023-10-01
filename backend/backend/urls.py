@@ -20,6 +20,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 import enum
 from .mixins import URLEnumMixin
+import nested_admin
+
+admin.site.site_header = 'toOne Admin'
+admin.site.site_title = 'toOne Admin Portal'
+admin.site.index_title = 'toOne Admin Portal'
+admin.site.site_url = '/restaurant/admin/login/'
 
 class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
     ADMIN = 'admin/'

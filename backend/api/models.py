@@ -39,7 +39,7 @@ class Quantity(models.Model):
     price = models.PositiveIntegerField(default = 0)
 
     def __str__(self) -> str:
-        return self.itemDetail.__str__() + " Quantity"
+        return str(self.qty)
 
 class SubOrder(models.Model):
     customer = models.ForeignKey(Customer, related_name='customer',blank=True,on_delete=models.CASCADE)

@@ -5,31 +5,31 @@ from .mixins import CustomAdminMixin
 
 class QuantityInLine(nested_admin.NestedTabularInline):
     model = Quantity
-    extra = 1
+    extra = 0
 
 class CustomatizationOptionsInLine(nested_admin.NestedTabularInline):
     model = CustomatizationOptions
-    extra = 1
+    extra = 0
 
-class MenuItemCustomizationInLine(nested_admin.NestedTabularInline):
+class MenuItemCustomizationInLine(nested_admin.NestedStackedInline):
     inlines = [CustomatizationOptionsInLine]
     model = MenuItemCustomization
-    extra = 1
+    extra = 0
 
-class MenuItemInLine(nested_admin.NestedTabularInline):
+class MenuItemInLine(nested_admin.NestedStackedInline):
     inlines = [MenuItemCustomizationInLine]
     model = MenuItem
-    extra = 1
+    extra = 0
 
 class itemDetailInLine(nested_admin.NestedTabularInline):
     inlines = [QuantityInLine]
     model = ItemDetail
-    extra = 1
+    extra = 0
 
 class SubOrderInLine(nested_admin.NestedTabularInline):
     model = SubOrder
     inlines = [itemDetailInLine]
-    extra = 1
+    extra = 0
 
 
 class MenuItemCustomizationAdmin(CustomAdminMixin):
@@ -49,7 +49,14 @@ class MenuItemAdmin(CustomAdminMixin):
 
 class RestaurantAdmin(CustomAdminMixin):
     inlines = [MenuItemInLine]
-    
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_staff:
+            if request.user.is_superuser:
+                return []
+            else:
+                return ('owner','joinDate')
+
     @CustomAdminMixin.get_queryset_decorator
     def get_queryset(self, request, qs):
         return qs.filter(owner=request.user)
@@ -64,6 +71,15 @@ class ItemDetailAdmin(CustomAdminMixin):
     
 class OrderAdmin(CustomAdminMixin):
     inlines = [SubOrderInLine]
+
+    def render_change_form(self, request, *args, **kwargs):
+        # if request.user.is_superuser:
+        #     self.change_form_template = None
+        # elif request.user.groups.filter(name='restaurantOwner').exists():
+        #     self.change_form_template = 'customAdmin/orders.html'
+
+        return super().render_change_form( request, *args, **kwargs)
+
 
     @CustomAdminMixin.get_queryset_decorator
     def get_queryset(self, request, qs):
@@ -88,7 +104,7 @@ class CustomatizationOptionsAdmin(CustomAdminMixin):
     def get_queryset(self, request, qs):
         return qs.filter(customization__item__restaurant__owner=request.user)
     
-
+admin.ModelAdmin
 
 admin.site.register(ItemType)
 admin.site.register(SpecialItem)
