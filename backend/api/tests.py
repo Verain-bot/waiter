@@ -5,7 +5,9 @@ from rest_framework.test import APIClient
 from django.core.cache import cache
 from .helper import validate_cart_data
 from . import responseMessages as msg
+from unittest.mock import patch
 from .urls import API_URLS
+from api.tasks import add_comment_for_order
 #Testing views
 class TestViews(TestBase):
     #reset cache
@@ -85,6 +87,116 @@ class TestViews(TestBase):
         response = self.client.get(API_URLS.ORDER_DETAILS.getURL(pk=2))
         self.assertEquals(response.status_code, 403)
 
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_OrderNotCompleted(self):
+        self.login()
+        data = {
+            'comment': 'Hello',
+            'rating': 5,
+        }
+        order = Order.objects.first()        
+        response = self.client.patch(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+        response = response.json()
+        self.assertEquals(response, msg.ORDER_COMMENT_AFTER_COMPLETED)
+        
+    
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_OrderCompleted(self):
+
+        self.login()
+        data = {
+            'comment': 'Hello22',
+            'rating': 5,
+        }
+        order = self.order1_bar
+        order.refresh_from_db()
+        order.orderStatus = Order.OrderStatusChoices.COMPLETE
+        order.save()
+        items = self.getItemsFromOrder(order)
+        for mi in items:
+            self.assertEquals(mi.rating, None)
+
+        response = self.client.put(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        
+        order.refresh_from_db()
+        self.assertEquals(order.comment, 'Hello22')
+        self.assertEquals(order.rating, 5)
+        
+        #Order contains Pizza
+        items = self.getItemsFromOrder(order)
+        for mi in items:
+            self.assertEquals(mi.rating, 5)
+            
+        data = {
+            'comment': 'Hello223',
+            'rating': 3,
+        }
+        response = self.client.put(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+        order.refresh_from_db()
+        order.orderStatus = Order.OrderStatusChoices.NOT_CONFIRMED
+        order.save()
+        self.assertEquals(order.comment, 'Hello223')
+        self.assertEquals(order.rating, 3)
+
+        
+        for mi in items:
+            mi.refresh_from_db()
+            self.assertEquals(mi.rating, 3)
+            mi.rating = None
+            mi.save()
+
+
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_OrderCancelled(self):
+        self.login()
+        order = self.order1_bar
+        price = order.price
+        data = {
+            'orderStatus': 'CANCELLED',
+            'price' : price + 210,
+            'comment': 'Something'
+        }
+        
+        order.orderStatus = Order.OrderStatusChoices.COMPLETE
+        order.save()
+
+        response = self.client.patch(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        
+        order.refresh_from_db()
+    
+        self.assertEquals(order.orderStatus, Order.OrderStatusChoices.COMPLETE)
+        self.assertEquals(order.price, price)
+
+        order.orderStatus = Order.OrderStatusChoices.NOT_CONFIRMED
+        order.save()
+
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_wrong_input(self):
+        self.login()
+        data = {
+            'comment': 'Hello22',
+            'rating': 'vsa',
+        }
+        order = Order.objects.first()        
+        order.orderStatus = Order.OrderStatusChoices.COMPLETE
+        order.save()
+
+        response = self.client.put(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        
+        order = Order.objects.first()        
+        order.orderStatus = Order.OrderStatusChoices.NOT_CONFIRMED
+        order.save()
+        self.assertEquals(order.comment, '')
+        self.assertEquals(order.rating, None)
+        
 # ===============================================================
 #
 #                       ORDER CREATE TESTS

@@ -92,7 +92,7 @@ class MenuItem(models.Model):
     category = models.ForeignKey(SpecialItem, related_name='special', null=True,on_delete=models.CASCADE, blank=True)
     description = models.TextField(max_length=500, blank=True)
     totalOrders = models.PositiveIntegerField(default=0)
-    rating = models.PositiveSmallIntegerField(null=True, blank=True)
+    rating = models.FloatField(null=True, blank=True)
     totalRatings = models.PositiveIntegerField(default=0)
     itemPhoto = models.ImageField(upload_to=MenuUploadTo, blank=True)
 

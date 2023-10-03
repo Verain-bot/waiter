@@ -15,8 +15,9 @@ from django.core.cache import cache
 from django.conf import settings
 import json
 import time
-
-
+from .celery import app
+from celery.contrib.testing.worker import start_worker
+from unittest.mock import patch
 
 def getMenuItems():
 
@@ -53,9 +54,9 @@ class TestBase(TestCase):
         if Restaurant.objects.exists():
             return
 
-        Verain = Customer.objects.create_user(username='1', first_name= 'Verain', email = 'test1@test.com', password='test')
-        Rahul = Customer.objects.create_user(username='2', first_name= 'Rahul', email = 'test2@test.com', password='test')
-        Raj = Customer.objects.create_user(username='3', first_name= 'Raj', email = 'test3@test.com', password='test')
+        cls.Verain = Verain = Customer.objects.create_user(username='1', first_name= 'Verain', email = 'test1@test.com', password='test')
+        cls.Rahul = Rahul = Customer.objects.create_user(username='2', first_name= 'Rahul', email = 'test2@test.com', password='test')
+        cls.Raj = Raj = Customer.objects.create_user(username='3', first_name= 'Raj', email = 'test3@test.com', password='test')
         restaurant_content_type = ContentType.objects.get_for_model(Restaurant)
         menu_content_type = ContentType.objects.get_for_model(MenuItem)
         order_content_type = ContentType.objects.get_for_model(Order)
@@ -102,8 +103,8 @@ class TestBase(TestCase):
 
         ownerGroup.permissions.add(Permission.objects.get(codename='view_quantity', content_type=quantity_content_type))
 
-        Owner1 = Customer.objects.create_user(username='101', first_name= 'Owner1', email = 'owner1@owner.com', password='test', is_staff=True)
-        Owner2 = Customer.objects.create_user(username='102', first_name= 'Owner1', email = 'owner2@owner.com', password='test', is_staff=True)
+        cls.Owner1 = Owner1 = Customer.objects.create_user(username='101', first_name= 'Owner1', email = 'owner1@owner.com', password='test', is_staff=True)
+        cls.Owner2 = Owner2 = Customer.objects.create_user(username='102', first_name= 'Owner1', email = 'owner2@owner.com', password='test', is_staff=True)
         Owner1.groups.add(ownerGroup)
         Owner2.groups.add(ownerGroup)
 
@@ -124,14 +125,24 @@ class TestBase(TestCase):
         bar_res = Restaurant.objects.create(name='Bar', phone='1234567890', owner=Owner1)
         pizza_res = Restaurant.objects.create(name='Pizza', phone='1234567891', owner=Owner2)
 
+        cls.bar_res = bar_res
+        cls.pizza_res = pizza_res
+
         # Create MenuItem objects
         liit_mi = MenuItem.objects.create(name='LIIT', price=100, restaurant=bar_res, itemType=beverage_item_type, category=bestseller_special_item)
         beer_mi = MenuItem.objects.create(name='Beer', price=200, restaurant=bar_res, itemType=beverage_item_type)
         snacks_mi = MenuItem.objects.create(name='Snacks', price=300, restaurant=bar_res, itemType=food_item_type)
 
+        cls.liit_mi = liit_mi
+        cls.beer_mi = beer_mi
+        cls.snacks_mi = snacks_mi
+
         # Create MenuItem objects for Pizza_Res
         pizza_mi = MenuItem.objects.create(name='Pizza', price=100, restaurant=pizza_res, itemType=food_item_type, category=popular_special_item)
         coke_mi = MenuItem.objects.create(name='Coke', price=300, restaurant=pizza_res, itemType=beverage_item_type)
+
+        cls.pizza_mi = pizza_mi
+        cls.coke_mi = coke_mi
 
         # Create MenuItemCustomization objects
         liit_size_customization = MenuItemCustomization.objects.create(item=liit_mi, name='Size', customizationType='radio')
@@ -174,29 +185,29 @@ class TestBase(TestCase):
         pizza_toppings_capsicum = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Capsicum', price=0)
         pizza_toppings_tomato = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Tomato', price=0)
         
-        order1_bar = Order.objects.create(restaurant=bar_res, tableNumber=1)
-        order2_bar = Order.objects.create(restaurant=bar_res, tableNumber=2)
-        order_pizza = Order.objects.create(restaurant=pizza_res, tableNumber=3)
+        cls.order1_bar = order1_bar = Order.objects.create(restaurant=bar_res, tableNumber=1)
+        cls.order2_bar=order2_bar = Order.objects.create(restaurant=bar_res, tableNumber=2)
+        cls.order_pizza= order_pizza = Order.objects.create(restaurant=pizza_res, tableNumber=3)
 
         # Create SubOrder objects
-        suborder1_order1_bar = SubOrder.objects.create(customer=Verain, order=order1_bar)
-        suborder2_order1_bar = SubOrder.objects.create(customer=Rahul, order=order1_bar)
-        suborder3_order2_bar = SubOrder.objects.create(customer=Raj, order=order2_bar)
-        suborder1_order_pizza = SubOrder.objects.create(customer=Verain, order=order_pizza)
-        suborder2_order_pizza = SubOrder.objects.create(customer=Raj, order=order_pizza)
+        cls.suborder1_order1_bar= suborder1_order1_bar = SubOrder.objects.create(customer=Verain, order=order1_bar)
+        cls.suborder2_order1_bar= suborder2_order1_bar = SubOrder.objects.create(customer=Rahul, order=order1_bar)
+        cls.suborder3_order2_bar= suborder3_order2_bar = SubOrder.objects.create(customer=Raj, order=order2_bar)
+        cls.suborder1_order_pizza= suborder1_order_pizza = SubOrder.objects.create(customer=Verain, order=order_pizza)
+        cls.suborder2_order_pizza= suborder2_order_pizza = SubOrder.objects.create(customer=Raj, order=order_pizza)
 
         # Create ItemDetail objects
-        item_detail1_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=liit_mi)
-        item_detail2_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=beer_mi)
-        item_detail3_suborder2_order1_bar = ItemDetail.objects.create(suborder=suborder2_order1_bar, item=snacks_mi)
-        item_detail4_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=beer_mi)
-        item_detail5_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=liit_mi)
-        item_detail6_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=pizza_mi)
-        item_detail7_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=coke_mi)
-        item_detail8_suborder2_order_pizza = ItemDetail.objects.create(suborder=suborder2_order_pizza, item=pizza_mi)
+        cls.item_detail1_suborder1_order1_bar = item_detail1_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=liit_mi)
+        cls.item_detail2_suborder1_order1_bar = item_detail2_suborder1_order1_bar = ItemDetail.objects.create(suborder=suborder1_order1_bar, item=beer_mi)
+        cls.item_detail3_suborder2_order1_bar = item_detail3_suborder2_order1_bar = ItemDetail.objects.create(suborder=suborder2_order1_bar, item=snacks_mi)
+        cls.item_detail4_suborder3_order2_bar = item_detail4_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=beer_mi)
+        cls.item_detail5_suborder3_order2_bar = item_detail5_suborder3_order2_bar = ItemDetail.objects.create(suborder=suborder3_order2_bar, item=liit_mi)
+        cls.item_detail6_suborder1_order_pizza = item_detail6_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=pizza_mi)
+        cls.item_detail7_suborder1_order_pizza = item_detail7_suborder1_order_pizza = ItemDetail.objects.create(suborder=suborder1_order_pizza, item=coke_mi)
+        cls.item_detail8_suborder2_order_pizza = item_detail8_suborder2_order_pizza = ItemDetail.objects.create(suborder=suborder2_order_pizza, item=pizza_mi)
 
         # Create Quantity objects
-        q1_item_detail1_suborder1_order1_bar = Quantity.objects.create(itemDetail=item_detail1_suborder1_order1_bar, qty=2)
+        cls.q1_item_detail1_suborder1_order1_bar= q1_item_detail1_suborder1_order1_bar = Quantity.objects.create(itemDetail=item_detail1_suborder1_order1_bar, qty=2)
         q1_item_detail1_suborder1_order1_bar.option.add(liit_size_medium)
         q1_item_detail1_suborder1_order1_bar.option.add(liit_ice_normal)
 
@@ -429,5 +440,9 @@ class TestBase(TestCase):
         
     def checkUserExists(self, phone):
         return Customer.objects.filter(username=phone).exists()
+    
+    def getItemsFromOrder(self, order):
+        suborder = SubOrder.objects.get(order = order, customer = order.customers.first())
+        return suborder.items.all()
     
     

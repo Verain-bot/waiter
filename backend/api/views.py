@@ -9,7 +9,7 @@ from .permissions import *
 from . import responseMessages as msg
 from rest_framework.permissions import IsAuthenticated
 from .helper import validate_cart_data
-from .tasks import cancel_order_if_not_accepted
+from .tasks import cancel_order_if_not_accepted, add_comment_for_order
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from ResOwner.helper import setRestaurantOrderAvailable
@@ -42,11 +42,20 @@ class OrderList(generics.ListAPIView):
     def get_queryset(self):
         return super().get_queryset().filter(customers__username=self.request.user.username)
 
-class OrderDetails(generics.RetrieveAPIView):
+class OrderDetails(generics.RetrieveUpdateAPIView):
 
     queryset = Order.objects.all()
     serializer_class = OrderDetailsSerializer
     permission_classes = [IsAuthenticated, IsCustomerOrder]
+    
+    def update(self, request, *args, **kwargs):
+        
+        instance = self.get_object()
+        if instance.orderStatus != Order.OrderStatusChoices.COMPLETE:
+            return Response(msg.ORDER_COMMENT_AFTER_COMPLETED, status=400)
+        
+        add_comment_for_order.delay(instance.pk, request.data.get('comment', None),request.data.get('rating', None))
+        return Response({'updated': True})
 
 class OrderCreate(views.APIView):
 

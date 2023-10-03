@@ -57,7 +57,7 @@ class TestViews(TestBase):
         self.assertEqual(response['orderStatus'], Order.OrderStatusChoices.COMPLETE)
 
         price = o.price
-        response = self.client.put(URL.OWNER_UPDATE_ORDER_STATUS.getURL(pk=o.pk), {'price': price+21}, content_type='application/json')
+        response = self.client.patch(URL.OWNER_UPDATE_ORDER_STATUS.getURL(pk=o.pk), {'price': price+21}, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         response = response.json()
         self.assertEqual(response['price'], price)

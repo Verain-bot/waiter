@@ -20,3 +20,8 @@ CART_PRICE = lambda price: {
     'price': price,
     'type' : 'success',
 }
+
+ORDER_COMMENT_AFTER_COMPLETED = {
+    'message' : 'Please wait for the order to complete before commenting.',
+    'type' : 'error',
+}
