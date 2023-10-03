@@ -46,7 +46,6 @@ class SubOrder(models.Model):
     order = models.ForeignKey('Order', related_name='order',blank=True,on_delete=models.CASCADE)
     items = models.ManyToManyField('MenuItem', related_name='suborder_items', blank=True, through=ItemDetail)
     price = models.PositiveIntegerField(default = 0)
-    tip = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self) -> str:
         return self.customer.__str__() + " Order No. " + self.order.id.__str__()
@@ -66,7 +65,6 @@ class Order(models.Model):
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_order',blank=True,on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default = 0)
     time = models.DateTimeField(default= now)
-    tableNumber = models.PositiveSmallIntegerField(default= 0)
     orderStatus = models.CharField(max_length=15, choices=OrderStatusChoices.choices, default=OrderStatusChoices.NOT_CONFIRMED)
     tip = models.PositiveSmallIntegerField(default=0)
     rating = models.SmallIntegerField(blank = True,null=True)
@@ -91,7 +89,6 @@ class MenuItem(models.Model):
     price = models.PositiveIntegerField(default=100)
     category = models.ForeignKey(SpecialItem, related_name='special', null=True,on_delete=models.CASCADE, blank=True)
     description = models.TextField(max_length=500, blank=True)
-    totalOrders = models.PositiveIntegerField(default=0)
     rating = models.FloatField(null=True, blank=True)
     totalRatings = models.PositiveIntegerField(default=0)
     itemPhoto = models.ImageField(upload_to=MenuUploadTo, blank=True)
@@ -109,17 +106,18 @@ class CustomerVisit(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     lastVisit = models.DateField(default=now)
     totalVisits = models.PositiveSmallIntegerField(default=0)
-    storeCredit = models.PositiveIntegerField(default = 0)
-    customerRating = models.PositiveSmallIntegerField(blank=True, null=True)
-    customerComment = models.CharField(max_length=200, blank = True, null=True)
 
     def __str__(self) -> str:
         return f"{self.customer.first_name} {self.customer.last_name} {self.restaurant.name} Restaurant Visit" 
 
 class MenuItemCustomization(models.Model):
+    class CustomizationTypeChoices(models.TextChoices):
+        RADIO = 'radio', 'Can select only one'
+        CHECK = 'checkbox', 'Can select many'
+        
     item = models.ForeignKey(MenuItem, related_name='item_customization', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=True)
-    customizationType = models.CharField(max_length=10, blank=True)
+    customizationType = models.CharField(max_length=10, blank=True, choices=CustomizationTypeChoices.choices, default=CustomizationTypeChoices.RADIO)
 
     def __str__(self) -> str:
         return self.name
@@ -135,19 +133,15 @@ class CustomatizationOptions(models.Model):
 class Restaurant(models.Model):
 
     name = models.CharField(max_length=50, blank=True)
-    preOrPost = models.SmallIntegerField(default=0)
     licenceNo = models.CharField(max_length=15, blank =True)
     restaurantType = models.CharField(max_length=30, blank = True)
     customers = models.ManyToManyField(Customer, related_name='customers', through=CustomerVisit)
-    primColor = models.CharField(max_length=10, blank=True)
-    secColor = models.CharField(max_length=10, blank=True)
     logo = models.ImageField(upload_to=restaurantUploadTo, blank=True)
     owner = models.ForeignKey(Customer, related_name='owner', on_delete=models.CASCADE)
     location = models.CharField(max_length=30,blank=True)
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)
     joinDate = models.DateField(default=now)
-    tables = models.PositiveSmallIntegerField(default=10)
     acceptingOrders = models.BooleanField(default=True)
     
     def __str__(self) -> str:

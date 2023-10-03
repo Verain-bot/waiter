@@ -185,9 +185,9 @@ class TestBase(TestCase):
         pizza_toppings_capsicum = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Capsicum', price=0)
         pizza_toppings_tomato = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Tomato', price=0)
         
-        cls.order1_bar = order1_bar = Order.objects.create(restaurant=bar_res, tableNumber=1)
-        cls.order2_bar=order2_bar = Order.objects.create(restaurant=bar_res, tableNumber=2)
-        cls.order_pizza= order_pizza = Order.objects.create(restaurant=pizza_res, tableNumber=3)
+        cls.order1_bar = order1_bar = Order.objects.create(restaurant=bar_res)
+        cls.order2_bar=order2_bar = Order.objects.create(restaurant=bar_res)
+        cls.order_pizza= order_pizza = Order.objects.create(restaurant=pizza_res)
 
         # Create SubOrder objects
         cls.suborder1_order1_bar= suborder1_order1_bar = SubOrder.objects.create(customer=Verain, order=order1_bar)
