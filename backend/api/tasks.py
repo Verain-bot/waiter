@@ -22,9 +22,13 @@ def add_comment_for_order(order_id, comment, rating ):
     try:
         if comment is not None:
             order.comment = comment
-    
+        else:
+            raise Exception('Comment is None')
+        
         if rating is not None and rating>0 and rating <6:
             order.rating = rating
+        else:
+            raise Exception('Rating is None')
     
     except:
         return {
@@ -37,8 +41,16 @@ def add_comment_for_order(order_id, comment, rating ):
 
     #get the items from the order
     suborder = SubOrder.objects.get(order = order, customer = order.customers.first())
+    restaurant = order.restaurant
+
     x = suborder.items.all()
     if oldRating is None:
+        if restaurant.rating is None:
+            restaurant.rating = rating
+        else:
+            restaurant.rating = ((restaurant.rating * restaurant.totalRatings) + rating)/(restaurant.totalRatings + 1)
+
+        restaurant.totalRatings += 1
         for item in x:
             newItemRating = item.totalRatings + 1
             if item.rating is None:
@@ -49,6 +61,7 @@ def add_comment_for_order(order_id, comment, rating ):
             item.save()
     
     else:
+        restaurant.rating = ((restaurant.rating * restaurant.totalRatings) - oldRating + rating)/restaurant.totalRatings
         for item in x:
             if item.rating is None:
                 item.rating = rating
@@ -57,6 +70,7 @@ def add_comment_for_order(order_id, comment, rating ):
             item.save()
 
     order.save()
+    restaurant.save()
 
     return {
         'orderID' : order_id,

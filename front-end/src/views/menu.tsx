@@ -18,6 +18,8 @@ export type MenuItemListFetch = {
     description: string;
     itemPhoto: string | null;
     hasCustomization: boolean;
+    rating: number
+    totalRatings: number
 };
 
 type RestaurantDetailsFetch = {

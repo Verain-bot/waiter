@@ -143,6 +143,8 @@ class Restaurant(models.Model):
     email = models.EmailField(blank=True)
     joinDate = models.DateField(default=now)
     acceptingOrders = models.BooleanField(default=True)
+    rating = models.FloatField(null=True, blank=True)
+    totalRatings = models.PositiveIntegerField(default=0)
     
     def __str__(self) -> str:
         return self.name

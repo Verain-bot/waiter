@@ -124,7 +124,8 @@ class TestViews(TestBase):
         order.refresh_from_db()
         self.assertEquals(order.comment, 'Hello22')
         self.assertEquals(order.rating, 5)
-        
+        self.assertEquals(order.restaurant.rating, 5)
+
         #Order contains Pizza
         items = self.getItemsFromOrder(order)
         for mi in items:
@@ -140,6 +141,7 @@ class TestViews(TestBase):
         order.save()
         self.assertEquals(order.comment, 'Hello223')
         self.assertEquals(order.rating, 3)
+        self.assertEquals(order.restaurant.rating, 3)
 
         
         for mi in items:

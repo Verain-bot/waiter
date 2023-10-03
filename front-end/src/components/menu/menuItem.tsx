@@ -83,7 +83,7 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
                                 <span className='text-muted small'>Rs. {props.price}</span>
                                 
                                 <span className='small pb-1'>
-                                <Stars stars={3.4} numRatings={21} />
+                                <Stars stars={props.rating} numRatings={props.totalRatings} />
                                 </span>
                                 
 

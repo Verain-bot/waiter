@@ -8,6 +8,8 @@ type RestaurantListItemProps = {
     name: string;
     type: string;
     id : number | string;
+    rating: number;
+    totalRatings: number;
 };
 
 
@@ -28,7 +30,7 @@ const RestaurantListItem: React.FC<RestaurantListItemProps> = (props) => {
                     <div className="row card-title p-1 pb-0">
                         {props.name}
                         <span className="small p-0">
-                            <Stars stars={4.5} numRatings={389} withNumber={true} />
+                            <Stars stars={props.rating} numRatings={props.totalRatings} withNumber={true} />
                         </span>
                         <span className="small p-0 text-muted">{props.type}</span>
                     </div>

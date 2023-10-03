@@ -21,7 +21,7 @@ const getLookup = (obj : Record<string, any>,str : string) : string=>{
     return r as unknown as string
 }
 
-export const Search : (list: any[], search: string, lookup: string) => any[]  = (list, search, lookup)=>{
+export const Search : <T>(list: any[], search: string, lookup: string) => any[]  = (list, search, lookup)=>{
     var result1 = list.filter((item)=> makeRegex(getLookup(item, lookup)).includes(makeRegex(search)))
 
     var remaining = list.filter((item)=> !makeRegex(getLookup(item, lookup)).includes(makeRegex(search)))
