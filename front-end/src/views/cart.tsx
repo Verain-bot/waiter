@@ -85,8 +85,12 @@ const App = ()=>{
             </div>
 
             <Table title='Credits' subTitle='Use your accumulated credits here' info='Credits are credited after the order is completed. You can use them for future purchases.' >
-                <TableItem left='Total Store credits' right='90'  width={8}/>
-                <TableItem left='Use Credits' right={<Check name='Use Credits' inputName='usecredits' />}  width={8}/>
+                <div className="col-12 mb-3 d-flex align-items-center justify-content-center">
+
+                <span className=' text-muted '>
+                    Coming Soon!
+                </span>
+                </div>
             </Table>
             
             <Link to={PATHS.ADDRESS} className='link text-dark'>

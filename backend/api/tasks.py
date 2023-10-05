@@ -19,6 +19,7 @@ def cancel_order_if_not_accepted(order_id):
 def add_comment_for_order(order_id, comment, rating ):
     order = Order.objects.get(pk = order_id)
     oldRating = order.rating
+    rating = int(rating)
     try:
         if comment is not None:
             order.comment = comment

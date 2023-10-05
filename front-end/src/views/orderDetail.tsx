@@ -3,12 +3,14 @@ import { useContext, useEffect } from "react"
 import Table from "../components/table/table"
 import { TableHeading, TableItem } from "../components/table/tableItems"
 import { useRatingContext } from "../context/RatingContext"
-import { LoaderFunction, redirect, useLoaderData } from "react-router-dom"
+import { ActionFunction, LoaderFunction, redirect, useLoaderData } from "react-router-dom"
 import APIRoutes, { makeURL } from "../utilities/APIRoutes"
-import { getData } from "../utilities/fetchData"
+import { getData, makeRequest } from "../utilities/fetchData"
 import { PATHS } from "../utilities/routeList"
 import { MenuItemListFetch } from "./menu"
 import { RestaurantListItemFetch } from "./restaurantList"
+import { LoginContextType } from "../context/LoginContext"
+import { ActionErrorDataType } from "../hooks/useActionError"
 
   
 export type ItemOptionFetch = {
@@ -72,7 +74,17 @@ const App = ()=>{
     const [rate, setRate]= useRatingContext()
     const data = useLoaderData() as OrderData
     const review = ()=>{
-        setRate({...rate,canRate:true, title: 'Rate order'})
+        setRate({...rate,
+            canRate:true,
+            title: 'Rate order',
+            starFieldName: 'rating',
+            url: makeURL(APIRoutes.ORDER_DETAILS,{'pk' : String(data.id)}),
+            bodyFieldName: 'comment',
+            showReviews: false,
+            actionURL: makeURL(PATHS.ORDER_DETAIL, {orderID: data.id}),
+            starsSelected: data.rating??0,
+            reviewWritten: data.comment?data.comment:'',
+            })
     }
 
     const items = data.customers.flatMap(customer=>{
@@ -141,10 +153,10 @@ const App = ()=>{
         </Table>
 
 
-        <div className='row card shadow p-1 pb-3 pointer' onClick={review}>
+        {data.orderStatus == 'COMPLETE' && <div className='row card shadow p-1 pb-3 pointer' onClick={review}>
             <h2 className='card-title mb-0 pb-2'>Rate order</h2>
             <h6 className='card-subtitle mb-0 pb-1'>Click here to provide feedback</h6>
-        </div>
+        </div>}
     </div>
     </>
     )
@@ -173,5 +185,20 @@ export const orderDetailLoader : LoaderFunction = async ({params, request})=>{
     const json = await data.json()
     return json
 }
+
+export const orderDetailAction : (val : [LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction = (LoginContext ) => async({request, params}) : Promise<ActionErrorDataType | Response>=>{
+    const data= await request.formData()
+    const {json, response, message} = await makeRequest(makeURL(APIRoutes.ORDER_DETAILS, {'pk': params.orderID as string}), request, data)
+    if(!response.ok){
+        return {
+            heading: "Something went wrong",
+            body: message,
+            type: "error"
+        }
+    }
+
+    return redirect(makeURL(PATHS.ORDER_DETAIL, {'orderID': params.orderID as string}))
+}
+
 
 export default App

@@ -117,7 +117,7 @@ class CartTotalPriceView(views.APIView):
         
         x = validate_cart_data(request.data.get('cart'), request.data.get('restaurantID'))
 
-        if (not x):
+        if (not x or not x['restaurant'].acceptingOrders):
             return Response(msg.INVALID_REQUEST, status=400)
 
         price = x['price']

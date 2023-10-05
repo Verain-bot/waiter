@@ -3,7 +3,7 @@ import Menu, { MenuListLoader } from '../views/menu';
 import RestaurantList, { RestaurantListLoader } from '../views/restaurantList';
 import Loading from '../views/loading';
 import Cart, { cartLoader } from '../views/cart'
-import OrderDetail, { orderDetailLoader } from '../views/orderDetail';
+import OrderDetail, { orderDetailAction, orderDetailLoader } from '../views/orderDetail';
 import OrderList, { orderListLoader } from '../views/orderList';
 import Credits from '../views/credits'
 import OTP, { otpAction } from '../views/otp';
@@ -99,7 +99,8 @@ const list : CustomRouteType[] = [
       name: 'Order Detail',
       pathType: [PathType.LOGGED_IN],
       icon: "file-earmark-text-fill",
-      ldr: orderDetailLoader
+      ldr: orderDetailLoader,
+      action: orderDetailAction
     },
     {
       path: PATHS.ORDER_LIST,

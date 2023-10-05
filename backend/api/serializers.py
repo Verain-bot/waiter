@@ -20,7 +20,8 @@ class MenuListSerializer(serializers.ModelSerializer):
     itemType = serializers.CharField(source='itemType.name', read_only=True)
     #create a field which is false if length of customization is 0
     hasCustomization = serializers.SerializerMethodField('get_hasCustomization')
-    
+    category = serializers.CharField(source='category.name', read_only= True)
+
     def get_hasCustomization(self, obj):
         if len(obj.item_customization.all()) > 0:
             return True
@@ -29,7 +30,7 @@ class MenuListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto','hasCustomization','rating', 'totalRatings']
+        fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto','hasCustomization','rating', 'totalRatings','dietaryType', 'category']
 
 class MenuDetailsSerializer(serializers.ModelSerializer):
     customizations = MenuItemCustomizationSerializer(many=True, read_only=True, source='item_customization')
@@ -41,13 +42,13 @@ class RestaurantDetailsSerializer(serializers.ModelSerializer):
     menu = MenuListSerializer(many=True, read_only=True, source='restaurant')
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'phone', 'email', 'logo', 'restaurantType', 'menu']
+        fields = ['id', 'name', 'phone', 'email', 'logo', 'restaurantType', 'menu', 'rating', 'totalRatings', 'acceptingOrders']
 
 class RestaurantListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-details')
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'logo','url','rating', 'totalRatings']
+        fields = ['id', 'name', 'logo','url','rating', 'totalRatings', 'acceptingOrders']
 
 class QuantitySerializer(serializers.ModelSerializer):
     option = CustomatizationOptionsSerializer(read_only=True,many=True)

@@ -26,11 +26,11 @@ export const Stars: React.FC<StarsProps> = (props) => {
 
         setStars(s);
     }, [props.stars]);
-
+    
     return (
         <span className="text-warning p-0">
             {props.withNumber && <b>{props.stars} </b>}
-            {stars.map((item, index) => {
+            {stars[0]!==0 && stars.map((item, index) => {
                 if (item === 1) {
                     return <i key={index} className="bi bi-star-fill" />;
                 } else if (item === 0.5) {
@@ -39,8 +39,17 @@ export const Stars: React.FC<StarsProps> = (props) => {
                     return <i key={index} className="bi bi-star" />;
                 }
             })}
-            {props.numRatings && (
-                <span className="text-dark">({props.numRatings})</span>
+            {props.numRatings!==undefined  && stars[0]!==0 && (
+                <span className="text-dark">
+                    ({props.numRatings})
+                </span>
+            )}
+            
+            {props.numRatings!==undefined  && stars[0]==0 && (
+                <span className="text-secondary mx-0 px-0">
+                    <i className="bi bi-star-fill mr-2" style={{paddingRight: 2}} />
+                    No Ratings yet
+                </span>
             )}
         </span>
     );

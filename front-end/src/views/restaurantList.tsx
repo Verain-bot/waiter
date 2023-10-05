@@ -14,6 +14,7 @@ export type RestaurantListItemFetch = {
     url: string;
     totalRatings: number
     rating: number
+    acceptingOrders: boolean
   };
   
 export type ArrayResponseFetch<T> = {
@@ -29,7 +30,7 @@ const App = ()=>{
     
     const data = useLoaderData() as ArrayResponseFetch<RestaurantListItemFetch>
     const search = useSearchBar()
-    const filteredRestaurants = Search(data.results,search,'name')
+    const filteredRestaurants = Search(data.results,search,'name').filter((item)=>item.acceptingOrders)
     
 
     return(

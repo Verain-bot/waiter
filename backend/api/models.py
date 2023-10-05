@@ -83,15 +83,21 @@ class Order(models.Model):
         return " ".join(self.customers.all().values_list('first_name', flat=True)) + ' ' + str(self.id)
 
 class MenuItem(models.Model):
+    class DietaryTypeChoices(models.TextChoices):
+        VEG = 'VEG', 'Vegetarian'
+        NON_VEG = 'NON_VEG', 'Non-Vegetarian'
+        EGG = 'EGG', 'Egg'
+
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='restaurant', null=True)
     name = models.CharField(max_length=100, blank=True)
-    itemType = models.ForeignKey(ItemType, related_name='itemtype',null=True,blank=True,on_delete=models.CASCADE)
+    itemType = models.ForeignKey(ItemType, related_name='itemtype',on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default=100)
     category = models.ForeignKey(SpecialItem, related_name='special', null=True,on_delete=models.CASCADE, blank=True)
     description = models.TextField(max_length=500, blank=True)
     rating = models.FloatField(null=True, blank=True)
     totalRatings = models.PositiveIntegerField(default=0)
     itemPhoto = models.ImageField(upload_to=MenuUploadTo, blank=True)
+    dietaryType = models.CharField(max_length=10, choices=DietaryTypeChoices.choices, default=DietaryTypeChoices.VEG)
 
     class Meta:
         constraints = [
