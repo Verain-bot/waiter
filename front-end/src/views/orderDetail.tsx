@@ -128,6 +128,9 @@ const App = ()=>{
             <TableItem left='Time' right={time.toLocaleString()} width={4} nohr />
             <TableItem left='Order ID' right={data.id} width={4} nohr />
             <TableItem left='Address' right={data.address} width={4} nohr />
+
+
+            <TableItem left='Need Help?' right={<a href={`tel:${data.restaurant.phone}`} className="">Call Restaurant</a>} width={4} nohr />
             
         </Table>
 

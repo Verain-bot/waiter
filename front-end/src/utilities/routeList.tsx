@@ -15,6 +15,9 @@ import AccountDetailsView, { accountDetailsLoader } from '../views/accountDetail
 import AccountDetailsEdit, { accountDetailsEditAction } from '../views/accountDetailsEdit';
 import { cartFooterAction } from '../components/cart/cartFooter';
 import OrderSuccess from '../views/orderSuccess'
+import ContactUs from '../views/contact'
+import AboutUs from '../views/about';
+
 export enum PathType{
     LOGGED_IN,
     LOGGED_OUT,
@@ -48,6 +51,8 @@ export enum PATHS {
     ACCOUNT_DETAILS = '/account/details',
     ACCOUNT_DETAILS_EDIT = '/account/edit',
     ORDER_CREATED_SUCCESS = '/order/success/:orderID',
+    CONTACT = '/contact',
+    ABOUT = '/about',
 }
 
 
@@ -164,8 +169,23 @@ const list : CustomRouteType[] = [
       name: 'Order Created Successfully ',
       pathType: [PathType.LOGGED_IN],
       icon: "person-circle",
-    }
+    },
+    {
+      path: PATHS.CONTACT,
+      element: <ContactUs />,
+      name: 'Contact Us',
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
+      icon: "telephone-fill",
+    },
+    {
+      path: PATHS.ABOUT,
+      element: <AboutUs />,
+      name: 'About Us',
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
+      icon: "at",
+    },
   ];
+
   
                                     
 export default list

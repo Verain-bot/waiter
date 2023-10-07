@@ -15,6 +15,7 @@ export type RestaurantListItemFetch = {
     totalRatings: number
     rating: number
     acceptingOrders: boolean
+    phone: string
   };
   
 export type ArrayResponseFetch<T> = {
