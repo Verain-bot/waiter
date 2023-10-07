@@ -77,7 +77,7 @@ const Left : React.FC<OrderListTableLeftProps>= (props)=>{
 export const orderListLoader : LoaderFunction = async ({request})=>{
     const data  = await getData(APIRoutes.ORDER_LIST, request.signal)
     const json = await data.json()
-    
+    console.log('json',json)
     return json
 }
 

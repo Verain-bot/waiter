@@ -74,13 +74,16 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
         const json : MenuItemDetailFetch = await response.json()
         const cust = json.customizations
         setCustomizations(cust)
-        setSelectedCustomizations(cust.map((customization)=>(
-            {
+        setSelectedCustomizations(cust.map((customization)=>{
+                const initialOption = customization.customizationType == 'radio'? [customization.customizationOptions[0]] : []
+                return {
                 CustomizationID: customization.id,
                 CustomizationName: customization.name,
-                Options: []
+                Options: initialOption
             }
-        )))
+        }
+        
+        ))
     }, [])
 
     const onClose = ()=>{

@@ -135,6 +135,7 @@ export const Form = memo((props : FormProps) => {
             if(selections.length > 0)
                 setSelections([])
         }
+        console.log('asdasd')
     })
 
     const handleChange = useCallback((e : React.ChangeEvent<HTMLInputElement>)=>{
@@ -237,7 +238,8 @@ export const CheckAndRadio = memo((props : CheckAndRadioProps) =>{
                 <input className="form-check-input" 
                     type={props.type} 
                     name={props.for} 
-                    value={String(val)} checked={checked} 
+                    value={String(val)}
+                    checked={checked} 
                     onChange={props.change}
                 />
                 

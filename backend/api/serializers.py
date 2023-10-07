@@ -76,6 +76,7 @@ class OrderListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='order-details')
     restaurant = RestaurantListSerializer(read_only=True)
     
+
     class Meta:
         model = Order
         fields = ['id', 'url', 'restaurant', 'price', 'time']

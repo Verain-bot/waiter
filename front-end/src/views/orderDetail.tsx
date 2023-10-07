@@ -60,14 +60,14 @@ export type OrderData = {
     time: string;
     tableNumber: number;
     tip: number;
-    orderStatus: string;
+    orderStatus: OrderStatusType;
     rating: number | null;
     comment: string;
     address: string;
     takeawayOrDinein: number;
 };
   
-
+type OrderStatusType = 'NOT_CONFIRMED'|'CONFIRMED'|'PREPARING'|'DISPATCHING'|'READY'|'COMPLETE'|'CANCELLED'
 
 const App = ()=>{
 
@@ -149,7 +149,7 @@ const App = ()=>{
         </Table>
 
         <Table title='Order Status' >
-            <TableItem right={<strong className='text-success'>{data.orderStatus}</strong>} left='Status' width={7} />
+            <TableItem right={<strong className='text-success'>{data.orderStatus.split('_').join(' ')}</strong>} left='Status' width={7} />
         </Table>
 
 

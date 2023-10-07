@@ -27,7 +27,7 @@ export const MenuHeader = ({selections, setSelections} : MenuHeaderProps) => {
 
 
     return (
-        <div className={`container d-flex flex-row overflow-auto sticky-top shadow card p-2 m-0 my-5 menu-header-${show ? 'show' : 'hide'}`}>
+        <div className={`container d-flex flex-row overflow-auto sticky-top shadow card p-2 m-0 my-5 menu-header-${show ? 'show' : 'hide'}` }>
             <OutlinedCheck name='Veg' buttonClass='btn-outline-success rounded-pill btn-badge' onClick={handleChange} value='VEG,dt' />
             <OutlinedCheck name='Non-Veg' buttonClass='btn-outline-danger rounded-pill btn-badge' onClick={handleChange} value='NON_VEG,dt' />
             <OutlinedCheck name='Egg' buttonClass='btn-outline-warning rounded-pill btn-badge' onClick={handleChange} value='EGG,dt' />

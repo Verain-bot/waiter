@@ -50,11 +50,11 @@ const App = () => {
   return (
     <main id="main" className="main">
       <div className='container m-0 p-0'>
-        <div className='row p-2 d-flex align-items-center justify-content-center'>
               
           <Message />
           <Review />
           <Header />
+        <div className='row p-2 d-flex align-items-center justify-content-center'>
 
           {navigation.state === 'loading' &&
             <LoadingScreen />

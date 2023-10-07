@@ -1,6 +1,7 @@
 import React, { memo, useEffect, useState, useContext } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
+import PlaceholderImage from '../../Media/placeholderMenuItem.jpeg'
 
 import { MenuItemListFetch } from "../../views/menu"
 import { AddOrUpdateAction, useCartContext } from "../../context/CartContext"
@@ -62,6 +63,11 @@ export const MenuItem : React.FC<MenuItemListFetch> = (props) => {
         })
     }
 
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        //change source
+        e.currentTarget.src = PlaceholderImage
+    }
+
 
     return(
 <>
@@ -70,15 +76,22 @@ export const MenuItem : React.FC<MenuItemListFetch> = (props) => {
 
             <div className="row d-flex align-items-center justify-content-center">
                 <div className="col-4 mx-auto">
-                    <img className='rounded img-thumbnail shadow-sm border-0' loading="lazy" src={String(props.itemPhoto)} />
+                    <img className='rounded img-thumbnail shadow-sm border-0' loading="lazy" src={String(props.itemPhoto)} onError={handleImageError} />
                 </div>
-                <div className="col-8 mx-0 mt-2 px-0">
+                
+                <div className="col-8 mx-0 mt px-0">
                     <div className='row'>
                         <div className='col-7 pb-2'>
                             <div className='row'>
                                 
-                                <h1 className='card-title py-0 m-0 medium' ><i className={`bi bi-dash-square-fill text-${props.dietaryType=="VEG"?'success':props.dietaryType=='NON_VEG'?'danger':'warning'}`} /> {props.name}</h1>
-                                <span className='text-muted small'>Rs. {props.price}</span>
+                                <h1 className='card-title py-0 m-0 medium' >
+                                    <i className={`bi bi-dash-square-fill text-${props.dietaryType=="VEG"?'success':props.dietaryType=='NON_VEG'?'danger':'warning'}`} style={{marginRight: 4}} />
+                                    {props.name}
+                                </h1>
+                                <span className='text-muted small'>
+                                    Rs. {props.price}
+                                    <span className="badge bg-danger-subtle border border-danger-subtle text-danger-emphasis rounded-pill mx-2">{props.category}</span>
+                                </span>
                                 
                                 <span className='small pb-1'>
                                 <Stars stars={props.rating} numRatings={props.totalRatings} />

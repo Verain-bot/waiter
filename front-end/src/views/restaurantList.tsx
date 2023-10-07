@@ -34,8 +34,8 @@ const App = ()=>{
     
 
     return(
-            <div className='col-md-6 col-12'>
-
+            <div className='col-md-5 col-12'>
+            
             <div className="col-12">
                 <h2>Explore</h2>
             </div>
