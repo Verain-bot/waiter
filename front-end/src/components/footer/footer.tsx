@@ -9,7 +9,7 @@ export default function Footer() {
     }
   return (
     <>
-    <hr className='col-12 col-md-8' style={{marginTop: '100px'}}></hr>
+    <hr className='col-12 col-md-10' style={{marginTop: '100px'}}></hr>
     <div className='col-12 col-md-8 d-flex align-items-center justify-content-center flex-column p-3'>
         
         <span className='text-muted ' style={style} >
@@ -26,6 +26,11 @@ export default function Footer() {
 
         <span className='text-secondary text-center my-2 ' style={style}>
             For more info on us and our team please click <Link to={PATHS.ABOUT}>here</Link>.
+        </span>
+
+        <span className='text-secondary text-center my-2 ' style={style}>
+            For terms and conditions please click <Link to={PATHS.TERMS} > here </Link> <br/>
+            For our privacy policy please click <Link to={PATHS.PRIVACY_POLICY} > here </Link>
         </span>
 
         <span className='text-secondary text-center my-2 ' style={style}>

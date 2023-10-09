@@ -1,6 +1,8 @@
-import { useEffect, useId, useRef } from "react";
+import React, { useEffect, useId, useRef } from "react";
 import { Form } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { useNavigation } from "react-router-dom";
+import { PATHS } from "../../utilities/routeList";
 
 type InputPropsUncontrolled = {
     name: string;
@@ -52,7 +54,7 @@ export const Input = (props:InputPropsUncontrolled) => {
 };
 
 
-export const Check = (props: InputPropsUncontrolled) => {
+export const Check = (props: Omit<InputPropsUncontrolled, 'name'>  & {name: React.ReactNode}) => {
     const navigation = useNavigation()
     const disabled = props.disabled?true:navigation.state=='idle'?false:true
     return (

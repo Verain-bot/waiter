@@ -23,9 +23,19 @@ const App = ()=>{
     const data = useLoaderData() as ArrayResponseFetch<OrderListTypeFetch>
     console.log('data',data)
     const results = Search(data.results,search,'restaurant.name')
+    if (results.length==0)
+        return(
+    <div style={{marginTop: '200px', marginBottom: '200px'}} className="text-center">
+        <h2>
+            You don't have any orders yet.
+            Please place a order and then come back.
+            <br/>
+            <br/>
+            <Link to={PATHS.RESTAURANT_LIST} className='btn btn-outline-danger'>Browse Restaurants</Link>
+        </h2>
+    </div>)
     return(
         <>
-    
         <div className='col-12 col-md-6 m-0 p-0'>
             <SearchResultMessage />
             <Table title='Orders' subTitle={'Your orders from all the restaurants available'} info={'Check your order history here. In case you need help, please contact the restaurant.'}  >

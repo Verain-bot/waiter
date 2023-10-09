@@ -10,6 +10,7 @@ import { makeRequest } from "../utilities/fetchData"
 import { PATHS } from "../utilities/routeList"
 import APIRoutes from "../utilities/APIRoutes"
 import { loginUser } from "../utilities/fetchUser"
+import { Link } from "react-router-dom"
 
 const App = ()=>{
 
@@ -30,7 +31,7 @@ const App = ()=>{
             <Input name='Last Name' type={'text'} inputName="last_name" />
             <Input name='Email' type={'email'} inputName="email" />
             <Input name='Phone' type={'number'} maxLength={10} prepend={'+91'} inputName="username" defaultValue={String(login.temp?.phone)} readonly />
-            <Check name='I agree to the Terms and Conditions' inputName="tnc" required invalidText='Please accept to continue' />
+            <Check name={<> I agree to the <Link to={PATHS.TERMS}>Terms and Conditions</Link> </>} inputName="tnc" required invalidText='Please accept to continue' />
             <Button name='Submit' />
             <LinkFooter text="Already registered?" linkText="Login" href={PATHS.LOGIN} />
         </FormCard>

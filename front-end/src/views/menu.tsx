@@ -87,7 +87,7 @@ const App = () =>{
 
     return(
     
-        <div className='col-md-5 col-12'>
+        <div className='col-md-7 col-12'>
             <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} />
             <MenuHeader  selections={filterSelections} setSelections={setFilterSelections} />
 

@@ -5,7 +5,7 @@ const App = ()=>{
     return(
         
         
-        <div className='col-12 col-md-6'>
+        <div className='col-12 col-md-8 p-0'>
             <div className="card shadow">
                 <div className="card-header pt-3 bg-primary-subtle text-primary-emphasis">
                     <h4>

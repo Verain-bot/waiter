@@ -17,6 +17,8 @@ import { cartFooterAction } from '../components/cart/cartFooter';
 import OrderSuccess from '../views/orderSuccess'
 import ContactUs from '../views/contact'
 import AboutUs from '../views/about';
+import PrivacyPolicy from '../views/privacyPolicy'
+import Terms from '../views/tnc'
 
 export enum PathType{
     LOGGED_IN,
@@ -53,6 +55,8 @@ export enum PATHS {
     ORDER_CREATED_SUCCESS = '/order/success/:orderID',
     CONTACT = '/contact',
     ABOUT = '/about',
+    PRIVACY_POLICY = '/privacy-policy',
+    TERMS = '/terms-and-conditions'
 }
 
 
@@ -182,6 +186,20 @@ const list : CustomRouteType[] = [
       element: <AboutUs />,
       name: 'About Us',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
+      icon: "at",
+    },
+    {
+      path: PATHS.PRIVACY_POLICY,
+      element: <PrivacyPolicy />,
+      name: 'Privacy Policy',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
+      icon: "at",
+    },
+    {
+      path: PATHS.TERMS,
+      element: <Terms />,
+      name: 'Terms and Conditions',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "at",
     },
   ];
