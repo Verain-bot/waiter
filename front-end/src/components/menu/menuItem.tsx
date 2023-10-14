@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { memo, useEffect, useState } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
 import PlaceholderImage from '../../Media/placeholderMenuItem.jpeg'
@@ -10,7 +10,7 @@ import { getCartItemQuantity as getCartQuantity } from "../../utilities/getCartQ
 import { useMenuContext } from "../../context/MenuContext"
 import MenuDescription from './menuItemDescription'
 
-export const MenuItem : React.FC<MenuItemListFetch> = (props) => {
+export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
     const RestaurantDetails = useMenuContext()
     const modalId = `menu-itemcutomizationModal-${props.id}`
     const [cart, dispatch] = useCartContext()
@@ -141,7 +141,7 @@ export const MenuItem : React.FC<MenuItemListFetch> = (props) => {
         />}
     </>
     )
-}
+})
 
 type QuantityModifierProps = {
     increase?: ()=>void;
