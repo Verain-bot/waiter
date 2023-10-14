@@ -19,6 +19,7 @@ import ContactUs from '../views/contact'
 import AboutUs from '../views/about';
 import PrivacyPolicy from '../views/privacyPolicy'
 import Terms from '../views/tnc'
+import PWAInfo from '../views/pwainfo'
 
 export enum PathType{
     LOGGED_IN,
@@ -56,7 +57,8 @@ export enum PATHS {
     CONTACT = '/contact',
     ABOUT = '/about',
     PRIVACY_POLICY = '/privacy-policy',
-    TERMS = '/terms-and-conditions'
+    TERMS = '/terms-and-conditions',
+    PWA_INFO = '/pwa-info',
 }
 
 
@@ -199,6 +201,13 @@ const list : CustomRouteType[] = [
       path: PATHS.TERMS,
       element: <Terms />,
       name: 'Terms and Conditions',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
+      icon: "at",
+    },
+    {
+      path: PATHS.PWA_INFO,
+      element: <PWAInfo />,
+      name: 'PWA Info',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "at",
     },

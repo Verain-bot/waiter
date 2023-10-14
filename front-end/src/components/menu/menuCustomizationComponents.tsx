@@ -78,6 +78,7 @@ export const Body = (props : Body1Props)=>{
                     index={key} 
                     selected = {props.selectedCustomizations} 
                     setSelected = {props.setSelectedCustomizations} 
+                    key={customization.id}
             />)}
         </>   
     )
@@ -199,6 +200,7 @@ export const Form = memo((props : FormProps) => {
                         for={props.name} 
                         selections={selections}
                         change={handleChange} 
+                        key={option.id}
                     />)  }
                 </div>
         </div>

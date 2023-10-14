@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState, useContext } from "react"
+import React, { useEffect, useState } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
 import PlaceholderImage from '../../Media/placeholderMenuItem.jpeg'
@@ -8,7 +8,7 @@ import { AddOrUpdateAction, useCartContext } from "../../context/CartContext"
 import { CartActions, CustomizationsType } from "../../context/CartContext"
 import { getCartItemQuantity as getCartQuantity } from "../../utilities/getCartQuantity"
 import { useMenuContext } from "../../context/MenuContext"
-
+import MenuDescription from './menuItemDescription'
 
 export const MenuItem : React.FC<MenuItemListFetch> = (props) => {
     const RestaurantDetails = useMenuContext()
@@ -76,7 +76,7 @@ export const MenuItem : React.FC<MenuItemListFetch> = (props) => {
 
             <div className="row d-flex align-items-center justify-content-center">
                 <div className="col-4 mx-auto">
-                    <img className='rounded img-thumbnail shadow-sm border-0' loading="lazy" src={String(props.itemPhoto)} onError={handleImageError} />
+                    <img className='rounded img-thumbnail shadow-sm border-0' loading="lazy" src={String(props.itemPhoto)} onError={handleImageError} alt="No image" />
                 </div>
                 
                 <div className="col-8 mx-0 mt px-0">
@@ -100,9 +100,7 @@ export const MenuItem : React.FC<MenuItemListFetch> = (props) => {
 
                             </div>
 
-                            <div className='row'>
-                                <span className='card-text text-secondary small'>{props.description}</span>
-                            </div>
+                            <MenuDescription desc={props.description} />
                         </div>
 
                         <div className='col-4 d-flex flex-column align-items-center justify-content-center' >

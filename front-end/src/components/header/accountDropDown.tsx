@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useLoginContext } from "../../context/LoginContext";
 import LogoutButton from "../forms/logoutButton";
 import { Link } from "react-router-dom";
@@ -8,7 +8,7 @@ import { PATHS } from "../../utilities/routeList";
 type AccountDropDownProps = {};
 
 export const AccountDropDown: React.FC<AccountDropDownProps> = (props) => {
-    const [login, setLogin] = useLoginContext()
+    const login = useLoginContext()[0]
 
     
 

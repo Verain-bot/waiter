@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "starthttps": "HTTPS=true SSL_CRT_FILE=/Users/verainsardana/Desktop/Developer/certs/172.20.10.10.pem SSL_KEY_FILE=/Users/verainsardana/Desktop/Developer/certs/172.20.10.10-key.pem react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

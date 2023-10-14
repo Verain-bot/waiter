@@ -3,7 +3,7 @@ import { MenuHeader } from "../components/menu/menuFilterHeader";
 import { MenuTitle } from "../components/menu/menuTitle";
 import { MenuSection } from "../components/menu/menuSubSection";
 import useSearchBar from "../hooks/useSearchBar"
-import { useLoaderData, useParams, LoaderFunction } from "react-router-dom";
+import { useLoaderData, LoaderFunction } from "react-router-dom";
 import { getData } from "../utilities/fetchData";
 import Search from "../utilities/search";
 import { SearchResultMessage } from "../components/header/search";
@@ -87,7 +87,7 @@ const App = () =>{
 
     return(
     
-        <div className='col-md-7 col-12'>
+        <div className='col-md-7 col-12 p-0'>
             <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} />
             <MenuHeader  selections={filterSelections} setSelections={setFilterSelections} />
 
