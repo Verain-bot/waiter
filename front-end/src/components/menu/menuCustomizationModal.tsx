@@ -75,11 +75,11 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
         const cust = json.customizations
         setCustomizations(cust)
         setSelectedCustomizations(cust.map((customization)=>{
-                
+                const initialOption = customization.customizationType == 'radio'? [customization.customizationOptions[0]] : []
                 return {
                 CustomizationID: customization.id,
                 CustomizationName: customization.name,
-                Options: [customization.customizationOptions[0]]
+                Options: initialOption
             }
         }
         

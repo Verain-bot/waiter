@@ -16,6 +16,7 @@ export type RestaurantListItemFetch = {
     rating: number
     acceptingOrders: boolean
     phone: string
+    restaurantType: string
   };
   
 export type ArrayResponseFetch<T> = {
@@ -43,7 +44,7 @@ const App = ()=>{
             <SearchResultMessage />
             {
                 filteredRestaurants.map((item)=>{
-                    return <RestaurantListItem id={item.id} key={item.id} name={item.name} type={item.type} img={item.img} totalRatings={item.totalRatings} rating={item.rating} />
+                    return <RestaurantListItem id={item.id} key={item.id} name={item.name} type={item.restaurantType} img={item.logo} totalRatings={item.totalRatings} rating={item.rating} />
                 })
             }
             

@@ -89,15 +89,15 @@ class MenuItem(models.Model):
         EGG = 'EGG', 'Egg'
 
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='restaurant', null=True)
-    name = models.CharField(max_length=100, blank=True)
-    itemType = models.ForeignKey(ItemType, related_name='itemtype',on_delete=models.CASCADE)
-    price = models.PositiveIntegerField(default=100)
+    name = models.CharField('Item Name',max_length=100, blank=True)
+    itemType = models.ForeignKey(ItemType, related_name='itemtype',on_delete=models.CASCADE, null=False, verbose_name='Item Type')
+    price = models.PositiveIntegerField('Price',default=100)
     category = models.ForeignKey(SpecialItem, related_name='special', null=True,on_delete=models.CASCADE, blank=True)
     description = models.TextField(max_length=500, blank=True)
     rating = models.FloatField(null=True, blank=True)
-    totalRatings = models.PositiveIntegerField(default=0)
-    itemPhoto = models.ImageField(upload_to=MenuUploadTo, blank=True)
-    dietaryType = models.CharField(max_length=10, choices=DietaryTypeChoices.choices, default=DietaryTypeChoices.VEG)
+    totalRatings = models.PositiveIntegerField('Total Ratings',default=0)
+    itemPhoto = models.ImageField('Item Photo',upload_to=MenuUploadTo, blank=True)
+    dietaryType = models.CharField('Food Type',max_length=10, choices=DietaryTypeChoices.choices, default=DietaryTypeChoices.VEG)
 
     class Meta:
         constraints = [

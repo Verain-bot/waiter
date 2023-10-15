@@ -192,7 +192,7 @@ export const Form = memo((props : FormProps) => {
 
     return(
         <div className="row mb-3">
-            <span><strong>{props.name}</strong> <span className="text-muted" style={{fontSize: 13}}>(Atleast 1 selection required)</span></span>
+            <span><strong>{props.name}</strong> {props.customizationType=='radio'&&<span className="text-muted" style={{fontSize: 13}}>(Atleast 1 selection required)</span>}</span>
                 <div className="col-12">
                     {props.customizationOptions.map((option)=>
                     <CheckAndRadio {...option} 

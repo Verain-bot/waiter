@@ -105,7 +105,6 @@ export const makeRequest = async (url: string, request: Request, data: FormData)
             message = 'Bad error, contact admin.'
         }
     }
-    alert('fetch')
     return {json, message, response}
 }
 

@@ -41,8 +41,6 @@ class OrderList(generics.ListAPIView):
     
     def get_queryset(self):
         return super().get_queryset().filter(customers__username=self.request.user.username)
-    
-    
 
 class OrderDetails(generics.RetrieveUpdateAPIView):
 

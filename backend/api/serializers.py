@@ -48,7 +48,7 @@ class RestaurantListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-details')
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'logo','url','rating', 'totalRatings', 'acceptingOrders', 'phone']
+        fields = ['id', 'name', 'logo','url','rating', 'totalRatings', 'acceptingOrders', 'phone', 'restaurantType']
 
 class QuantitySerializer(serializers.ModelSerializer):
     option = CustomatizationOptionsSerializer(read_only=True,many=True)

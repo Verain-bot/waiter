@@ -480,7 +480,7 @@ class TestViews(TestBase):
         cart.addItemDetails(2)
         customizations = cart.getMenuCustomizations(items[0])
         
-        cart.addCustomization(customizations[1][0])
+        cart.addCustomization(customizations[0][0])
         response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
         self.assertEquals(response.status_code, 400)
         self.assertEquals(response.json(), msg.INVALID_REQUEST)

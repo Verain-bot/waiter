@@ -108,8 +108,6 @@ def validate_cart_data(cartJSON, restaurantID):
                         if len(options) != 1:
                             return False
                     
-                    elif len(options) < 1:
-                        return False
                     
                     for option in options:
                         optionID = option['id']
