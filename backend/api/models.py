@@ -98,6 +98,7 @@ class MenuItem(models.Model):
     totalRatings = models.PositiveIntegerField('Total Ratings',default=0)
     itemPhoto = models.ImageField('Item Photo',upload_to=MenuUploadTo, blank=True)
     dietaryType = models.CharField('Food Type',max_length=10, choices=DietaryTypeChoices.choices, default=DietaryTypeChoices.VEG)
+    isActive = models.BooleanField('Currently Available',default=True)
 
     class Meta:
         constraints = [

@@ -51,7 +51,7 @@ def validate_cart_data(cartJSON, restaurantID):
 
             menuItem = menuItem.first()
             
-            if menuItem.pk in menuItemSet:
+            if menuItem.pk in menuItemSet or menuItem.isActive == False:
                 return False
             
             menuItemSet.add(menuItem.pk)

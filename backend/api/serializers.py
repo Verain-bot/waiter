@@ -28,6 +28,7 @@ class MenuListSerializer(serializers.ModelSerializer):
         else:
             return False
 
+    
     class Meta:
         model = MenuItem
         fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto','hasCustomization','rating', 'totalRatings','dietaryType', 'category']
@@ -39,7 +40,12 @@ class MenuDetailsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RestaurantDetailsSerializer(serializers.ModelSerializer):
-    menu = MenuListSerializer(many=True, read_only=True, source='restaurant')
+    menu = serializers.SerializerMethodField('get_menu')
+
+    def get_menu(self, obj):
+        menuItems = MenuItem.objects.filter(restaurant=obj, isActive=True)
+        return MenuListSerializer(menuItems, many=True, context=self.context).data
+
     class Meta:
         model = Restaurant
         fields = ['id', 'name', 'phone', 'email', 'logo', 'restaurantType', 'menu', 'rating', 'totalRatings', 'acceptingOrders']

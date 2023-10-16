@@ -835,4 +835,29 @@ class TestViews(TestBase):
         self.assertEquals(response.status_code, 400)
         self.assertEquals(response.json(), msg.INVALID_REQUEST)
 
+    def test_order_create_POST_MI_notActive(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        mi = MenuItem.objects.get(pk=items[0])
+        mi.isActive = False
+        mi.save()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        mi.isActive = True
+        mi.save()
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.json(), msg.ORDER_CREATED(cart.getPrice(), cart.getPK()))
     
