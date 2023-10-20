@@ -12,6 +12,7 @@ import LoadingScreen from './views/loading'
 import { useMessageContext } from './context/MessageContext';
 import { useLoginContext } from './context/LoginContext';
 import RouteList, { PATHS, PathType } from './utilities/routeList';
+import Footer from './components/footer/footer';
 
 const App = () => {
   const [login, setLogin] = useLoginContext()
@@ -50,11 +51,11 @@ const App = () => {
   return (
     <main id="main" className="main">
       <div className='container m-0 p-0'>
-        <div className='row p-2 d-flex align-items-center justify-content-center'>
               
           <Message />
           <Review />
           <Header />
+        <div className='row p-2 d-flex align-items-center justify-content-center'>
 
           {navigation.state === 'loading' &&
             <LoadingScreen />
@@ -63,7 +64,9 @@ const App = () => {
           {navigation.state !== 'loading' &&
             <Outlet />
           }
-
+        
+          
+          <Footer />
         </div>
       </div>
     </main>

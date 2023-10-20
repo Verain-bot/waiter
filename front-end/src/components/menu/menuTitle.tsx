@@ -4,6 +4,8 @@ import { Stars } from './stars';
 type MenuTitleProps = {
     name: string;
     type: string[];
+    stars: number;
+    numRatings: number;
 };
 
 export const MenuTitle: React.FC<MenuTitleProps> = (props) => {
@@ -21,7 +23,7 @@ export const MenuTitle: React.FC<MenuTitleProps> = (props) => {
         <div className="card p-4 mb-0 d-flex align-items-center justify-content-center">
             <h3>{props.name}</h3>
             <span className="text-secondary">{restaurantType} </span>
-            <Stars stars={4.2} numRatings={34} withNumber={true} />
+            <Stars stars={props.stars} numRatings={props.numRatings} withNumber={true} />
         </div>
     );
 };

@@ -77,12 +77,12 @@ export const Check = (props: InputControlledProps) => {
 };
 
 
-export const OutlinedCheck = (props: {name: string; onClick: React.ChangeEventHandler<HTMLInputElement>; buttonClass: string}) => {
+export const OutlinedCheck = (props: {value: string ;name: string; onClick: React.ChangeEventHandler<HTMLInputElement>; buttonClass: string}) => {
     const id = "OutlinedCheckbox" + props.name;
 
     return (
         <div className="mx-2">
-            <input type="checkbox" className="btn-check" id={id} name={props.name} onChange={props.onClick} />
+            <input type="checkbox" className="btn-check" id={id} name={props.name} onChange={props.onClick} value={props.value} />
             <label className={`btn ${props.buttonClass}`} htmlFor={id}>{props.name}</label><br />
         </div>
     );

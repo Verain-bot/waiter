@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,10 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    'OTPAuth',
     "corsheaders",
     'nested_admin',
     'rest_framework',
@@ -54,12 +54,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+                    '/Users/verainsardana/Desktop/Developer/waiter/owner-dashboard/dist',
+                    os.path.join(BASE_DIR, 'templates')
+                ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +77,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
@@ -87,9 +94,21 @@ CORS_ALLOW_CREDENTIALS = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'waiter',     
+        'USER': 'root', 
+        'PASSWORD': 'verain123', 
+        'HOST': 'localhost',   
+        'COLLATION': 'utf8_general_ci',
+        'CHARSET': 'utf8',
+        
+        'PORT': '3306',
+        'TEST':{
+            'NAME': 'testing',
+            
+        },
+        
+    },
 }
 
 
@@ -127,7 +146,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+#STATIC_URL = 'static/'
+STATIC_URL = 'assets/'
+
+STATICFILES_DIRS = [
+    '/Users/verainsardana/Desktop/Developer/waiter/owner-dashboard/dist/assets/',
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -140,12 +165,34 @@ MEDIA_URL = '/media/view/'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 100
 }
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-        "LOCATION": "unique-snowflake",
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://localhost:6379/0",
     }
 }
+
+#CELERY SETTINGS
+
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+
+#set result backend as python database
+# CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+#CELERY_IMPORTS  = ('api.tasks',)
+CELERY_WORKER_DEDUPLICATE_SUCCESSFUL_TASKS = True
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERYD_PREFETCH_MULTIPLIER = 4
+CELERY_SEND_SENT_EVENT = True
+CELERY_TASK_TRACK_STARTED = True
+CELERYD_CONCURRENCY = 4
+CELERYD_POOL = 'prefork'
+
+# worker command 
+# celery -A backend worker -l INFO

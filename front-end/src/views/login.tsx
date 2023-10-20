@@ -9,6 +9,7 @@ import { makeRequest } from '../utilities/fetchData';
 import { LoginContextType } from '../context/LoginContext';
 import { PATHS } from '../utilities/routeList';
 import { checkPhone } from '../utilities/formChecks';
+import APIRoutes from '../utilities/APIRoutes';
 
 const App = () => {
     const err = useActionError()
@@ -16,12 +17,12 @@ const App = () => {
     return (
         
         <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center" style={{'height':'80vh'}}>
-        <FormCard title='Login' subtitle='Please enter your phone for verification' method='POST' error={err} >
+        <FormCard title='Enter Phone' subtitle='Please enter your phone for verification' method='POST' error={err} >
 
                 <Input name='Phone'  type={'number'} prepend={'+91'} maxLength={10} inputName='phone' />
                 <Check name='Remember me' inputName='remember'  />
                 <Button name='Login'  />
-                <LinkFooter text={'Don\'t have an account?'} linkText='Register' href={PATHS.REGISTER} />
+                
         </FormCard> 
         </div>
         
@@ -34,12 +35,14 @@ export const loginAction : ( val:[LoginContextType, React.Dispatch<React.SetStat
     const data = await request.formData()
     const phone  = String(data.get('phone'))
     const [chk, phMsg] = checkPhone(phone)
+    const [login, setLogin] = LoginContext
+    
 
     if (!chk){
         return phMsg
     }
     
-    const {json, message, response} = await makeRequest('api/login/', request, data)
+    const {json, message, response} = await makeRequest(APIRoutes.SEND_OTP, request, data)
 
     if(!response.ok){
         return {
@@ -49,7 +52,16 @@ export const loginAction : ( val:[LoginContextType, React.Dispatch<React.SetStat
         }
     }
 
-    alert(`OTP sent to ${json.phone}`)
+    setLogin((prev)=>{
+        return{
+            ...prev,
+            temp: {
+                phone: parseInt(phone),
+                verified: false
+            }
+        }
+    })
+
     return redirect(PATHS.OTP)
 }
 

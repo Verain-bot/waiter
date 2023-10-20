@@ -2,25 +2,36 @@ import { useEffect, useState } from "react"
 import { FormCard } from "../components/forms/formCard"
 import { Button, LinkFooter} from "../components/forms/inputsControlled"
 import { Check, Input } from "../components/forms/inputsUncontrolled"
-import { LoginContextType } from "../context/LoginContext"
-import { ActionFunction, redirect } from "react-router-dom"
+import { LoginContextType, useLoginContext } from "../context/LoginContext"
+import { ActionFunction, redirect, useNavigate } from "react-router-dom"
 import { ActionErrorDataType, useActionError } from "../hooks/useActionError"
 import { checkEmail, checkPhone } from "../utilities/formChecks"
 import { makeRequest } from "../utilities/fetchData"
 import { PATHS } from "../utilities/routeList"
+import APIRoutes from "../utilities/APIRoutes"
+import { loginUser } from "../utilities/fetchUser"
+import { Link } from "react-router-dom"
 
 const App = ()=>{
 
     const err = useActionError()
+    const navigate = useNavigate()
+    const [login, setLogin] = useLoginContext()
+
+    useEffect(()=>{
+        if(!('temp' in login) || !login.temp?.verified || !login.temp?.phone)
+            navigate(PATHS.LOGIN)
+
+    })
 
     return(
         <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center">
         <FormCard title='Register' subtitle='Please enter your details to register' error={err} method="POST">
-            <Input name='First Name' type={'text'} inputName="firstName" />
-            <Input name='Last Name' type={'text'} inputName="lastName" />
+            <Input name='First Name' type={'text'} inputName="first_name" />
+            <Input name='Last Name' type={'text'} inputName="last_name" />
             <Input name='Email' type={'email'} inputName="email" />
-            <Input name='Phone' type={'number'} maxLength={10} prepend={'+91'} inputName="phone" />
-            <Check name='I agree to the Terms and Conditions' inputName="tnc" required invalidText='Please accept to continue' />
+            <Input name='Phone' type={'number'} maxLength={10} prepend={'+91'} inputName="username" defaultValue={String(login.temp?.phone)} readonly />
+            <Check name={<> I agree to the <Link to={PATHS.TERMS}>Terms and Conditions</Link> </>} inputName="tnc" required invalidText='Please accept to continue' />
             <Button name='Submit' />
             <LinkFooter text="Already registered?" linkText="Login" href={PATHS.LOGIN} />
         </FormCard>
@@ -29,38 +40,29 @@ const App = ()=>{
 }
 
 export const registerAction : (val : [LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction = (LoginContext ) => async({request, params}) : Promise<ActionErrorDataType | Response>=>{
-    console.log('asda')
     const data = await request.formData()
-    const firstName = String(data.get('firstName'))
-    const lastName = String(data.get('lastName'))
-    const phone = String(data.get('phone'))
     const email = String(data.get('email'))
 
     const [mailCheck, mailMsg] = checkEmail(email)
-    const [phoneCheck, phoneMsg] = checkPhone(phone)
     
     console.log()
 
-    if (!mailCheck || !phoneCheck ){
+    if (!mailCheck ){
         return {
             heading: 'Error',
             body: 'Please enter valid details',
             type: 'error',
             // @ts-ignore
-            errors: [...mailMsg.errors, ...phoneMsg.errors]
+            errors: [...mailMsg.errors]
         }
     }
 
-    const formData = new FormData()
-    formData.append('name', `${firstName} ${lastName}`)
-    formData.append('email', email)
-    formData.append('phone', phone)
 
-    const {json, message, response} = await makeRequest('api/create/', request, formData)
+    const {json, message, response} = await makeRequest(APIRoutes.CREATE, request, data)
     var m : string = json.phone || json.email || message
     m = String(m)
     m = m[0].toUpperCase() + m.slice(1)
-
+    console.log(json)
     if (!response.ok) {
         return {
             heading: 'Error',
@@ -69,10 +71,7 @@ export const registerAction : (val : [LoginContextType, React.Dispatch<React.Set
         }
     }
 
-    alert(`User created successfully. Please login to continue.`)
-
-    return redirect(PATHS.LOGIN, {status: 201})
+    return loginUser(LoginContext[1])
 }
-
 
 export default App

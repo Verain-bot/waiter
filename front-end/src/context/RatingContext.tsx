@@ -11,6 +11,12 @@ type RatingsContextType = {
     canRate: boolean
     showReviews: boolean
     reviews: ReviewContextType[]
+    url: string
+    starFieldName: string
+    bodyFieldName: string
+    actionURL: string
+    starsSelected: number
+    reviewWritten: string
   }
 
 const RatingsContext = createContext<[RatingsContextType, React.Dispatch<React.SetStateAction<RatingsContextType>>] | undefined>(undefined);
@@ -27,6 +33,13 @@ export const RatingContextProvider = ({ children }: { children: React.ReactNode 
             body: 'Something, Something, Something, Something, Something, Something, Something, Something, Something, Something, Something, Something, Something, Something, ',
           },
         ],
+        url: 'nan',
+        starFieldName: 'stars',
+        bodyFieldName: 'body',
+        actionURL: 'nan',
+        starsSelected: 0,
+        reviewWritten: ''
+
       })
 
     return (

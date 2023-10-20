@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from .models import *
+from OTPAuth.serializers import CustomerListSerializer
 
 class CustomatizationOptionsSerializer(serializers.ModelSerializer):
     customization = serializers.CharField(source='customization.name', read_only=True)
+    customizationID = serializers.IntegerField(source='customization.id', read_only=True)
     class Meta:
         model = CustomatizationOptions
         fields = '__all__'
@@ -18,16 +20,18 @@ class MenuListSerializer(serializers.ModelSerializer):
     itemType = serializers.CharField(source='itemType.name', read_only=True)
     #create a field which is false if length of customization is 0
     hasCustomization = serializers.SerializerMethodField('get_hasCustomization')
-    
+    category = serializers.CharField(source='category.name', read_only= True)
+
     def get_hasCustomization(self, obj):
         if len(obj.item_customization.all()) > 0:
             return True
         else:
             return False
 
+    
     class Meta:
         model = MenuItem
-        fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto','hasCustomization']
+        fields = ['id','name', 'url', 'itemType', 'price', 'description', 'itemPhoto','hasCustomization','rating', 'totalRatings','dietaryType', 'category']
 
 class MenuDetailsSerializer(serializers.ModelSerializer):
     customizations = MenuItemCustomizationSerializer(many=True, read_only=True, source='item_customization')
@@ -36,33 +40,21 @@ class MenuDetailsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class RestaurantDetailsSerializer(serializers.ModelSerializer):
-    menu = MenuListSerializer(many=True, read_only=True, source='restaurant')
+    menu = serializers.SerializerMethodField('get_menu')
+
+    def get_menu(self, obj):
+        menuItems = MenuItem.objects.filter(restaurant=obj, isActive=True)
+        return MenuListSerializer(menuItems, many=True, context=self.context).data
+
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'phone', 'email', 'logo', 'restaurantType', 'menu']
+        fields = ['id', 'name', 'phone', 'email', 'logo', 'restaurantType', 'menu', 'rating', 'totalRatings', 'acceptingOrders']
 
 class RestaurantListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='restaurant-details')
     class Meta:
         model = Restaurant
-        fields = ['id', 'name', 'logo','url']
-
-class CustomerDetailSerializer(serializers.ModelSerializer):
-    #phone number cannot be updated once created
-
-    class Meta:
-        model = Customer
-        fields = [ 'name', 'phone', 'email' ]
-
-    def update(self, instance, validated_data):
-        validated_data.pop('phone', None)
-        return super().update(instance, validated_data)
-    
-
-class CustomerListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'logo','url','rating', 'totalRatings', 'acceptingOrders', 'phone', 'restaurantType']
 
 class QuantitySerializer(serializers.ModelSerializer):
     option = CustomatizationOptionsSerializer(read_only=True,many=True)
@@ -89,23 +81,23 @@ class SubOrderSerializer(serializers.ModelSerializer):
 class OrderListSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name='order-details')
     restaurant = RestaurantListSerializer(read_only=True)
+    
 
     class Meta:
         model = Order
-        fields = ['id', 'url', 'restaurant']
+        fields = ['id', 'url', 'restaurant', 'price', 'time']
 
 class OrderDetailsSerializer(serializers.ModelSerializer):
     restaurant = RestaurantListSerializer(read_only=True)
     customers = SubOrderSerializer(many=True, read_only=True, source='order')
-
+    
     class Meta:
         model = Order
         fields = '__all__'
+        read_only_fields = ()
+    
+        
 
-class TableSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tables
-        fields = '__all__'
 
 class CartSerializer(serializers.Serializer):
     #get menu item from primary key
@@ -113,3 +105,4 @@ class CartSerializer(serializers.Serializer):
 
     class Meta:
         fields = ['itemID', 'quantity', 'customization']
+        

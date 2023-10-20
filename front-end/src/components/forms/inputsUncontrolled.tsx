@@ -1,43 +1,50 @@
-import { useId } from "react";
+import React, { useEffect, useId, useRef } from "react";
 import { Form } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { useNavigation } from "react-router-dom";
+import { PATHS } from "../../utilities/routeList";
 
 type InputPropsUncontrolled = {
     name: string;
     inputName: string;
     disabled?: boolean;
+    readonly?: boolean;
     prepend? : string;
     type?: string;
     maxLength?: number;
     defaultValue?: string;
     required?: boolean;
     invalidText?: string;
+    valid?: number;
 }
 
 export const Input = (props:InputPropsUncontrolled) => {
     const navigation = useNavigation()
     const disabled = props.disabled?true:navigation.state=='idle'?false:true
     const id = useId()
+    const valid = props.valid == 1 ? 'is-valid' : props.valid == -1 ? 'is-invalid' : '' 
 
     return (
         <div className="col-12">
             
-            <div className="input-group mb-3">
+            <div className="input-group has-validation mb-3">
 
             {props.prepend && <span className="input-group-text" id="inputGroupPrepend">{props.prepend}</span>}
             <div className="form-floating">
             
                 <input
                     type={props.type || "text"}
-                    className="form-control"
+                    className={valid + " form-control"}
                     name={props.inputName}
                     required = {true}
                     disabled={disabled}
                     maxLength={props.maxLength}
                     placeholder={props.name}
-
+                    readOnly={props.readonly}
                     defaultValue={props.defaultValue}
                     id={id}
+                    inputMode={props.type=='number'?'numeric':'text'}
+                    pattern= {props.type=='number'?'[0-9]*':''}
                     />
             <label className="form-label" htmlFor={id}>{props.name}</label>
             </div>
@@ -48,7 +55,7 @@ export const Input = (props:InputPropsUncontrolled) => {
 };
 
 
-export const Check = (props: InputPropsUncontrolled) => {
+export const Check = (props: Omit<InputPropsUncontrolled, 'name'>  & {name: React.ReactNode}) => {
     const navigation = useNavigation()
     const disabled = props.disabled?true:navigation.state=='idle'?false:true
     return (

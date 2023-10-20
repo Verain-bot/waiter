@@ -18,9 +18,28 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
+import enum
+from .mixins import URLEnumMixin
+import nested_admin
+
+admin.site.site_header = 'toOne Admin'
+admin.site.site_title = 'toOne Admin Portal'
+admin.site.index_title = 'toOne Admin Portal'
+admin.site.site_url = '/restaurant/admin/login/'
+
+class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
+    ADMIN = 'admin/'
+    API = 'api/'
+    OTP_AUTH = 'api/account/'
+    RES_OWNER = 'restaurant/admin/'
+
+    BASE = ''
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/',include('api.urls')),
-    path(r'^_nested_admin/', include('nested_admin.urls')),
+    path(URL_FOR_APPS.ADMIN, admin.site.urls),
+    path(URL_FOR_APPS.API,include('api.urls')),
+    path(URL_FOR_APPS.OTP_AUTH,include('OTPAuth.urls'),name='otp-auth'),
+    path(URL_FOR_APPS.RES_OWNER,include('ResOwner.urls')),
+    path('_nested_admin/', include('nested_admin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

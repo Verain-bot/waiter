@@ -1,204 +1,29 @@
 from django.test import TestCase, Client
+from backend.tests import TestBase
 from .models import *
 from rest_framework.test import APIClient
 from django.core.cache import cache
+from .helper import validate_cart_data
 from . import responseMessages as msg
-
+from unittest.mock import patch
+from .urls import API_URLS
+from api.tasks import add_comment_for_order
 #Testing views
-class TestViews(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.APIClient = APIClient()
-        self.table = 111
-        self.client2 = Client()
-
-        Customer.objects.create(name='Verain', phone='1',email='test1@test.com')
-        Customer.objects.create(name='Sunil', phone='2',email='test2@test.com')
-        Customer.objects.create(name='Karan', phone='3',email='test3@test.com')
-
-        ItemType.objects.create(name='Beverage')
-        ItemType.objects.create(name='Food')
-
-        SpecialItem.objects.create(name='Bestseller', color='red')
-        SpecialItem.objects.create(name='Popular', color='blue')
-
-        Restaurant.objects.create(name='Bar', phone='1234567890')
-        Restaurant.objects.create(name='Pizza', phone='1234567891')
-
-        MenuItem.objects.create(name='LIIT', price=100, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Beverage'), category=SpecialItem.objects.get(name='Bestseller'))
-        MenuItem.objects.create(name='Beer', price=200, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Beverage'))
-        MenuItem.objects.create(name='Snacks', price=300, restaurant=Restaurant.objects.get(name='Bar'), itemType=ItemType.objects.get(name='Food'))
-
-        #Similar menu for restaurant 2
-        MenuItem.objects.create(name='Pizza', price=100, restaurant=Restaurant.objects.get(name='Pizza'), itemType=ItemType.objects.get(name='Food'), category=SpecialItem.objects.get(name='Popular'))
-        MenuItem.objects.create(name='Coke', price=300, restaurant=Restaurant.objects.get(name='Pizza'), itemType=ItemType.objects.get(name='Beverage'))
-
-        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='LIIT'), name='Size', customizationType='radio')
-        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='LIIT'), name='Ice', customizationType='radio')
-        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Beer'), name='Size', customizationType='radio')
-        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Snacks'), name='Size', customizationType='radio')
-
-        #Similar customizations for restaurant 2
-        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Pizza'), name='Size', customizationType='radio')
-        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Pizza'), name='Toppings', customizationType='checkbox')
-        MenuItemCustomization.objects.create(item=MenuItem.objects.get(name='Coke'), name='Size', customizationType='radio')
-
-        #Customizations for LIIT
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Small', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Medium', price=50)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Large', price=100)
-
-        #Ice for LIIT
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Less', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Normal', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='More', price=0)
-
-        #Customizations for Beer
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Small', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Medium', price=50)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Beer'), name='Size'), name='Large', price=100)
-
-        #Customizations for Snacks
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Small', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Medium', price=50)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Snacks'), name='Size'), name='Large', price=100)
-
-        #Customizations for Pizza
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Small', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Medium', price=50)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Large', price=100)
-
-        #Toppings for Pizza
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Onion', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Capsicum', price=0)
-        CustomatizationOptions.objects.create(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Tomato', price=0)
-
-        #Order1 for person 1 and 2 at Bar
-        Order.objects.create(restaurant=Restaurant.objects.get(name='Bar'), tableNumber=1)
-        SubOrder1 = SubOrder.objects.create(customer=Customer.objects.get(pk=1), order=Order.objects.get(tableNumber=1))
-        SubOrder2 = SubOrder.objects.create(customer=Customer.objects.get(pk=2), order=Order.objects.get(tableNumber=1))
-        i1 = ItemDetail.objects.create(suborder=SubOrder1, item=MenuItem.objects.get(name='LIIT'), price=100)
-        i2 = ItemDetail.objects.create(suborder=SubOrder1, item=MenuItem.objects.get(name='Beer'), price=400)
-        i3 = ItemDetail.objects.create(suborder=SubOrder2, item=MenuItem.objects.get(name='Snacks'), price=100)
-
-        q1 = Quantity.objects.create(itemDetail=i1,qty=2)
-        q1.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Size'), name='Medium', price=50))
-        q1.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='LIIT'), name='Ice'), name='Normal', price=0))
-        Quantity.objects.create(itemDetail=i2, qty=1)
-        Quantity.objects.create(itemDetail=i3, qty=1)
-
-
-        #Order2 For Person 3 at Bar
-        Order.objects.create(restaurant=Restaurant.objects.get(name='Bar'), tableNumber=2)
-        SubOrder3 = SubOrder.objects.create(customer=Customer.objects.get(pk=3), order=Order.objects.get(tableNumber=2))
-        i4 = ItemDetail.objects.create(suborder=SubOrder3, item=MenuItem.objects.get(name='Beer'), price=100)
-        i5 = ItemDetail.objects.create(suborder=SubOrder3, item=MenuItem.objects.get(name='LIIT'), price=400)
-        Quantity.objects.create(itemDetail=i4, qty=1)
-        Quantity.objects.create(itemDetail=i5, qty=2)
-
-
-        #Order3 For Person 1 and 3 at Pizza
-        Order.objects.create(restaurant=Restaurant.objects.get(name='Pizza'), tableNumber=3)
-        SubOrder4 = SubOrder.objects.create(customer=Customer.objects.get(pk=1), order=Order.objects.get(tableNumber=3))
-        SubOrder5 = SubOrder.objects.create(customer=Customer.objects.get(pk=3), order=Order.objects.get(tableNumber=3))
-        i6 = ItemDetail.objects.create(suborder=SubOrder4, item=MenuItem.objects.get(name='Pizza'), price=100)
-        i7 = ItemDetail.objects.create(suborder=SubOrder4, item=MenuItem.objects.get(name='Coke'), price=400)
-        i8 = ItemDetail.objects.create(suborder=SubOrder5, item=MenuItem.objects.get(name='Pizza'), price=100)
-
-        q6 = Quantity.objects.create(itemDetail=i6, qty=1)
-        q6.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Size'), name='Medium', price=50))
-        q6.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Onion', price=0))
-        q6.option.add(CustomatizationOptions.objects.get(customization=MenuItemCustomization.objects.get(item=MenuItem.objects.get(name='Pizza'), name='Toppings'), name='Capsicum', price=0))
-
-        Quantity.objects.create(itemDetail=i7, qty=1)
-        Quantity.objects.create(itemDetail=i8, qty=1)
-
-
-        #All Customer Visits
-        CustomerVisit.objects.create(customer=Customer.objects.get(pk=2), restaurant=Restaurant.objects.get(name='Bar'))
-        CustomerVisit.objects.create(customer=Customer.objects.get(pk=1), restaurant=Restaurant.objects.get(name='Bar'))
-        CustomerVisit.objects.create(customer=Customer.objects.get(pk=3), restaurant=Restaurant.objects.get(name='Bar'))
-        CustomerVisit.objects.create(customer=Customer.objects.get(pk=1), restaurant=Restaurant.objects.get(name='Pizza'))
-        CustomerVisit.objects.create(customer=Customer.objects.get(pk=3), restaurant=Restaurant.objects.get(name='Pizza'))
-
-    
+class TestViews(TestBase):
     #reset cache
-    def reset_cache(self):
-        cache.clear()
-    
-    def reset_table(self):
-        #Assign customers to all tables null
-        for table in Tables.objects.all():
-            table.customersSitting.clear()
-            table.status='Available'
-            table.save()
-    #login user with phone 2 with 2nd client
-    def login2(self):
-        data = {'phone': '2'}
-        response = self.client2.post('/api/login/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-
-        #Check OTP
-        data = {'otp': '1234'}
-        response = self.client2.post('/api/otp/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        print(response)
-
-    #logout user with phone 2
-    def logout2(self):
-        data = {'logout': True}
-        response = self.client2.post('/api/login/',data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-
-    def login(self):
-        data = {'phone': '1'}
-        response = self.client.post('/api/login/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['phone'], '1')
-
-        #Check OTP
-        data = {'otp': '1234'}
-        response = self.client.post('/api/otp/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-
-    def logout(self):
-        data = {'logout': True}
-        response = self.client.post('/api/login/',data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        
-
-    def assignTable(self, tableNumber, client):
-        data = {'tableNumber': tableNumber}
-        response = client.post('/api/restaurants/1/table/assign/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        
-    
-    def requestToJoinTable(self, tableNumber, client):
-        data = {'tableNumber': tableNumber}
-        response = client.post('/api/restaurants/1/table/join/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        
 
     def test_restaurant_list_GET(self):
-        response = self.client.get('/api/restaurants/')
+        response = self.client.get(API_URLS.RESTAURANT_LIST.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response['count'], 2)
+        self.assertEquals(response['count'], Restaurant.objects.count())
         self.assertEquals(response['results'][0]['name'], 'Bar')
         
         #check if json contains url
-        self.assertEquals(response['results'][0]['url'], 'http://testserver/api/restaurants/details/1')
+        self.assertEquals(response['results'][0]['url'], API_URLS.RESTAURANT_DETAILS.getTestURL(pk=1))
 
     def test_restaurant_detail_GET(self):
-        response = self.client.get('/api/restaurants/details/1')
+        response = self.client.get(API_URLS.RESTAURANT_DETAILS.getURL(pk=1))
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response['name'], 'Bar')
@@ -207,10 +32,10 @@ class TestViews(TestCase):
         self.assertEquals(len(response['menu']), 3)
 
         #check if menu contains url
-        self.assertEquals(response['menu'][0]['url'], 'http://testserver/api/menu/details/1')
+        self.assertEquals(response['menu'][0]['url'], API_URLS.MENU_DETAILS.getTestURL(pk=1))
     
     def test_menu_detail_GET(self):
-        response = self.client.get('/api/menu/details/1')
+        response = self.client.get(API_URLS.MENU_DETAILS.getURL(pk=1))
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response['name'], 'LIIT')
@@ -220,128 +45,28 @@ class TestViews(TestCase):
 
         #Check for customization options
         self.assertEquals(len(response['customizations'][0]['customizationOptions']), 3)
-        
-    #Test create user page
-    def test_create_user_GET(self):
-        #new customer data
-        data = {
-            'name': 'Create User',
-            'phone': '1234567899',
-            'email': 'test11@test.com'
-        }
-        response = self.client.post('/api/create/', data)
-        self.assertEquals(response.status_code, 201)
-        response = response.json()
-        self.assertEquals(response['name'], 'Create User')
-    
-        
-    #Test login page
-    def test_login_POST(self):
-        response = self.client.post('/api/login/')
-        self.assertEquals(response.status_code, 400)
 
-        #wrong data
-        data = {'phone': '1234567895'}
-        response = self.client.post('/api/login/', data)
-        self.assertEquals(response.status_code, 404)
-        
-        #correct data
-        data = {'phone': '1'}
-        response = self.client.post('/api/login/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['phone'], '1')
-
-        #Check OTP
-        data = {'otp': '1234'}
-        response = self.client.post('/api/otp/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        print(response)
-        self.assertEquals(response, msg.OTP_VERIFICATION_COMPLETE)
-
-        response = self.client.post('/api/login/')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['phone'], 1)
-
-        #logout
-        data = {'logout': True}
-        response = self.client.post('/api/login/',data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response, msg.USER_LOGGED_OUT)
-
-        data = {'otp': 1233}
-        response = self.client.post('/api/otp/', data)
-        self.assertEquals(response.status_code, 400)
-
-        #Check OTP Limit
-
-        data = {'phone': '1'}
-        response = self.client.post('/api/login/', data)
-
-        data = {'otp': 1233}
-
-        for i in range(1,6):
-            response = self.client.post('/api/otp/', data)
-            if  (i == 5):
-                self.assertEquals(response.status_code, 400)
-            else:
-                self.assertEquals(response.status_code, 400)
-        
-        response = response.json()
-        self.assertEquals(response, msg.OTP_TOO_MANY_ATTEMPTS)
-
-#check user retrieve update page
-    def test_user_detail_GET(self):
-        response = self.client.get('/api/account/')
-        self.assertEquals(response.status_code, 403)
-
-        self.login()
-        response = self.client.get('/api/account/')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['name'], 'Verain')
-        self.assertEquals(response['phone'], 1)
-        self.logout()
-
-    def test_user_detail_PATCH(self):
-        response = self.client.patch('/api/account/')
-        self.assertEquals(response.status_code, 403)
-
-        self.login()
-        data = {"email": "verain@verain.com"}
-        response = self.client.patch('/api/account/', data,content_type='application/json')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['name'], 'Verain')
-        self.assertEquals(response['phone'], 1)
-        self.assertEquals(response['email'], 'verain@verain.com')
-        self.logout()
-    
     #Order list view
-    def test_order_list_GET(self):
-        response = self.client.get('/api/account/orders/')
+    def test_order_list_GET_LoggedOut(self):
+        response = self.client.get(API_URLS.ORDER_LIST.getURL())
         self.assertEquals(response.status_code, 403)
 
+    def test_order_list_GET(self):
         self.login()
-        response = self.client.get('/api/account/orders/')
+        response = self.client.get(API_URLS.ORDER_LIST.getURL())
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response['count'], 2)
-        self.assertEquals(response['results'][0]['id'], 1)
-
-        #check if json contains url
-        self.assertEquals(response['results'][0]['url'], 'http://testserver/api/account/orders/details/1')
-        self.logout()
-    
-    def test_order_detail_GET(self):
-        response = self.client.get('/api/account/orders/details/1')
+        self.assertEquals(response['results'][0]['id'], 3)
+        self.assertEquals(response['results'][0]['url'], API_URLS.ORDER_DETAILS.getTestURL(pk=3))
+         
+    def test_order_detail_GET_LoggedOut(self):
+        response = self.client.get(API_URLS.ORDER_DETAILS.getURL(pk=1))
         self.assertEquals(response.status_code, 403)
 
+    def test_order_detail_GET(self):
         self.login()
-        response = self.client.get('/api/account/orders/details/1')
+        response = self.client.get(API_URLS.ORDER_DETAILS.getURL(pk=1))
         self.assertEquals(response.status_code, 200)
         response = response.json()
         self.assertEquals(response['id'], 1)
@@ -357,133 +82,782 @@ class TestViews(TestCase):
         self.assertEquals(len(response['customers'][0]['items'][0]['quantity']), 1)
         self.assertEquals(len(response['customers'][0]['items'][0]['quantity'][0]['option']), 2)
 
-        response = self.client.get('/api/account/orders/details/2')
+    def test_order_detail_GET_InvalidOrder(self):
+        self.login()
+        response = self.client.get(API_URLS.ORDER_DETAILS.getURL(pk=2))
         self.assertEquals(response.status_code, 403)
 
-        self.logout()
-
-    def test_table_list(self):
-        response = self.client.get('/api/restaurants/1/tables')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['count'], 10)
-        
-    def test_simultaneous_login(self):
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_OrderNotCompleted(self):
         self.login()
-        self.login2()
-
-        #check if both users are logged in
-        response = self.client.get('/api/account/')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['name'], 'Verain')
-
-        response = self.client2.get('/api/account/')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['name'], 'Sunil')
-
-        self.logout()
-        self.logout2()
-
-    def test_assign_Table_POSTDELETE(self):
-        self.login()
-        #request without table number
-        response = self.client.post('/api/restaurants/1/table/assign/')
-        self.assertEquals(response.status_code, 400)
-
-        #request with table number
-        data = {'tableNumber': 1}
-        response = self.client.post('/api/restaurants/1/table/assign/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response, msg.TABLE_ASSIGNED_SUCCESS)
-
-        #request with already assigned table
-        self.login2()
-        response = self.client2.post('/api/restaurants/1/table/assign/', data)
-        self.assertEquals(response.status_code, 400)
-
-        self.logout2()
-        
-        response = self.client.delete('/api/restaurants/1/table/assign/')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response, msg.GENERAL_SUCCESS)
-        self.logout()
-
-    def test_Join_table_POST(self):
-        self.login()
-        self.assignTable(1, self.client)
-        self.login2()
-        
-        response = self.client2.post('/api/restaurants/1/table/join/')
-        self.assertEquals(response.status_code, 400)
-        
-        response = self.client.post('/api/restaurants/1/table/join/')
-        self.assertEquals(response.status_code, 400)
-
-        data = {'tableNumber': 2}
-        response = self.client2.post('/api/restaurants/1/table/join/', data)
-        self.assertEquals(response.status_code, 400)
-
-        data = {'tableNumber': 1}
-        response = self.client2.post('/api/restaurants/1/table/join/', data)
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response, msg.TABLE_JOIN_REQUESTED)
-        self.logout()
-        self.logout2()
-    
-    def test_view_table_GET(self):
-        self.reset_cache()
-        self.reset_table()
-        self.login()
-        self.login2()
-        self.assignTable(1, self.client)
-        
-        self.requestToJoinTable(1, self.client2)
-        
-        response = self.client.get('/api/table/view/')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['table']['tableNumber'], 1)
-        self.assertEquals(response['table']['status'], 'Occupied')
-        self.assertEquals(len(response['peopleRequesting']), 1)
-
-        self.client2.delete('/api/restaurants/1/table/join/')
-
-        response = self.client.get('/api/table/view/')
-        self.assertEquals(response.status_code, 200)
-        response = response.json()
-        self.assertEquals(response['table']['tableNumber'], 1)
-        self.assertEquals(len(response['peopleRequesting']), 0)
-
-        self.logout()
-        self.logout2()
-    
-    def test_join_table_process(self):
-        self.reset_cache()
-        self.reset_table()
-        self.login()
-        self.login2()
-
-        self.assignTable(1, self.client)
-
-        self.requestToJoinTable(1, self.client2)
-        
         data = {
-            'phone': 2,
+            'comment': 'Hello',
+            'rating': 5,
         }
-        response = self.client.post('/api/table/view/', data)
+        order = Order.objects.first()        
+        response = self.client.patch(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+        response = response.json()
+        self.assertEquals(response, msg.ORDER_COMMENT_AFTER_COMPLETED)
+        
+    
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_OrderCompleted(self):
+
+        self.login()
+        data = {
+            'comment': 'Hello22',
+            'rating': 5,
+        }
+        order = self.order1_bar
+        order.refresh_from_db()
+        order.orderStatus = Order.OrderStatusChoices.COMPLETE
+        order.save()
+        items = self.getItemsFromOrder(order)
+        for mi in items:
+            self.assertEquals(mi.rating, None)
+
+        response = self.client.put(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response, msg.USER_ACCEPTED)
+        
+        order.refresh_from_db()
+        self.assertEquals(order.comment, 'Hello22')
+        self.assertEquals(order.rating, 5)
+        self.assertEquals(order.restaurant.rating, 5)
 
-        response = self.client2.get('/api/restaurants/1/table/join/')
+        #Order contains Pizza
+        items = self.getItemsFromOrder(order)
+        for mi in items:
+            self.assertEquals(mi.rating, 5)
+            
+        data = {
+            'comment': 'Hello223',
+            'rating': 3,
+        }
+        response = self.client.put(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+        order.refresh_from_db()
+        order.orderStatus = Order.OrderStatusChoices.NOT_CONFIRMED
+        order.save()
+        self.assertEquals(order.comment, 'Hello223')
+        self.assertEquals(order.rating, 3)
+        self.assertEquals(order.restaurant.rating, 3)
+
+        
+        for mi in items:
+            mi.refresh_from_db()
+            self.assertEquals(mi.rating, 3)
+            mi.rating = None
+            mi.save()
+
+
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_OrderCancelled(self):
+        self.login()
+        order = self.order1_bar
+        price = order.price
+        data = {
+            'orderStatus': 'CANCELLED',
+            'price' : price + 210,
+            'comment': 'Something'
+        }
+        
+        order.orderStatus = Order.OrderStatusChoices.COMPLETE
+        order.save()
+
+        response = self.client.patch(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+
         self.assertEquals(response.status_code, 200)
         response = response.json()
-        self.assertEquals(response, msg.TABLE_ASSIGNED_SUCCESS)
+        
+        order.refresh_from_db()
+    
+        self.assertEquals(order.orderStatus, Order.OrderStatusChoices.COMPLETE)
+        self.assertEquals(order.price, price)
 
-        self.logout()
-        self.logout2()
+        order.orderStatus = Order.OrderStatusChoices.NOT_CONFIRMED
+        order.save()
+
+    @patch('api.views.add_comment_for_order.delay', new=add_comment_for_order)
+    def test_order_detail_UPDATE_wrong_input(self):
+        self.login()
+        data = {
+            'comment': 'Hello22',
+            'rating': 'vsa',
+        }
+        order = Order.objects.first()        
+        order.orderStatus = Order.OrderStatusChoices.COMPLETE
+        order.save()
+
+        response = self.client.put(API_URLS.ORDER_DETAILS.getURL(pk=order.pk), data, content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        
+        order = Order.objects.first()        
+        order.orderStatus = Order.OrderStatusChoices.NOT_CONFIRMED
+        order.save()
+        self.assertEquals(order.comment, '')
+        self.assertEquals(order.rating, None)
+        
+# ===============================================================
+#
+#                       ORDER CREATE TESTS
+#
+# ===============================================================
+
+
+    def test_order_create_POST(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        pk1 = cart.getPK()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        pk2 = cart.getPK()
+        self.assertNotEquals(pk1, pk2)
+
+        order = cart.getLastOrder()
+        self.assertEquals(order.restaurant,Restaurant.objects.get(pk=2))
+
+        orderItems = cart.getOrderItems(order.pk)
+        self.assertEquals(orderItems.count(), 1)
+
+        orderItem_Quantity = cart.getItemQuantity(orderItems.first().pk)
+        self.assertEquals(orderItem_Quantity.count(), 1)
+        self.assertEquals(orderItem_Quantity.first().qty, 2)
+
+        orderItem_Quantity_Options = cart.getQuantityOptions(orderItem_Quantity.first().pk)
+        self.assertEquals(orderItem_Quantity_Options.count(), 1)
+        self.assertEquals(orderItem_Quantity_Options.first().pk, customizationOptions[0])
+
+        self.assertEquals(response.json(), msg.ORDER_CREATED(cart.getPrice(), cart.getPK()))
+        cart.print()
+    
+    def test_order_create_POST_many_Items(self):
+        self.login()
+        cart = self.Cart(3)
+        optionsGiven = []
+        items = cart.getRestaurantItems()
+
+        #add item 1
+        cart.addItem(items[0])
+        cart.addItemDetails(11)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        #radio customization
+        optionsGiven.append([])
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1].append(customizationOptions[0])
+
+        #checkbox customization
+        cart.addCustomization(customizations[1][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        cart.addOption(customizationOptions[1])
+        cart.addOption(customizationOptions[2])
+        optionsGiven[-1].append(customizationOptions[0])
+        optionsGiven[-1].append(customizationOptions[1])
+        optionsGiven[-1].append(customizationOptions[2])
+        
+        #add item 2
+        cart.addItem(items[1])
+        cart.addItemDetails(12)
+        customizations = cart.getMenuCustomizations(items[1])
+
+        #radio customization
+        optionsGiven.append([])
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1].append(customizationOptions[0])
+        #checkbox customization
+        cart.addCustomization(customizations[1][0])
+        
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        cart.addOption(customizationOptions[1])
+        optionsGiven[-1].append(customizationOptions[0])
+        optionsGiven[-1].append(customizationOptions[1])
+
+        #add item 3
+        cart.addItem(items[4])
+        cart.addItemDetails(13)
+        customizations = cart.getMenuCustomizations(items[4])
+
+        #radio customization
+        optionsGiven.append([])
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1].append(customizationOptions[0])
+
+        #checkbox customization
+        cart.addCustomization(customizations[1][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1].append(customizationOptions[0])
+
+
+        pk1 = cart.getPK()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        pk2 = cart.getPK()
+        self.assertNotEquals(pk1, pk2)
+
+        order = cart.getLastOrder()
+        self.assertEquals(order.restaurant,Restaurant.objects.get(pk=3))
+
+        orderItems = cart.getOrderItems(order.pk)
+        self.assertEquals(orderItems.count(), 3)
+
+        for idx ,orderItem in enumerate(orderItems):
+            orderItem_Quantity = cart.getItemQuantity(orderItem.pk)
+            self.assertEquals(orderItem_Quantity.count(), 1)
+            self.assertEquals(orderItem_Quantity.first().qty, [11,12,13][idx])
+            
+            orderItem_Quantity_Options = cart.getQuantityOptions(orderItem_Quantity.first().pk)
+            self.assertEquals(orderItem_Quantity_Options.count(), [4,3,2][idx])
+
+            for idx2, option in enumerate(orderItem_Quantity_Options):
+                self.assertEquals(option.pk, optionsGiven[idx][idx2])
+
+        self.assertEquals(response.json(), msg.ORDER_CREATED(cart.getPrice(), cart.getPK()))
+    
+    def test_order_create_POST_many_Items_Multiple_Quantities(self):
+        self.login()
+        cart = self.Cart(3)
+        optionsGiven = []
+        items = cart.getRestaurantItems()
+
+        #add item 1
+        cart.addItem(items[0])
+
+        cart.addItemDetails(11)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        #radio customization
+        optionsGiven.append([[]])
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1][-1].append(customizationOptions[0])
+
+        #checkbox customization
+        cart.addCustomization(customizations[1][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        cart.addOption(customizationOptions[1])
+        cart.addOption(customizationOptions[2])
+        optionsGiven[-1][-1].append(customizationOptions[0])
+        optionsGiven[-1][-1].append(customizationOptions[1])
+        optionsGiven[-1][-1].append(customizationOptions[2])
+        
+        #add new quantity
+        cart.addItemDetails(21)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        #radio customization
+        optionsGiven[-1].append([])
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[1])
+        optionsGiven[-1][-1].append(customizationOptions[1])
+
+        #checkbox customization
+        cart.addCustomization(customizations[1][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        cart.addOption(customizationOptions[1])
+        cart.addOption(customizationOptions[2])
+        optionsGiven[-1][-1].append(customizationOptions[0])
+        optionsGiven[-1][-1].append(customizationOptions[1])
+        optionsGiven[-1][-1].append(customizationOptions[2])
+        
+        #add item 2
+        cart.addItem(items[1])
+        cart.addItemDetails(12)
+        customizations = cart.getMenuCustomizations(items[1])
+
+        #radio customization
+        optionsGiven.append([[]])
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1][-1].append(customizationOptions[0])
+        #checkbox customization
+        cart.addCustomization(customizations[1][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        cart.addOption(customizationOptions[1])
+        optionsGiven[-1][-1].append(customizationOptions[0])
+        optionsGiven[-1][-1].append(customizationOptions[1])
+
+        #add item 3
+        cart.addItem(items[4])
+        cart.addItemDetails(13)
+        customizations = cart.getMenuCustomizations(items[4])
+
+        #radio customization
+        optionsGiven.append([[]])
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1][-1].append(customizationOptions[0])
+
+        #checkbox customization
+        cart.addCustomization(customizations[1][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        optionsGiven[-1][-1].append(customizationOptions[0])
+        
+
+        pk1 = cart.getPK()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+        pk2 = cart.getPK()
+        self.assertNotEquals(pk1, pk2)
+
+        order = cart.getLastOrder()
+
+        items = cart.getOrderItems(order.pk)
+
+        self.assertEquals(order.restaurant,Restaurant.objects.get(pk=3))
+
+        orderItems = cart.getOrderItems(order.pk)
+        self.assertEquals(orderItems.count(), 3)
+        
+        for idx ,orderItem in enumerate(orderItems):
+            orderItem_Quantities = cart.getItemQuantity(orderItem.pk)
+            self.assertEquals(orderItem_Quantities.count(), [2,1,1][idx])
+
+            for idx2, orderItem_qty in enumerate(orderItem_Quantities):
+                
+                self.assertEquals(orderItem_qty.qty, [[11,21],[12],[13]][idx][idx2])
+            
+                orderItem_Quantity_Options = cart.getQuantityOptions(orderItem_qty.pk)
+                self.assertEquals(orderItem_Quantity_Options.count(), [[4,4],[3],[2]][idx][idx2])
+
+                for idx3, option in enumerate(orderItem_Quantity_Options):
+                    self.assertEquals(option.pk, optionsGiven[idx][idx2][idx3])
+
+        self.assertEquals(response.json(), msg.ORDER_CREATED(cart.getPrice(), cart.getPK()))
+    
+    def test_order_create_POST_No_Quantity(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+    
+    def test_order_create_POST_No_Customizations(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 200)
+
+        self.assertEquals(response.json(), msg.ORDER_CREATED(cart.getPrice(), cart.getPK()))
+    
+    def test_order_create_POST_No_Options(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_No_Items(self):
+        self.login()
+        cart = self.Cart(2)
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_Same_Items(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_Duplicate_Customizations(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[3])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[3])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_Duplicate_Options(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[3])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[3])
+        
+        cart.addCustomization(customizations[1][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_Bad_Restaurant_str(self):
+        self.login()
+        cart = self.Cart('Hello')
+        items = cart.getRestaurantItems(1)
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        
+    def test_order_create_POST_Bad_Restaurant_int(self):
+            self.login()
+            cart = self.Cart(321)
+            items = cart.getRestaurantItems(1)
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            
+
+            cart.addCustomization(customizations[0][0])
+            customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(customizationOptions[0])
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+            self.assertEquals(response.status_code, 404)
+              
+    def test_order_create_POST_Bad_MenuItem(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems(2)
+        cart.addItem(items[0], 1)
+        cart.addItemDetails(9)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_bad_cart(self):
+        self.login()
+        cart = self.Cart(2)
+        cart.items = 'verain'
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_bad_customizations(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        cart.items[-1]['customizations'] = 'verain'
+
+        # cart.print()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_bad_customizations2(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+        cart.items[-1]['customizations'][-1]['customizations'] = 'verain'
+
+        # cart.print()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_bad_options(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+        cart.items[-1]['customizations'][-1]['customizations'][-1]['Options'] = 'verain'
+
+        # cart.print()
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_missing_field_1(self):
+        self.login()
+
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        x = cart.toFormData()
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(),{
+            'cart': x['cart'],
+        } , content_type='application/json')
+        
+        self.assertEquals(response.status_code, 400)
+        #self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(),{
+            'restaurantID': x['restaurantID'],
+        } , content_type='application/json')
+        
+        self.assertEquals(response.status_code, 400)
+        #self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_missing_field_2(self):
+        self.login()
+
+        for key in self.Cart.getKeys1():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_missing_field_3(self):
+        self.login()
+
+        for key in self.Cart.getKeys2():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1]['customizations'][-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_missing_field_4(self):
+        self.login()
+
+        for key in self.Cart.getKeys3():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1]['customizations'][-1]['customizations'][-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_missing_field_5(self):
+        self.login()
+
+        for key in self.Cart.getKeys4():
+            cart = self.Cart(2)
+            items = cart.getRestaurantItems()
+            cart.addItem(items[0])
+            cart.addItemDetails(2)
+            customizations = cart.getMenuCustomizations(items[0])
+            cart.addCustomization(customizations[0][0])
+            options = cart.getCustomizationOptions(customizations[0][0])
+            cart.addOption(options[0])
+
+            del cart.items[-1]['customizations'][-1]['customizations'][-1]['Options'][-1][key]
+
+            response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+            self.assertEquals(response.status_code, 400)
+            self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_wrong_MenuItem(self):
+        self.login()
+        cart = self.Cart(2)
+        items = cart.getRestaurantItems(1)
+        cart.addItem(items[0])
+        cart.addItemDetails(9)
+        customizations = cart.getMenuCustomizations(items[0])
+        
+        cart.addCustomization(customizations[0][0])
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+ 
+    def test_order_create_POST_wrong_customization(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[1])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[1])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_wrong_option(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[1][0])
+        cart.addOption(customizationOptions[0])
+
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+    
+    def test_order_create_POST_wrong_JSON(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+
+        data = cart.toFormData()
+        
+        data['cart'] = data['cart'].replace(',',';')
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), data, content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        self.assertEquals(response.json(), msg.INVALID_REQUEST)
+
+    def test_order_create_POST_MI_notActive(self):
+        self.login()
+        cart = self.Cart(3)
+        items = cart.getRestaurantItems()
+        mi = MenuItem.objects.get(pk=items[0])
+        mi.isActive = False
+        mi.save()
+        cart.addItem(items[0])
+        cart.addItemDetails(2)
+        customizations = cart.getMenuCustomizations(items[0])
+        cart.addCustomization(customizations[0][0])
+
+        customizationOptions = cart.getCustomizationOptions(customizations[0][0])
+        cart.addOption(customizationOptions[0])
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 400)
+        mi.isActive = True
+        mi.save()
+        
+        response = self.client.post(API_URLS.ORDER_CREATE.getURL(), cart.toFormData(), content_type='application/json')
+
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.json(), msg.ORDER_CREATED(cart.getPrice(), cart.getPK()))
+    

@@ -1,17 +1,17 @@
-import React, { memo, useEffect, useState, useContext } from "react"
+import React, { memo, useEffect, useState } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
+import PlaceholderImage from '../../Media/placeholderMenuItem.jpeg'
 
 import { MenuItemListFetch } from "../../views/menu"
 import { AddOrUpdateAction, useCartContext } from "../../context/CartContext"
 import { CartActions, CustomizationsType } from "../../context/CartContext"
 import { getCartItemQuantity as getCartQuantity } from "../../utilities/getCartQuantity"
+import { useMenuContext } from "../../context/MenuContext"
+import MenuDescription from './menuItemDescription'
 
-export type MenuItemProps = MenuItemListFetch & {
-    restaurantID: number;
-}
-
-export const MenuItem : React.FC<MenuItemProps> = (props) => {
+export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
+    const RestaurantDetails = useMenuContext()
     const modalId = `menu-itemcutomizationModal-${props.id}`
     const [cart, dispatch] = useCartContext()
     const [customizations, setCustomizations] = useState<CustomizationsType[]>([])
@@ -30,7 +30,6 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
         if(i==-1 && customizations.length>0)
             setCustomizations([])
 
-
     })
 
     const AddOrUpdate = (customizations: CustomizationsType[]) => {
@@ -39,7 +38,7 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
           menuItemID: props.id,
           menuItemName: props.name,
           menuItemPrice: props.price,
-          restaurantID: props.restaurantID,
+          restaurantID: RestaurantDetails.restaurantID,
           customizations: structuredClone(customizations),
         };
       
@@ -60,8 +59,13 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
             menuItemID: props.id,
             menuItemName: props.name,
             menuItemPrice: props.price,
-            restaurantID: props.restaurantID
+            restaurantID: RestaurantDetails.restaurantID,
         })
+    }
+
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        //change source
+        e.currentTarget.src = PlaceholderImage
     }
 
 
@@ -72,41 +76,53 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
 
             <div className="row d-flex align-items-center justify-content-center">
                 <div className="col-4 mx-auto">
-                    <img className='rounded img-thumbnail shadow-sm border-0' src={String(props.itemPhoto)} />
+                    <img className='rounded img-thumbnail shadow-sm border-0' loading="lazy" src={String(props.itemPhoto)} onError={handleImageError} alt="No image" />
                 </div>
-                <div className="col-8 mx-0 mt-2 px-0">
+                
+                <div className="col-8 mx-0 mt px-0">
                     <div className='row'>
                         <div className='col-7 pb-2'>
                             <div className='row'>
                                 
-                                <h1 className='card-title py-0 m-0 medium' ><i className='bi bi-dash-square-fill text-success' /> {props.name}</h1>
-                                <span className='text-muted small'>Rs. {props.price}</span>
-                                
-                                <span className='small pb-1'>
-                                <Stars stars={3.4} numRatings={21} />
+                                <h1 className='card-title py-0 m-0 medium' >
+                                    <i className={`bi bi-dash-square-fill text-${props.dietaryType=="VEG"?'success':props.dietaryType=='NON_VEG'?'danger':'warning'}`} style={{marginRight: 4}} />
+                                    {props.name}
+                                </h1>
+                                <span className='text-muted small'>
+                                    Rs. {props.price}
+                                    <span className="badge bg-danger-subtle border border-danger-subtle text-danger-emphasis rounded-pill mx-2">{props.category}</span>
                                 </span>
                                 
+                                <span className='small pb-1'>
+                                <Stars stars={props.rating} numRatings={props.totalRatings} />
+                                
+                                </span>
 
                             </div>
 
-                            <div className='row'>
-                                <span className='card-text text-secondary small'>{props.description}</span>
-                            </div>
+                            <MenuDescription desc={props.description} />
                         </div>
 
-                        <div className='col-4 d-flex flex-column align-items-center justify-content-center'>
+                        <div className='col-4 d-flex flex-column align-items-center justify-content-center' >
                             
-                            <div className='row'>
+                            {RestaurantDetails.restaurantAcceptingOrders? <>
+                            <div className='row'>                                
+
                                 {props.hasCustomization && quantity===0 && <i className='bi bi-cart-plus add-to-cart-btn'  data-bs-toggle="modal" data-bs-target={`#${modalId}`}></i>}
                                 {!props.hasCustomization && quantity===0 && <i className='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity}></i>}
 
                                 {props.hasCustomization && quantity>0&&<QuantityModifier useModal={true} modalId={`#${modalId}`} decrease={decreaseQuantity} value={quantity} />}
                                 {!props.hasCustomization && quantity>0&&<QuantityModifier increase={increaseQuantity} decrease={decreaseQuantity} useModal={false} value={quantity} />}
                             </div>
-
                             {props.hasCustomization&&<div className='row'>
-                                <span className='small text-secondary'>Customizable+</span>
+                            <span className='small text-secondary'>Customizable+</span>
                             </div>}
+                            </>:
+                            <span className="small text-secondary text-center">
+                                Restaurant is not accepting orders
+                            </span>
+
+                        }
                         </div>
                     </div>
 
@@ -125,7 +141,7 @@ export const MenuItem : React.FC<MenuItemProps> = (props) => {
         />}
     </>
     )
-}
+})
 
 type QuantityModifierProps = {
     increase?: ()=>void;
@@ -134,7 +150,6 @@ type QuantityModifierProps = {
     value: number;
     useModal?: boolean;
     modalId?: string;
-
 }
 
 export const QuantityModifier : React.FC<QuantityModifierProps> = (props) => {

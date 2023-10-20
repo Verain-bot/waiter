@@ -63,4 +63,28 @@ root.render(
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+
+
 reportWebVitals();
+
+// add serviceWorker
+console.log(navigator)
+
+if ('serviceWorker' in navigator)
+{
+  window.addEventListener('load', async () => {
+    try{
+      const registration = await navigator.serviceWorker.register('/service-worker.js')
+      if (registration.installing) {
+        console.log("Service worker installing");
+      } else if (registration.waiting) {
+        console.log("Service worker installed");
+      } else if (registration.active) {
+        console.log("Service worker active");
+      }
+    }
+    catch(err){
+      console.log('SW registration failed: ', err);
+    }
+  })
+}

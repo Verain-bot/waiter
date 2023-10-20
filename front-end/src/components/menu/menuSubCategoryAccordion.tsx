@@ -12,13 +12,14 @@ export const MenuAccordion: React.FC<MenuAccordionProps> = (props) => {
             <div className="accordion-item">
                 <h2 className="accordion-header">
                     <button
-                        className="accordion-button bg-dark-subtle"
+                        className="accordion-button bg-primary-subtle text-primary-emphasis py-2 border border-primary-subtle"
                         type="button"
                         data-bs-toggle="collapse"
                         data-bs-target={'#' + id}
-
                     >
-                        {props.name}
+                        <strong>
+                            {props.name}
+                        </strong>
                     </button>
                 </h2>
                 <div id={id} className="accordion-collapse collapse show" >

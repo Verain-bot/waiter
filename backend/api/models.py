@@ -1,38 +1,14 @@
-from typing import Iterable, Optional
 from django.db import models
 from django.utils.timezone import now
-# Create your models here.
+from django.contrib.auth import get_user_model
+
+Customer = get_user_model()
 
 def MenuUploadTo(instance, filename):
     return f"menu/{instance.restaurant.id}/{filename}"
 
 def restaurantUploadTo(instance, filename):
     return f"restaurant/{instance.id}/{filename}"
-
-class Customer(models.Model):
-    name = models.CharField(max_length=50, blank= True)
-    phone = models.PositiveBigIntegerField(unique= True, blank=True)
-    email = models.EmailField(blank=True, unique=True)
-    location = models.CharField(max_length= 50, blank=True)
-
-    def __str__(self) -> str:
-        return self.name
-    
-
-class Tables(models.Model):
-    restaurant = models.ForeignKey('Restaurant', related_name='restaurant_table',blank=True,on_delete=models.CASCADE)
-    tableNumber = models.PositiveSmallIntegerField(default= 0)
-    capacity = models.PositiveSmallIntegerField(default= 0)
-    status = models.CharField(max_length= 50, default= 'Available')
-    customersSitting = models.ManyToManyField(Customer, related_name='customer_sitting', blank=True)
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['restaurant', 'tableNumber'], name='unique_table')
-        ]
-
-    def __str__(self) -> str:
-        return self.restaurant.__str__() + " Table No. " + self.tableNumber.__str__()
 
 class ItemType(models.Model):
     name = models.CharField(max_length=50)
@@ -47,10 +23,10 @@ class SpecialItem(models.Model):
     def __str__(self) -> str:
         return self.name
 
+#seems to be redundant
 class ItemDetail(models.Model):
     suborder = models.ForeignKey('SubOrder', related_name='suborder',blank=True,on_delete=models.CASCADE)
     item = models.ForeignKey('MenuItem', related_name='item',blank=True,on_delete=models.CASCADE)
-    price = models.PositiveIntegerField(default=0)
 
     def __str__(self) -> str:
         return self.suborder.__str__() + " " + self.item.__str__()
@@ -59,51 +35,69 @@ class Quantity(models.Model):
     itemDetail = models.ForeignKey('ItemDetail', related_name='itemDetail',blank=True,on_delete=models.CASCADE)
     option = models.ManyToManyField('CustomatizationOptions', related_name='option',blank=True)
     qty = models.PositiveSmallIntegerField()
+    price = models.PositiveIntegerField(default = 0)
 
     def __str__(self) -> str:
-        return self.itemDetail.__str__() + " Quantity"
+        return str(self.qty)
 
 class SubOrder(models.Model):
     customer = models.ForeignKey(Customer, related_name='customer',blank=True,on_delete=models.CASCADE)
     order = models.ForeignKey('Order', related_name='order',blank=True,on_delete=models.CASCADE)
     items = models.ManyToManyField('MenuItem', related_name='suborder_items', blank=True, through=ItemDetail)
     price = models.PositiveIntegerField(default = 0)
-    tip = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self) -> str:
         return self.customer.__str__() + " Order No. " + self.order.id.__str__()
 
+
 class Order(models.Model):
+    class OrderStatusChoices(models.TextChoices):
+        NOT_CONFIRMED = 'NOT_CONFIRMED', 'Awaiting Confirmation'
+        CONFIRMED = 'CONFIRMED', 'Confirmed'
+        PREPARING = 'PREPARING', 'Preparing'
+        DISPATCHING = 'DISPATCHING', 'Dispatching'
+        READY = 'READY', 'Ready'
+        COMPLETE = 'COMPLETE', 'Complete'
+        CANCELLED = 'CANCELLED', 'Cancelled'
+
     customers = models.ManyToManyField(Customer, related_name='customerList', blank=True, through=SubOrder)
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_order',blank=True,on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default = 0)
-    time = models.DateTimeField(default= now())
-    tableNumber = models.PositiveSmallIntegerField(default= 0)
+    time = models.DateTimeField(default= now)
+    orderStatus = models.CharField(max_length=15, choices=OrderStatusChoices.choices, default=OrderStatusChoices.NOT_CONFIRMED)
     tip = models.PositiveSmallIntegerField(default=0)
-    orderStatus = models.CharField(max_length=10, blank = True)
     rating = models.SmallIntegerField(blank = True,null=True)
     comment = models.TextField(max_length=500, blank = True)
     takeawayOrDinein = models.SmallIntegerField(default = 0)
+    address = models.CharField(max_length=100, blank=True, null=True)
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['id', 'restaurant'], name='unique_order')
         ]
 
+        ordering = ['-time']
+
     def __str__(self) -> str:
-        return " ".join(self.customers.all().values_list('name', flat=True)) + ' ' + str(self.id)
+        return " ".join(self.customers.all().values_list('first_name', flat=True)) + ' ' + str(self.id)
 
 class MenuItem(models.Model):
+    class DietaryTypeChoices(models.TextChoices):
+        VEG = 'VEG', 'Vegetarian'
+        NON_VEG = 'NON_VEG', 'Non-Vegetarian'
+        EGG = 'EGG', 'Egg'
+
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='restaurant', null=True)
-    name = models.CharField(max_length=100, blank=True)
-    itemType = models.ForeignKey(ItemType, related_name='itemtype',null=True,blank=True,on_delete=models.CASCADE)
-    price = models.PositiveIntegerField(default=100)
+    name = models.CharField('Item Name',max_length=100, blank=True)
+    itemType = models.ForeignKey(ItemType, related_name='itemtype',on_delete=models.CASCADE, null=False, verbose_name='Item Type')
+    price = models.PositiveIntegerField('Price',default=100)
     category = models.ForeignKey(SpecialItem, related_name='special', null=True,on_delete=models.CASCADE, blank=True)
     description = models.TextField(max_length=500, blank=True)
-    totalOrders = models.PositiveIntegerField(default=0)
-    rating = models.PositiveSmallIntegerField(null=True, blank=True)
-    totalRatings = models.PositiveIntegerField(default=0)
-    itemPhoto = models.ImageField(upload_to=MenuUploadTo, blank=True)
+    rating = models.FloatField(null=True, blank=True)
+    totalRatings = models.PositiveIntegerField('Total Ratings',default=0)
+    itemPhoto = models.ImageField('Item Photo',upload_to=MenuUploadTo, blank=True)
+    dietaryType = models.CharField('Food Type',max_length=10, choices=DietaryTypeChoices.choices, default=DietaryTypeChoices.VEG)
+    isActive = models.BooleanField('Currently Available',default=True)
 
     class Meta:
         constraints = [
@@ -116,19 +110,20 @@ class MenuItem(models.Model):
 class CustomerVisit(models.Model):
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
-    lastVisit = models.DateField(default=now().date())
+    lastVisit = models.DateField(default=now)
     totalVisits = models.PositiveSmallIntegerField(default=0)
-    storeCredit = models.PositiveIntegerField(default = 0)
-    customerRating = models.PositiveSmallIntegerField(blank=True, null=True)
-    customerComment = models.CharField(max_length=200, blank = True, null=True)
 
     def __str__(self) -> str:
-        return self.customer.name + " " + self.restaurant.name + "Restaurant Visit"
+        return f"{self.customer.first_name} {self.customer.last_name} {self.restaurant.name} Restaurant Visit" 
 
 class MenuItemCustomization(models.Model):
+    class CustomizationTypeChoices(models.TextChoices):
+        RADIO = 'radio', 'Can select only one'
+        CHECK = 'checkbox', 'Can select many'
+        
     item = models.ForeignKey(MenuItem, related_name='item_customization', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=True)
-    customizationType = models.CharField(max_length=10, blank=True)
+    customizationType = models.CharField(max_length=10, blank=True, choices=CustomizationTypeChoices.choices, default=CustomizationTypeChoices.RADIO)
 
     def __str__(self) -> str:
         return self.name
@@ -137,7 +132,6 @@ class CustomatizationOptions(models.Model):
     customization = models.ForeignKey(MenuItemCustomization, related_name='customization_options', on_delete=models.CASCADE)
     name = models.CharField(max_length=50, blank=True)
     price = models.PositiveIntegerField(default=0)
-    dependencies = models.ManyToManyField('self', related_name='dependencies', blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -145,25 +139,21 @@ class CustomatizationOptions(models.Model):
 class Restaurant(models.Model):
 
     name = models.CharField(max_length=50, blank=True)
-    preOrPost = models.SmallIntegerField(default=0)
     licenceNo = models.CharField(max_length=15, blank =True)
     restaurantType = models.CharField(max_length=30, blank = True)
     customers = models.ManyToManyField(Customer, related_name='customers', through=CustomerVisit)
-    primColor = models.CharField(max_length=10, blank=True)
-    secColor = models.CharField(max_length=10, blank=True)
     logo = models.ImageField(upload_to=restaurantUploadTo, blank=True)
-    owner = models.CharField(max_length=50, blank = True)
+    owner = models.ForeignKey(Customer, related_name='owner', on_delete=models.CASCADE)
     location = models.CharField(max_length=30,blank=True)
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)
-    joinDate = models.DateField(default=now())
-    tables = models.PositiveSmallIntegerField(default=10)
+    joinDate = models.DateField(default=now)
+    acceptingOrders = models.BooleanField(default=True)
+    rating = models.FloatField(null=True, blank=True)
+    totalRatings = models.PositiveIntegerField(default=0)
     
     def __str__(self) -> str:
         return self.name
     
-    #create tables when restaurant is created
-    def save(self, *args, **kwargs):
-        super(Restaurant, self).save(*args, **kwargs)
-        for i in range(1, self.tables+1):
-            Tables.objects.create(restaurant=self, tableNumber=i)
+    class Meta:
+        ordering = ['name']

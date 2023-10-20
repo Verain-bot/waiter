@@ -3,10 +3,14 @@ import { MenuHeader } from "../components/menu/menuFilterHeader";
 import { MenuTitle } from "../components/menu/menuTitle";
 import { MenuSection } from "../components/menu/menuSubSection";
 import useSearchBar from "../hooks/useSearchBar"
-import { useLoaderData, useParams, LoaderFunction } from "react-router-dom";
+import { useLoaderData, LoaderFunction } from "react-router-dom";
 import { getData } from "../utilities/fetchData";
 import Search from "../utilities/search";
 import { SearchResultMessage } from "../components/header/search";
+import APIRoutes, { makeURL } from "../utilities/APIRoutes";
+import { RestaurantListItemFetch } from "./restaurantList";
+import { MenuContextProvider } from "../context/MenuContext";
+import { useEffect, useState } from "react";
 
 export type MenuItemListFetch = {
     id: number;
@@ -17,9 +21,13 @@ export type MenuItemListFetch = {
     description: string;
     itemPhoto: string | null;
     hasCustomization: boolean;
+    rating: number
+    totalRatings: number
+    dietaryType: string
+    category: string
 };
 
-type RestaurantDetailsFetch = {
+type RestaurantDetailsFetch1  = {
     id: number;
     name: string;
     phone: number;
@@ -27,8 +35,10 @@ type RestaurantDetailsFetch = {
     logo: string | null;
     restaurantType: string;
     menu: MenuItemListFetch[];
+
 };
 
+type RestaurantDetailsFetch = RestaurantDetailsFetch1 & RestaurantListItemFetch
 
 const getSectionsFromMenu = (menu : MenuItemListFetch[])=>{
     const sections = new Set(menu.map((item)=>item.itemType))
@@ -46,17 +56,45 @@ const getSectionsFromMenu = (menu : MenuItemListFetch[])=>{
 const App = () =>{
     const search = useSearchBar()
     const data = useLoaderData() as RestaurantDetailsFetch
+    const [filterSelections, setFilterSelections] = useState(new Set<string>())
+    const [menuItems, setMenuItems] = useState<MenuItemListFetch[]>(data.menu)
     
-    const menuItems = getSectionsFromMenu(Search(data.menu,search,'name'))
+    const MItoDisplay = getSectionsFromMenu(Search(menuItems,search,'name'))
     
+    useEffect(()=>{
+
+        const DTSet = new Set([...filterSelections].filter((item)=>item.split(',')[1]=='dt').map((item)=>item.split(',')[0]))
+        const SISet = new Set([...filterSelections].filter((item)=>item.split(',')[1]=='si').map((item)=>item.split(',')[0]))
+
+        console.log('Calllledddd', DTSet, SISet)
+        if (filterSelections.size===0){
+            setMenuItems(data.menu)
+        }
+        else if (SISet.size === 0){
+            const fm = data.menu.filter((item)=>DTSet.has(item.dietaryType))
+            setMenuItems(fm)
+        }
+        else if (DTSet.size ===0){
+            const fm = data.menu.filter((item)=> SISet.has(item.category))
+            setMenuItems(fm)
+        }
+        else{
+            const fm = data.menu.filter((item)=> SISet.has(item.category) && DTSet.has(item.dietaryType) )
+            setMenuItems(fm)
+        }
+
+    },[filterSelections])
+
     return(
     
-        <div className='col-md-6 col-12'>
-            <MenuTitle name={data.name} type={data.restaurantType.split(',')} />
-            <MenuHeader />
-            <SearchResultMessage /> 
-            {menuItems.map((section)=>(<MenuSection name={section.name} items={section.items} restaurantID={data.id} key={section.name} />))}
+        <div className='col-md-7 col-12 p-0'>
+            <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} />
+            <MenuHeader  selections={filterSelections} setSelections={setFilterSelections} />
 
+            <SearchResultMessage /> 
+            <MenuContextProvider value={{ restaurantAcceptingOrders: data.acceptingOrders, restaurantID: data.id}}>
+                {MItoDisplay.map((section)=>(<MenuSection name={section.name} items={section.items} key={section.name} />))}
+            </MenuContextProvider>
             <MenuFooter sections={getSectionsFromMenu(data.menu).map((item)=>item.name)} />
             <MenuCartFooter />
 
@@ -66,7 +104,8 @@ const App = () =>{
 
 
 export const MenuListLoader  : LoaderFunction = async ({params, request})=>{
-    const data = await getData(`api/restaurants/details/${params.restaurantID}`, request.signal)
+    let id = params.restaurantID as string
+    const data = await getData(makeURL(APIRoutes.RESTAURANT_DETAILS, {"pk" : id}), request.signal)
     return data.json()
 }
 

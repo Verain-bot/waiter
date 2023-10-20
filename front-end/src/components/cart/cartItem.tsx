@@ -39,30 +39,16 @@ export const CartItem = (props : CartItemPropsType)=>{
     return(
         <div className='list-group-item pointer'>
             <div className='row'>
-                <div className='col-6 d-flex flex-column justify-content-center'>
-                    <span className='card-text py-0 my-0'>
-                        {props.menuItemName}
-                    </span>
-                    <span className='card-text small py-0 my-0 text-secondary mb-2'>
-                        <strong>
-                        Rs. {BasePrice}
-                        </strong>
-                    </span>
-                    <span className='card-text text-muted small'>
-                    {custString}
-                    </span>        
-                </div>
-                <div className='col-6 d-flex flex-row-reverse'>
+                <CartItemLeft name={props.menuItemName} price={BasePrice} custString={custString} />
+                <div className='col-4 d-flex flex-row-reverse'>
                     <div className='d-flex flex-column-reverse align-items-end'>
                         
                         
                         <span className='card-text medium mt-2'>
                             <strong>
-
                                 {BasePrice*quantity}
                             </strong>
                             
-
                         </span>
                          <QuantityModifier value={quantity} increase={increase} decrease={decrease} />
                         
@@ -75,22 +61,45 @@ export const CartItem = (props : CartItemPropsType)=>{
     )
 }
 
+type CartItemLeftPropsType = {
+    name: string;
+    price?: string | number;
+    custString: string;
+}
+
+export const CartItemLeft = (props : CartItemLeftPropsType)=>{
+    return(
+        <div className='col-8 d-flex flex-column justify-content-center'>
+                    <span className='card-text py-0 my-0'>
+                        {props.name}
+                    </span>
+
+                    {props.price&&<span className='card-text small py-0 my-0 text-secondary mb-2'>
+                        <strong>
+                        Rs. {props.price}
+                        </strong>
+                    </span>}
+                    <span className='card-text text-muted small'>
+                    {props.custString}
+                    </span>        
+            </div>
+    )
+}
+
 
 type CartTotalItemPropsType = {
     name: string;
-    amount: string;
+    amount: string | number;
     small?: boolean;
     strong?: boolean;
 }
 
 export const CartTotalItem = (props : CartTotalItemPropsType) =>{
     return(
-        <div className='row m-0 p-0'>
+        <div className='row px-2'>
             <div className='col-6 p-0 m-0'>
-                <span className={`card-text ${props.small?'small':'medium'} m-0 p-0`}>
-                    
+                <span className={`card-text ${props.small?'small':'medium'} mx-0 p-0`}>
                     {props.strong?<strong>{props.name}</strong>:props.name}
-                    
                 </span>
             </div>
 

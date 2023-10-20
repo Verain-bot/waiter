@@ -2,17 +2,24 @@ import Login, { loginAction } from '../views/login';
 import Menu, { MenuListLoader } from '../views/menu';
 import RestaurantList, { RestaurantListLoader } from '../views/restaurantList';
 import Loading from '../views/loading';
-import Cart from '../views/cart'
-import OrderDetail from '../views/orderDetail';
-import OrderList from '../views/orderList';
+import Cart, { cartLoader } from '../views/cart'
+import OrderDetail, { orderDetailAction, orderDetailLoader } from '../views/orderDetail';
+import OrderList, { orderListLoader } from '../views/orderList';
 import Credits from '../views/credits'
 import OTP, { otpAction } from '../views/otp';
 import Register, { registerAction } from '../views/register';
-import Address from '../views/deliveryAddress'
+import Address, { addressChangeAction } from '../views/deliveryAddress'
 import { ActionFunction, LoaderFunction } from 'react-router-dom';
 import { LoginContextType } from '../context/LoginContext';
 import AccountDetailsView, { accountDetailsLoader } from '../views/accountDetails';
 import AccountDetailsEdit, { accountDetailsEditAction } from '../views/accountDetailsEdit';
+import { cartFooterAction } from '../components/cart/cartFooter';
+import OrderSuccess from '../views/orderSuccess'
+import ContactUs from '../views/contact'
+import AboutUs from '../views/about';
+import PrivacyPolicy from '../views/privacyPolicy'
+import Terms from '../views/tnc'
+import PWAInfo from '../views/pwainfo'
 
 export enum PathType{
     LOGGED_IN,
@@ -38,14 +45,20 @@ export enum PATHS {
     RESTAURANT_LIST = '/restaurants',
     LOADING = '/loading',
     CART = '/cart',
-    ORDER_DETAIL = '/order/detail',
-    ORDER_LIST = '/orderList',
+    ORDER_DETAIL = '/orders/details/:orderID', // :orderID is a parameter
+    ORDER_LIST = '/orders/list',
     CREDITS = '/credits',
     OTP = '/otp',
     REGISTER = '/register',
     ADDRESS = '/address',
     ACCOUNT_DETAILS = '/account/details',
-    ACCOUNT_DETAILS_EDIT = '/account/edit'
+    ACCOUNT_DETAILS_EDIT = '/account/edit',
+    ORDER_CREATED_SUCCESS = '/order/success/:orderID',
+    CONTACT = '/contact',
+    ABOUT = '/about',
+    PRIVACY_POLICY = '/privacy-policy',
+    TERMS = '/terms-and-conditions',
+    PWA_INFO = '/pwa-info',
 }
 
 
@@ -87,21 +100,26 @@ const list : CustomRouteType[] = [
       element: <Cart />,
       name: 'Cart',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
-      icon: "cart-fill"
+      icon: "cart-fill",
+      ldr: cartLoader,
+      action: cartFooterAction,
     },
     {
       path: PATHS.ORDER_DETAIL,
       element: <OrderDetail />,
       name: 'Order Detail',
       pathType: [PathType.LOGGED_IN],
-      icon: "file-earmark-text-fill"
+      icon: "file-earmark-text-fill",
+      ldr: orderDetailLoader,
+      action: orderDetailAction
     },
     {
       path: PATHS.ORDER_LIST,
       element: <OrderList />,
       name: 'Orders',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
-      icon: "list-ul"
+      icon: "list-ul",
+      ldr: orderListLoader,
     },
     {
       path: PATHS.CREDITS,
@@ -123,7 +141,7 @@ const list : CustomRouteType[] = [
       path: PATHS.REGISTER, 
       element: <Register />,
       name: 'Register',
-      pathType: [PathType.LOGGED_OUT, PathType.NAVBAR],
+      pathType: [PathType.LOGGED_OUT],
       icon: "person-plus-fill",
       action: registerAction
     },
@@ -132,7 +150,8 @@ const list : CustomRouteType[] = [
       element: <Address />,
       name: 'Address',
       pathType: [PathType.LOGGED_IN],
-      icon: "geo-alt-fill"
+      icon: "geo-alt-fill",
+      action: addressChangeAction,
     },
     {
       path: PATHS.ACCOUNT_DETAILS,
@@ -141,15 +160,59 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "person-circle",
       ldr: accountDetailsLoader,
-    },{
+    },
+    {
       path: PATHS.ACCOUNT_DETAILS_EDIT,
       element: <AccountDetailsEdit />,
       name: 'Account Details ',
       pathType: [PathType.LOGGED_IN],
       icon: "person-circle",
       action: accountDetailsEditAction,
-    }
+    },
+    {
+      path: PATHS.ORDER_CREATED_SUCCESS,
+      element: <OrderSuccess />,
+      name: 'Order Created Successfully ',
+      pathType: [PathType.LOGGED_IN],
+      icon: "person-circle",
+    },
+    {
+      path: PATHS.CONTACT,
+      element: <ContactUs />,
+      name: 'Contact Us',
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
+      icon: "telephone-fill",
+    },
+    {
+      path: PATHS.ABOUT,
+      element: <AboutUs />,
+      name: 'About Us',
+      pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
+      icon: "at",
+    },
+    {
+      path: PATHS.PRIVACY_POLICY,
+      element: <PrivacyPolicy />,
+      name: 'Privacy Policy',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
+      icon: "at",
+    },
+    {
+      path: PATHS.TERMS,
+      element: <Terms />,
+      name: 'Terms and Conditions',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
+      icon: "at",
+    },
+    {
+      path: PATHS.PWA_INFO,
+      element: <PWAInfo />,
+      name: 'PWA Info',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
+      icon: "at",
+    },
   ];
+
   
                                     
 export default list

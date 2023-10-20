@@ -78,6 +78,7 @@ export const Body = (props : Body1Props)=>{
                     index={key} 
                     selected = {props.selectedCustomizations} 
                     setSelected = {props.setSelectedCustomizations} 
+                    key={customization.id}
             />)}
         </>   
     )
@@ -135,6 +136,7 @@ export const Form = memo((props : FormProps) => {
             if(selections.length > 0)
                 setSelections([])
         }
+        console.log('asdasd')
     })
 
     const handleChange = useCallback((e : React.ChangeEvent<HTMLInputElement>)=>{
@@ -190,7 +192,7 @@ export const Form = memo((props : FormProps) => {
 
     return(
         <div className="row mb-3">
-            <strong>{props.name}</strong>
+            <span><strong>{props.name}</strong> {props.customizationType=='radio'&&<span className="text-muted" style={{fontSize: 13}}>(Atleast 1 selection required)</span>}</span>
                 <div className="col-12">
                     {props.customizationOptions.map((option)=>
                     <CheckAndRadio {...option} 
@@ -198,6 +200,7 @@ export const Form = memo((props : FormProps) => {
                         for={props.name} 
                         selections={selections}
                         change={handleChange} 
+                        key={option.id}
                     />)  }
                 </div>
         </div>
@@ -237,7 +240,8 @@ export const CheckAndRadio = memo((props : CheckAndRadioProps) =>{
                 <input className="form-check-input" 
                     type={props.type} 
                     name={props.for} 
-                    value={String(val)} checked={checked} 
+                    value={String(val)}
+                    checked={checked} 
                     onChange={props.change}
                 />
                 

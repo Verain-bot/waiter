@@ -5,30 +5,27 @@ import Table from "../components/table/table"
 import { TableItem } from "../components/table/tableItems"
 import { fetchUserData } from "../utilities/fetchUser"
 import { useEffect } from "react"
-import { useLoginContext } from "../context/LoginContext"
+import { UserContextType, useLoginContext } from "../context/LoginContext"
 import { PATHS } from "../utilities/routeList"
 
 const App = ()=>{
     
-    const data  = useLoaderData() as {name: string, phone: string, email:string}
+    const data  = useLoaderData() as UserContextType
     const [login, setLogin] = useLoginContext()
     
     useEffect(()=>{
         setLogin({
             login: true,
-            user:{
-                name: data?.name,
-                phone: data?.phone,
-                email: data?.email
-            }
+            user: data,
         })
     },[])
 
     return(
         <div className='col-12 col-md-6'>
             <FormCard title='Account' subtitle="View your account information here" >
-                <TableItem width={4} left={<strong>Name</strong>} right={<span>{data?.name}</span>} nohr />
-                <TableItem width={4} left={<strong>Phone</strong>} right={<span>+91 {data?.phone}</span>} nohr />
+                <TableItem width={4} left={<strong>First Name</strong>} right={<span>{data?.first_name}</span>} nohr />
+                <TableItem width={4} left={<strong>Last Name</strong>} right={<span>{data?.last_name}</span>} nohr />
+                <TableItem width={4} left={<strong>Phone</strong>} right={<span>+91 {data?.username}</span>} nohr />
                 <TableItem width={4} left={<strong>Email</strong>} right={<span>{data?.email}</span>} nohr />
                 <Link to={PATHS.ACCOUNT_DETAILS_EDIT} className="btn btn-primary">Edit Information</Link>
                 <LinkFooter text='*Your phone number cannot be modified.' linkText='' />
@@ -38,10 +35,10 @@ const App = ()=>{
 }
 
 export const accountDetailsLoader : LoaderFunction= async ({params, request})=>{
-    const {json, response, message } = await fetchUserData()
+    const user = await fetchUserData()
 
-    if(response.ok)
-        return json
+    if(user)
+        return user
 
     return redirect(PATHS.LOGIN)
 }

@@ -8,6 +8,7 @@ type FormCardProps = {
     method?: 'POST' | 'GET' | 'PUT' | 'DELETE' | 'PATCH',
     error?: string[]
     action?: string
+    noStyle?: boolean
 }
 
 export const FormCard: React.FC<FormCardProps> = (props) => {
@@ -19,8 +20,8 @@ export const FormCard: React.FC<FormCardProps> = (props) => {
       e.preventDefault()
       e.stopPropagation()
     }
-
-    form.current?.classList.add('was-validated')
+    if(!props.noStyle)
+      form.current?.classList.add('was-validated')
   }
 
 
