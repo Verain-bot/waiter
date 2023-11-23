@@ -20,10 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9d8bb^wz!)=4)9)k(5)1dgbhw5)x=)3lmbxwsk7v)em6zv*@-g'
+SECRET_KEY = os.environ.get("V_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if os.environ.get("V_ENV") == "DEV":
+    DEBUG = True
+
+else:
+    DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -54,8 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
-
+CSRF_TRUSTED_ORIGINS = [os.environ.get("V_FRONTEND_URL")]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -82,12 +85,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    os.environ.get("V_FRONTEND_URL"),
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -96,13 +97,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'waiter',     
-        'USER': 'root', 
-        'PASSWORD': 'verain123', 
-        'HOST': 'localhost',   
+        'USER': os.environ.get("V_MYSQL_USER"),
+        'PASSWORD': os.environ.get("V_MYSQL_PASSWORD"), 
+        'HOST': os.environ.get("V_MYSQL_HOST"),   
         'COLLATION': 'utf8_general_ci',
         'CHARSET': 'utf8',
-        
-        'PORT': '3306',
+        'PORT': os.environ.get("V_MYSQL_PORT"),
+
         'TEST':{
             'NAME': 'testing',
             
@@ -136,7 +137,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -163,22 +164,28 @@ MEDIA_ROOT = 'media/'
 
 MEDIA_URL = '/media/view/'
 
+#REST FRAMEWORK SETTINGS
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 100
+    'PAGE_SIZE': 100,
+
 }
 
+#Using Cache as Session Engine
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+
+#Using Redis as Cache Backend
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://localhost:6379/0",
+        "LOCATION": os.environ.get("V_CACHE_URL"),
     }
 }
 
 #CELERY SETTINGS
 
-CELERY_BROKER_URL = 'redis://localhost:6379/1'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/2'
+CELERY_BROKER_URL = os.environ.get("V_CELERY_BROKER")
+CELERY_RESULT_BACKEND = os.environ.get("V_CELERY_RESULT_BACKEND")
 
 #set result backend as python database
 # CELERY_RESULT_BACKEND = 'django-db'
@@ -194,5 +201,6 @@ CELERY_TASK_TRACK_STARTED = True
 CELERYD_CONCURRENCY = 4
 CELERYD_POOL = 'prefork'
 
-# worker command 
-# celery -A backend worker -l INFO
+# custom constants
+
+SMS_API_KEY = os.environ.get('V_SMS_API_KEY')

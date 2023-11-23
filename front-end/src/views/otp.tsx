@@ -45,12 +45,12 @@ export const otpAction : (val : [LoginContextType, React.Dispatch<React.SetState
     
     const otp = String(data.get('otp'))
     console.log(otp.length)
-    if (otp.length !== 4) {
+    if (otp.length !== 6) {
         return{
             heading:'Invalid OTP',
             body:'Please enter a valid OTP',
             type:'error',
-            errors:['OTP will be 4 digits long']
+            errors:['OTP will be 6 digits long']
         }
     }
 

@@ -12,6 +12,7 @@ from .enums import Ath
 from django.contrib.auth import login, logout
 from rest_framework.permissions import IsAuthenticated
 from .tasks import sendOTP
+from datetime import datetime
 
 class CustomerLogout(views.APIView):
     def get(self, request, *args, **kwargs):
@@ -36,7 +37,14 @@ class SendOTPView(views.APIView):
             except:
                 request.session.flush()
                 return Response(msg.INVALID_REQUEST, status=400)
-            
+
+            #Prevent sending OTP if already sent in last 30 seconds            
+            existing_cache = cache.get(phone)
+            if existing_cache:
+                if (datetime.now() - existing_cache.get('sentTime',1)).seconds < 30:
+                    return Response(msg.OTP_WAIT_30_SEC, status=400)
+
+            #Async task to send OTP
             sendOTP.delay(phone)
 
             request.session[Ath.PHONE] = phone
