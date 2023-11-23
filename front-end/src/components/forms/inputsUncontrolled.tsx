@@ -44,7 +44,7 @@ export const Input = (props:InputPropsUncontrolled) => {
                     defaultValue={props.defaultValue}
                     id={id}
                     inputMode={props.type=='number'?'numeric':'text'}
-                    pattern= {props.type=='number'?'[0-9]*':''}
+                    pattern= {props.type=='number'?'[0-9]*':'.*'}
                     />
             <label className="form-label" htmlFor={id}>{props.name}</label>
             </div>

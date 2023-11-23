@@ -94,9 +94,9 @@ const App = ()=>{
             </Table>
             
             <Link to={PATHS.ADDRESS} className='link text-dark'>
-                <Table title='Address' subTitle='Please select your delivery address'>
-                    <TableItem left='Delivering to:' right={<Address name={user.user? user.user.first_name : ''} address={address? address: ''} />}  width={5}/>
-                    <TableItem left={<span className='small'>Tap to change your delivery address</span>}  width={11}/>
+                <Table title='Table' subTitle='Only select this field if your restaurant is not self service'>
+                    <TableItem left='Table:' right={<Address address={address? address: ''} />}  width={5}/>
+                    <TableItem left={<span className='small'>Tap to change your table</span>}  width={11}/>
                 </Table>
             </Link>
             
@@ -115,10 +115,9 @@ const App = ()=>{
     )
 }
 
-const Address = (props: {name: string, address: string}) =>{
+const Address = (props: { address: string}) =>{
     return(
-        <div className='small text-muted'>
-            {props.name} <br/>
+        <div className='text-muted'>
             {props.address}
         </div>
     )

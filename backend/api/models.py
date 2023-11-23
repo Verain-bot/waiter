@@ -4,6 +4,10 @@ from django.contrib.auth import get_user_model
 
 Customer = get_user_model()
 
+class BooleanChoices(models.TextChoices):
+    YES = True, 'Yes'
+    NO = False, 'No'
+
 def MenuUploadTo(instance, filename):
     return f"menu/{instance.restaurant.id}/{filename}"
 
@@ -97,7 +101,7 @@ class MenuItem(models.Model):
     totalRatings = models.PositiveIntegerField('Total Ratings',default=0)
     itemPhoto = models.ImageField('Item Photo',upload_to=MenuUploadTo, blank=True)
     dietaryType = models.CharField('Food Type',max_length=10, choices=DietaryTypeChoices.choices, default=DietaryTypeChoices.VEG)
-    isActive = models.BooleanField('Currently Available',default=True)
+    isActive = models.BooleanField('Currently Available',default=True, choices=BooleanChoices.choices)
 
     class Meta:
         constraints = [
@@ -148,7 +152,7 @@ class Restaurant(models.Model):
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)
     joinDate = models.DateField(default=now)
-    acceptingOrders = models.BooleanField(default=True)
+    acceptingOrders = models.BooleanField(default=True, choices=BooleanChoices.choices)
     rating = models.FloatField(null=True, blank=True)
     totalRatings = models.PositiveIntegerField(default=0)
     

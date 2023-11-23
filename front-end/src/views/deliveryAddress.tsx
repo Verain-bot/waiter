@@ -9,9 +9,9 @@ import { PATHS } from "../utilities/routeList"
 const App = ()=>{
     return(
         <div className='col-12 col-md-6'>
-            <FormCard title='Address' subtitle='Please enter the delivery address' method="POST">
-                <Input name='Address' inputName="addr" />
-                <Button name='Save' onClick={()=>{}} />
+            <FormCard title='Table' subtitle='Please enter the table number' method="POST">
+                <Input name='Table' inputName="addr" type="text" />
+                <Button name='Save'/>
             </FormCard>
         </div>
     )
