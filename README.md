@@ -27,3 +27,5 @@ V_CELERY_BROKER                 "Celery message broker based on redis"
 V_CELERY_RESULT_BACKEND         "Celery result storage based on redis"
 
 ```
+
+To generate test data run setUpTestData method of backend.tests.TestViews
