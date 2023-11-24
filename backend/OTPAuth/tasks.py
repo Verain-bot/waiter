@@ -4,7 +4,7 @@ from .enums import Ath
 from . import responseMessages as msg
 import requests
 from django.conf import settings
-import random
+from random import randint
 from datetime import datetime
 
 @shared_task
@@ -17,7 +17,7 @@ def sendOTP(phone):
     deleteOTPAfter = 120
     
     #Generate RANDOM 6 digit OTP
-    otp = random.randint(100000, 999999)
+    otp = randint(100000, 999999)
     
     result = {
         'otp': otp,
