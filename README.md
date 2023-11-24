@@ -1,3 +1,16 @@
+## Tech Stack Used for this Project
+### Backend
+1. Django
+2. Django Rest Framework
+3. Celery
+4. Redis - As Cache for complete project, message broker and result backend for celery. Also used for session storage.
+5. MySQL Database
+
+### Frontend
+1. React (TSX)
+2. React Router
+3. Bootstrap 5
+
 ## Commands
 
 Celery Worker command
