@@ -97,12 +97,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'waiter',     
-        'USER': os.environ.get("V_MYSQL_USER"),
-        'PASSWORD': os.environ.get("V_MYSQL_PASSWORD"), 
-        'HOST': os.environ.get("V_MYSQL_HOST"),   
+        'USER': os.environ.get("V_DB_USER"),
+        'PASSWORD': os.environ.get("V_DB_PASSWORD"), 
+        'HOST': os.environ.get("V_DB_HOST"),   
         'COLLATION': 'utf8_general_ci',
         'CHARSET': 'utf8',
-        'PORT': os.environ.get("V_MYSQL_PORT"),
+        'PORT': os.environ.get("V_DB_PORT"),
 
         'TEST':{
             'NAME': 'testing',

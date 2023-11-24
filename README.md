@@ -29,10 +29,10 @@ redis-cli
 ```bash
 V_ENV                           "DEV" or "PROD"
 V_SMS_API_KEY 
-V_MYSQL_HOST                    "HOST URL"
-V_MYSQL_PORT
-V_MYSQL_USER 
-V_MYSQL_PASSWORD 
+V_DB_HOST                       "DB HOST URL"
+V_DB_PORT
+V_DB_USER 
+V_DB_PASSWORD 
 V_SECRET_KEY                    "Django Secret Key" 
 V_FRONTEND_URL 
 V_CACHE_URL                     "Redis Cache URL"
