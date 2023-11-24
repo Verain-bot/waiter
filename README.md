@@ -1,4 +1,4 @@
-Commands
+## Commands
 
 Celery Worker command
 ```bash
@@ -11,7 +11,7 @@ redis-server
 redis-cli
 ```
 
-ENV Variables to configure
+## ENV Variables to configure
 
 ```bash
 V_ENV                           "DEV" or "PROD"
@@ -27,5 +27,6 @@ V_CELERY_BROKER                 "Celery message broker based on redis"
 V_CELERY_RESULT_BACKEND         "Celery result storage based on redis"
 
 ```
+## Other info
 
 To generate test data run setUpTestData method of backend.tests.TestViews
