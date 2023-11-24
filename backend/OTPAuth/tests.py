@@ -4,6 +4,11 @@ from backend.tests import TestBase
 from .urls import URL_FOR_OTPAuth as URL
 import time
 from . import responseMessages as msg
+from unittest.mock import patch
+from OTPAuth.tasks import sendOTP
+from freezegun import freeze_time
+import datetime
+
 class TestViews(TestBase):
 
 
@@ -36,6 +41,52 @@ class TestViews(TestBase):
         response = response.json()
         self.assertEquals(response, msg.INVALID_REQUEST)
 
+    def test_send_OTP_Twice(self):
+        data = {
+            'phone' : self.TEST_PHONE,
+        }
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response, msg.OTP_SENT(self.TEST_PHONE))
+
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        self.assertEquals(response.status_code, 400)
+        response = response.json()
+        self.assertEquals(response, msg.OTP_WAIT_30_SEC)
+
+    def test_send_OTP_DifferentUser(self):
+        data = {
+            'phone' : self.TEST_PHONE,
+        }
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response, msg.OTP_SENT(self.TEST_PHONE))
+
+        data = {
+            'phone' : self.TEST_PHONE_2,
+        }
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response, msg.OTP_SENT(self.TEST_PHONE_2))
+
+    def test_send_OTP_After_30_Secs(self):
+        data = {
+            'phone' : self.TEST_PHONE,
+        }
+        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+        self.assertEquals(response.status_code, 200)
+        response = response.json()
+        self.assertEquals(response, msg.OTP_SENT(self.TEST_PHONE))
+
+        with freeze_time( datetime.datetime.now() + datetime.timedelta(seconds=32) ):
+            response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+            self.assertEquals(response.status_code, 200)
+            response = response.json()
+            self.assertEquals(response, msg.OTP_SENT(self.TEST_PHONE))
+
     def test_send_OTP_POST_wrong_data(self):
         data = {
             'phosne' : 'abc',
@@ -51,8 +102,10 @@ class TestViews(TestBase):
         data = {
             'phone' : self.TEST_PHONE,
         }
-        response = self.client.post(URL.SEND_OTP.getURL(), data=data)
-        time.sleep(0.1)
+        #set time to 30 secs more than now
+        with freeze_time( datetime.datetime.now() + datetime.timedelta(seconds=32) ):
+            response = self.client.post(URL.SEND_OTP.getURL(), data=data)
+
         self.assertEquals(response.status_code, 200)
         response = response.json()
         existingUser = self.checkUserExists(self.TEST_PHONE)
@@ -234,7 +287,8 @@ class TestViews(TestBase):
     def test_Logout_GET_Multi(self):
         self.login(self.client, self.TEST_PHONE)
         self.logout(self.client)
-        self.login(self.client, self.TEST_PHONE)
+        with freeze_time( datetime.datetime.now() + datetime.timedelta(seconds=32) ):
+            self.login(self.client, self.TEST_PHONE)
         self.logout(self.client)
     
     def test_Logout_GET_Multiple_Users(self):

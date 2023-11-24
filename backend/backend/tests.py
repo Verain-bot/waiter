@@ -18,6 +18,8 @@ import time
 from .celery import app
 from celery.contrib.testing.worker import start_worker
 from unittest.mock import patch
+from OTPAuth.tasks import sendOTP
+from api.tasks import add_comment_for_order
 
 def getMenuItems():
 
@@ -43,9 +45,28 @@ class TestBase(TestCase):
     TEST_PHONE_REGISTERED = 2192
     TEST_OTP = '1234'
 
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        
+        cls.patchers = [
+            patch('OTPAuth.tasks.sendOTP.delay', new=sendOTP),
+            patch('OTPAuth.tasks.randint', return_value=int(cls.TEST_OTP)),
+            patch('api.views.add_comment_for_order.delay', new=add_comment_for_order),
+        ]
+        
+        for p in cls.patchers:
+            p.start()
+        
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        cache.clear()
+        for p in cls.patchers:
+            p.stop()
+
     def setUp(self):
-        self.owner1 = Customer.objects.get(username='101')
-        self.owner2 = Customer.objects.get(username='102')
         cache.clear()
         
     @classmethod
@@ -57,6 +78,7 @@ class TestBase(TestCase):
         cls.Verain = Verain = Customer.objects.create_user(username='1', first_name= 'Verain', email = 'test1@test.com', password='test')
         cls.Rahul = Rahul = Customer.objects.create_user(username='2', first_name= 'Rahul', email = 'test2@test.com', password='test')
         cls.Raj = Raj = Customer.objects.create_user(username='3', first_name= 'Raj', email = 'test3@test.com', password='test')
+
         restaurant_content_type = ContentType.objects.get_for_model(Restaurant)
         menu_content_type = ContentType.objects.get_for_model(MenuItem)
         order_content_type = ContentType.objects.get_for_model(Order)
@@ -103,23 +125,23 @@ class TestBase(TestCase):
 
         ownerGroup.permissions.add(Permission.objects.get(codename='view_quantity', content_type=quantity_content_type))
 
-        cls.Owner1 = Owner1 = Customer.objects.create_user(username='101', first_name= 'Owner1', email = 'owner1@owner.com', password='test', is_staff=True)
-        cls.Owner2 = Owner2 = Customer.objects.create_user(username='102', first_name= 'Owner1', email = 'owner2@owner.com', password='test', is_staff=True)
+        cls.owner1 = Owner1 = Customer.objects.create_user(username='101', first_name= 'Owner1', email = 'owner1@owner.com', password='test', is_staff=True)
+        cls.owner2 = Owner2 = Customer.objects.create_user(username='102', first_name= 'Owner1', email = 'owner2@owner.com', password='test', is_staff=True)
         Owner1.groups.add(ownerGroup)
         Owner2.groups.add(ownerGroup)
 
         Customer.objects.create_superuser(username='verain', first_name= 'Gr8', email = '', password='1')
-        beverage_item_type = ItemType.objects.create(name='Beverage')
-        food_item_type = ItemType.objects.create(name='Food')
-        snacks_item_type = ItemType.objects.create(name='Snacks')
-        MC_item_type = ItemType.objects.create(name='Main Course')
-        chinese_item_type = ItemType.objects.create(name='Italian Course')
+        cls.beverage_item_type = ItemType.objects.create(name='Beverage')
+        cls.food_item_type = ItemType.objects.create(name='Food')
+        cls.snacks_item_type = ItemType.objects.create(name='Snacks')
+        cls.MC_item_type = ItemType.objects.create(name='Main Course')
+        cls.chinese_item_type = ItemType.objects.create(name='Italian Course')
 
-        item_type_list = [beverage_item_type, food_item_type, snacks_item_type, MC_item_type, chinese_item_type]
+        item_type_list = [cls.beverage_item_type, cls.food_item_type, cls.snacks_item_type, cls.MC_item_type, cls.chinese_item_type]
 
         # Create SpecialItem objects
-        bestseller_special_item = SpecialItem.objects.create(name='Bestseller', color='red')
-        popular_special_item = SpecialItem.objects.create(name='Popular', color='blue')
+        cls.bestseller_special_item = SpecialItem.objects.create(name='Bestseller', color='red')
+        cls.popular_special_item = SpecialItem.objects.create(name='Popular', color='blue')
 
         # Create Restaurant objects
         bar_res = Restaurant.objects.create(name='Bar', phone='1234567890', owner=Owner1)
@@ -129,17 +151,17 @@ class TestBase(TestCase):
         cls.pizza_res = pizza_res
 
         # Create MenuItem objects
-        liit_mi = MenuItem.objects.create(name='LIIT', price=100, restaurant=bar_res, itemType=beverage_item_type, category=bestseller_special_item)
-        beer_mi = MenuItem.objects.create(name='Beer', price=200, restaurant=bar_res, itemType=beverage_item_type)
-        snacks_mi = MenuItem.objects.create(name='Snacks', price=300, restaurant=bar_res, itemType=food_item_type)
+        liit_mi = MenuItem.objects.create(name='LIIT', price=100, restaurant=bar_res, itemType=cls.beverage_item_type, category=cls.bestseller_special_item)
+        beer_mi = MenuItem.objects.create(name='Beer', price=200, restaurant=bar_res, itemType=cls.beverage_item_type)
+        snacks_mi = MenuItem.objects.create(name='Snacks', price=300, restaurant=bar_res, itemType=cls.food_item_type)
 
         cls.liit_mi = liit_mi
         cls.beer_mi = beer_mi
         cls.snacks_mi = snacks_mi
 
         # Create MenuItem objects for Pizza_Res
-        pizza_mi = MenuItem.objects.create(name='Pizza', price=100, restaurant=pizza_res, itemType=food_item_type, category=popular_special_item)
-        coke_mi = MenuItem.objects.create(name='Coke', price=300, restaurant=pizza_res, itemType=beverage_item_type)
+        pizza_mi = MenuItem.objects.create(name='Pizza', price=100, restaurant=pizza_res, itemType=cls.food_item_type, category=cls.popular_special_item)
+        coke_mi = MenuItem.objects.create(name='Coke', price=300, restaurant=pizza_res, itemType=cls.beverage_item_type)
 
         cls.pizza_mi = pizza_mi
         cls.coke_mi = coke_mi
@@ -233,7 +255,7 @@ class TestBase(TestCase):
         CustomerVisit.objects.create(customer=Raj, restaurant=pizza_res)
 
         #create restaurant with many Menu Items
-        manny_res = Restaurant.objects.create(name='Manny\'s', phone='1234567892', owner=Owner1)
+        cls.manny_res = manny_res = Restaurant.objects.create(name='Manny\'s', phone='1234567892', owner=Owner1)
         fp = os.path.join(settings.MEDIA_ROOT, 'menu','3')
         add_media = not os.path.exists(fp)
 
@@ -423,7 +445,6 @@ class TestBase(TestCase):
             'phone' : phone,
         }
         response = client.post(URL.SEND_OTP.getURL(), data=data)
-        time.sleep(0.1)
 
         self.assertEquals(response.status_code, 200)
         response = response.json()

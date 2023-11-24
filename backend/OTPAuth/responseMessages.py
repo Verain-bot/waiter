@@ -88,3 +88,8 @@ GENERAL_SUCCESS = {
     'message' : 'Success',
     'type' : 'success',
 }
+
+OTP_WAIT_30_SEC = {
+    'message' : 'Please wait 30 seconds before trying again',
+    'type' : 'error',
+}

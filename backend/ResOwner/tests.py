@@ -19,7 +19,7 @@ class TestViews(TestBase):
 
         self.assertEqual(response['count'], 2)
 
-        o = Order.objects.filter(restaurant = Restaurant.objects.get(pk=1)).first()
+        o = Order.objects.filter(restaurant = Restaurant.objects.get(pk=self.bar_res.pk)).first()
         o.orderStatus = Order.OrderStatusChoices.CANCELLED
         o.save()
 
@@ -29,7 +29,7 @@ class TestViews(TestBase):
 
         self.assertEqual(response['count'], 1)
 
-        o = Order.objects.filter(restaurant = Restaurant.objects.get(pk=1)).last()
+        o = Order.objects.filter(restaurant = Restaurant.objects.get(pk=self.bar_res.pk)).last()
         o.orderStatus = Order.OrderStatusChoices.COMPLETE
         o.save()
 
@@ -97,7 +97,7 @@ class TestViews(TestBase):
 
 
         self.login()
-        cart = self.Cart(1)
+        cart = self.Cart(self.bar_res.pk)
         items = cart.getRestaurantItems()
         cart.addItem(items[0])
         cart.addItemDetails(2)

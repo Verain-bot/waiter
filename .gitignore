@@ -1,0 +1,18 @@
+# Ignore database files
+*.sqlite3
+*.db
+
+# Ignore cache files
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.pyw
+**/*.pyz
+**/*.pyzw
+**/*.pycachefile
+**/*.pyoachefile
+**/*.pydachefile
+**/*.pywachefile
+**/*.pyzachefile
+**/*.rdb
