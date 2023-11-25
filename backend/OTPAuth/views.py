@@ -13,6 +13,7 @@ from django.contrib.auth import login, logout
 from rest_framework.permissions import IsAuthenticated
 from .tasks import sendOTP
 from datetime import datetime
+import bcrypt
 
 class CustomerLogout(views.APIView):
     def get(self, request, *args, **kwargs):
@@ -91,7 +92,7 @@ class VerifyOTPView(views.APIView):
                 request.session.flush()
                 return Response(msg.OTP_TOO_MANY_ATTEMPTS, status=400)
             
-            if otp == cacheData['otp']:
+            if bcrypt.checkpw(str(otp).encode('utf-8'), cacheData['otp']):
                 request.session[Ath.IS_VERIFIED] = True
                 existingUser = Customer.objects.filter(username=phone).exists()
                 return Response(msg.OTP_VERIFICATION_COMPLETE(existingUser))
