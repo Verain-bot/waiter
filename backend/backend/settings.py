@@ -29,7 +29,7 @@ if os.environ.get("V_ENV") == "DEV":
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("V_ALLOWED_HOSTS").split(",")
 
 # Application definition
 
@@ -48,14 +48,15 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'backend.middleware.AnalyticsMiddleware'
 ]
 
 CSRF_TRUSTED_ORIGINS = [os.environ.get("V_FRONTEND_URL")]
@@ -95,7 +96,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'waiter',     
         'USER': os.environ.get("V_DB_USER"),
         'PASSWORD': os.environ.get("V_DB_PASSWORD"), 
@@ -204,3 +205,5 @@ CELERYD_POOL = 'prefork'
 # custom constants
 
 SMS_API_KEY = os.environ.get('V_SMS_API_KEY')
+
+SECURE_HSTS_SECONDS = 31536000

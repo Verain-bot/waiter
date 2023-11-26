@@ -27,7 +27,7 @@ class RestraurantList(generics.ListAPIView):
 class RestaurantDetail(generics.RetrieveAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantDetailsSerializer
-
+    
 #@method_decorator(cache_page(60 * 10), name='dispatch')
 class MenuDetails(generics.RetrieveAPIView):
     queryset = MenuItem.objects.all()

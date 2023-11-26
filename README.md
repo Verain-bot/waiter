@@ -4,7 +4,7 @@
 2. Django Rest Framework
 3. Celery
 4. Redis - As Cache for complete project, message broker and result backend for celery. Also used for session storage.
-5. MySQL Database
+5. PostgreSQL Database
 
 ### Frontend
 1. React (TSX)
@@ -28,6 +28,7 @@ redis-cli
 
 ```bash
 V_ENV                           "DEV" or "PROD"
+V_ALLOWED_HOSTS
 V_SMS_API_KEY 
 V_DB_HOST                       "DB HOST URL"
 V_DB_PORT
@@ -38,8 +39,20 @@ V_FRONTEND_URL
 V_CACHE_URL                     "Redis Cache URL"
 V_CELERY_BROKER                 "Celery message broker based on redis"
 V_CELERY_RESULT_BACKEND         "Celery result storage based on redis"
-
 ```
 ## Other info
 
 To generate test data run setUpTestData method of backend.tests.TestViews
+
+# PostGreSQL Commands
+
+```bash
+alias runpsql="/opt/homebrew/opt/postgresql@14/bin/postgres -D /opt/homebrew/var/postgresql@14"
+alias createpsqluser="/opt/homebrew/Cellar/postgresql@14/14.10/bin/createuser -s"
+
+createdb <user>
+
+psql -U <user>
+
+
+```

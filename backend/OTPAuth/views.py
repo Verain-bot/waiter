@@ -138,3 +138,4 @@ class RegisterView(generics.CreateAPIView):
             return super().post(request, *args, **kwargs)
         
         return Response(msg.INVALID_REQUEST, 400)
+    

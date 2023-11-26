@@ -8,7 +8,9 @@ let response = new Response('',{statusText: 'Something went wrong.', status: 500
     try{
         response = await fetch(BASEUrl+url,{
             signal: signal,    
-            credentials: 'include'
+            credentials: 'include',
+            //allow all referrer to be sent to backend
+            referrerPolicy: 'unsafe-url'
         })
     }
     catch(err : any){
@@ -60,7 +62,8 @@ export const makeRequest = async (url: string, request: Request, data: FormData)
                     'Accept': 'application/json',
                     'X-CSRFToken': csrfToken || '',
                 },
-                credentials: 'include'
+                credentials: 'include',
+                referrerPolicy: 'unsafe-url'
             })
         }
             
@@ -74,7 +77,8 @@ export const makeRequest = async (url: string, request: Request, data: FormData)
                     'Accept': 'application/json',
                     'X-CSRFToken': csrfToken || '',
                 },
-                credentials: 'include'
+                credentials: 'include',
+                referrerPolicy: 'unsafe-url'
             })
         }
     }
