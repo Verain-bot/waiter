@@ -48,7 +48,7 @@ class OrderListView(generics.ListAPIView):
 
     def get_queryset(self):
         setRestaurantOrderAvailable(self.request.user.pk, False)
-        return super().get_queryset().filter(restaurant__owner=self.request.user)
+        return super().get_queryset().filter(restaurant__owner=self.request.user, paymentStatus=Order.OrderPaymentStatusChoices.PAID)
     
 class OrderUpdatesAvailableView(views.APIView):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]

@@ -30,12 +30,15 @@ else:
     DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("V_ALLOWED_HOSTS").split(",")
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 INSTALLED_APPS = [
     'OTPAuth',
-    "corsheaders",
+    'Payments',
+    'corsheaders',
     'nested_admin',
     'rest_framework',
     'api',

@@ -64,6 +64,12 @@ class Order(models.Model):
         COMPLETE = 'COMPLETE', 'Complete'
         CANCELLED = 'CANCELLED', 'Cancelled'
 
+    class OrderPaymentStatusChoices(models.TextChoices):
+        PAID = 'PAID', 'Paid'
+        FAILED = 'FAILED', 'Failed'
+        REFUNDED = 'REFUNDED', 'Refunded'
+        PENDING = 'PENDING', 'Pending'
+
     customers = models.ManyToManyField(Customer, related_name='customerList', blank=True, through=SubOrder)
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_order',blank=True,on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default = 0)
@@ -74,6 +80,7 @@ class Order(models.Model):
     comment = models.TextField(max_length=500, blank = True)
     takeawayOrDinein = models.SmallIntegerField(default = 0)
     address = models.CharField(max_length=100, blank=True, null=True)
+    paymentStatus = models.CharField(max_length=15, choices=OrderPaymentStatusChoices.choices, default=OrderPaymentStatusChoices.PENDING)
 
     class Meta:
         constraints = [
