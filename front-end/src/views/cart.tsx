@@ -93,12 +93,12 @@ const App = ()=>{
                 </div>
             </Table>
             
-            <Link to={PATHS.ADDRESS} className='link text-dark'>
+            {/* <Link to={PATHS.ADDRESS} className='link text-dark'>
                 <Table title='Table' subTitle='Only select this field if your restaurant is not self service'>
                     <TableItem left='Table:' right={<Address address={address? address: ''} />}  width={5}/>
                     <TableItem left={<span className='small'>Tap to change your table</span>}  width={11}/>
                 </Table>
-            </Link>
+            </Link> */}
             
             
             <Table title='Amount' subTitle='Your Total Amount'>

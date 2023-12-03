@@ -18,9 +18,10 @@ from phonepe.sdk.pg.payments.v1.payment_client import PhonePePaymentClient
 from phonepe.sdk.pg.env import Env
 from phonepe.sdk.pg.payments.v1.models.request.pg_pay_request import PgPayRequest
 
+
 class PaymentPhonePe(APIView):
-    def get(self, request):
-        order_id = request.GET.get('order_id')
+    def post(self, request):
+        order_id = int(request.data.get('order_id'))
         
         if not order_id:
             return Response(msg.ORDER_ID_NOT_PASSED, status=400)
@@ -144,8 +145,9 @@ class PhonePeCheckStatus(APIView):
         d = response.__dict__
         d['data'] = d['data'].__dict__
         d['data']['payment_instrument'] = d['data']['payment_instrument'].__dict__
-        d['data']['payment_instrument']['type'] = d['data']['payment_instrument']['type'].__dict__
+        del d['data']['payment_instrument']['type']
+        
+        pymtSuccess = response.code == 'PAYMENT_SUCCESS'
+        process_payment_for_order.delay(merchant_transaction_id, d, pymtSuccess)
 
-        process_payment_for_order.delay(merchant_transaction_id, d, response.code == 'PAYMENT_SUCCESS')
-
-        return Response({'status': response.code, 'message': response.message, 'success': response.success}, status=200)
+        return Response({'status': pymtSuccess, 'message': response.message, 'success': response.success}, status=200)

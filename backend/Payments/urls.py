@@ -6,10 +6,10 @@ from backend.mixins import URLEnumMixin
 import enum
 
 class URL_FOR_PAYMENTS(URLEnumMixin,enum.StrEnum):
-    PHONE_PE_INITITATE = 'phonepe/initiate'
-    PHONE_PE_CALLBACK = 'phonepe/callback'
-    PHONE_PE_UPI_INTENT = 'phonepe/upi'
-    PHONE_PE_CHECK_STATUS = 'phonepe/checkstatus'
+    PHONE_PE_INITITATE = 'phonepe/initiate/'
+    PHONE_PE_CALLBACK = 'phonepe/callback/'
+    PHONE_PE_UPI_INTENT = 'phonepe/upi/'
+    PHONE_PE_CHECK_STATUS = 'phonepe/checkstatus/'
 
 
     BASE = URL_FOR_APPS.PAYMENTS

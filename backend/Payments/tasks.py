@@ -13,7 +13,7 @@ def process_payment_for_order(paymentId : int, data , success : bool):
     obj = PaymentStatus.objects.get(payment_id=paymentId)
     if not success:
         if not obj.success and obj.terminal_state:
-            return {'success': False, 'paymentId': paymentId}
+            return {'success': False, 'paymentId': paymentId, 'msg': 'Payment already processed'}
         
         obj.success = False
         obj.terminal_state = True
@@ -23,10 +23,10 @@ def process_payment_for_order(paymentId : int, data , success : bool):
 
         obj.data = data
         obj.save()
-        return {'success': False, 'paymentId': paymentId}
+        return {'success': False, 'paymentId': paymentId, 'msg': 'Payment failed'}
     
     if obj.success and obj.terminal_state:
-        return {'success': False, 'paymentId': paymentId}
+        return {'success': False, 'paymentId': paymentId, 'msg': 'Payment already processed'}
 
     obj.success = True
     obj.data = data
@@ -40,7 +40,7 @@ def process_payment_for_order(paymentId : int, data , success : bool):
     setRestaurantOrderAvailable(order.restaurant.owner.pk, True)
     cancel_order_if_not_accepted.apply_async((order.pk,), countdown=120)
 
-    return {'success': True, 'paymentId': paymentId}
+    return {'success': True, 'paymentId': paymentId, 'msg': 'Payment successfull'}
 
 @shared_task
 def refund_payment_for_order(orderID: int):
