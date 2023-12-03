@@ -1,4 +1,5 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
+from django.http import HttpResponse
 from . import responseMsg as msg 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -25,8 +26,6 @@ class PaymentPhonePe(APIView):
             return Response(msg.ORDER_ID_NOT_PASSED, status=400)
 
         order = get_object_or_404(Order, id=order_id)
-
-        print('Time ', order.time , timezone.now())
 
         if order.paymentStatus in [Order.OrderPaymentStatusChoices.PAID, Order.OrderPaymentStatusChoices.REFUNDED] or order.price == 0 or order.time + timedelta(minutes=10) < timezone.now():
             return Response(msg.ORDER_CANT_PAY, status=400)
@@ -57,11 +56,11 @@ class PaymentPhonePe(APIView):
 
         print(d)
         
-        PaymentStatus.objects.create(order=order, payment_id=unique_transaction_id , success=False, payment_gateway='PhonePe', data=d).save()
+        PaymentStatus.objects.create(order=order, payment_id=unique_transaction_id , payment_gateway='PhonePe', data=d).save()
 
         return Response({'url': pay_page_url})
 
-class PaymentPhonePeCallback(APIView):
+class PhonePeCallback(APIView):
     
     @csrf_exempt
     def post(self ,request):
@@ -83,4 +82,70 @@ class PaymentPhonePeCallback(APIView):
 
         process_payment_for_order.delay(uid, data, code == 'PAYMENT_SUCCESS')
 
-        return Response({'status': 'success', 'message': 'Payment successful'}, status=200)
+        return Response({'status': 'success', 'message': 'Payment successful'}, status=200)    
+
+class PhonePeUPI_Intent(APIView):
+
+    def get(self, request):
+
+        merchant_id = "PGTESTPAYUAT"
+        salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"  
+        salt_index = 1 # insert your salt index
+        
+        env = Env.UAT
+        should_publish_events = True
+        phonepe_client = PhonePePaymentClient(merchant_id, salt_key, salt_index, env, should_publish_events)
+
+        unique_transaction_id = str(uuid.uuid4())[:-2]
+        s2s_callback_url = "https://www.merchant.com/callback"
+        amount = 100
+        id_assigned_to_user_by_merchant = '<YOUR_USER_ID>'
+
+        os_where_the_link_will_be_used = "IOS"
+        target_app_ios_gpay = "PHONEPE"  # other possible values, GPAY, PAYTM
+        upi_intent_request = PgPayRequest.upi_intent_pay_request_builder(merchant_transaction_id=unique_transaction_id,
+                                                                        amount=amount,
+                                                                        target_app=target_app_ios_gpay,
+                                                                        merchant_user_id=id_assigned_to_user_by_merchant,
+                                                                        callback_url=s2s_callback_url,
+                                                                        device_os=os_where_the_link_will_be_used,
+                                                                        
+                                                                        )
+        upi_intent_response = phonepe_client.pay(upi_intent_request)
+        upi_intent_url = upi_intent_response.data.instrument_response.intent_url
+
+
+        return HttpResponse(f'<a href="{upi_intent_url}">{upi_intent_url}</a>')
+
+class PhonePeCheckStatus(APIView):
+    
+    @csrf_exempt
+    def post(self, request):
+
+        order_id = request.data.get('order_id')
+        if not order_id:
+            return Response(msg.ORDER_ID_NOT_PASSED, status=400)
+        
+        order = get_object_or_404(Order, id=order_id)
+
+        payments = get_list_or_404(PaymentStatus, order=order)
+        latest_payment = payments[0]
+
+        merchant_id = "PGTESTPAYUAT"
+        salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"  
+        salt_index = 1 
+        env = Env.UAT
+        should_publish_events = True
+        phonepe_client = PhonePePaymentClient(merchant_id, salt_key, salt_index, env, should_publish_events)
+
+        merchant_transaction_id = latest_payment.payment_id
+        response = phonepe_client.check_status(merchant_transaction_id)
+        
+        d = response.__dict__
+        d['data'] = d['data'].__dict__
+        d['data']['payment_instrument'] = d['data']['payment_instrument'].__dict__
+        d['data']['payment_instrument']['type'] = d['data']['payment_instrument']['type'].__dict__
+
+        process_payment_for_order.delay(merchant_transaction_id, d, response.code == 'PAYMENT_SUCCESS')
+
+        return Response({'status': response.code, 'message': response.message, 'success': response.success}, status=200)

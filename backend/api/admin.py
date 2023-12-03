@@ -104,11 +104,11 @@ class ItemDetailAdmin(CustomAdminMixin):
 class OrderAdmin(CustomAdminMixin):
     inlines = [SubOrderInLine]
     ordering=['-time']
-    list_display = ['id','price', 'orderStatus', 'CustomerName','time']
+    list_display = ['id','price', 'orderStatus', 'Customer_name','time', 'paymentStatus']
     search_fields = ['id','customers__username','customers__first_name']
     search_help_text = "Search by Order ID, Customer Name, Customer Phone"
 
-    def CustomerName(self,obj):
+    def Customer_name(self,obj):
         x = obj.customers.first()
         return x.first_name + ' ' + x.last_name
 

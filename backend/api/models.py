@@ -74,13 +74,13 @@ class Order(models.Model):
     restaurant = models.ForeignKey('Restaurant', related_name='restaurant_order',blank=True,on_delete=models.CASCADE)
     price = models.PositiveIntegerField(default = 0)
     time = models.DateTimeField(default= now)
-    orderStatus = models.CharField(max_length=15, choices=OrderStatusChoices.choices, default=OrderStatusChoices.NOT_CONFIRMED)
+    orderStatus = models.CharField('Order Status',max_length=15, choices=OrderStatusChoices.choices, default=OrderStatusChoices.NOT_CONFIRMED)
     tip = models.PositiveSmallIntegerField(default=0)
     rating = models.SmallIntegerField(blank = True,null=True)
     comment = models.TextField(max_length=500, blank = True)
     takeawayOrDinein = models.SmallIntegerField(default = 0)
     address = models.CharField(max_length=100, blank=True, null=True)
-    paymentStatus = models.CharField(max_length=15, choices=OrderPaymentStatusChoices.choices, default=OrderPaymentStatusChoices.PENDING)
+    paymentStatus = models.CharField('Payment Status',max_length=15, choices=OrderPaymentStatusChoices.choices, default=OrderPaymentStatusChoices.PENDING)
 
     class Meta:
         constraints = [

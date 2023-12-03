@@ -12,6 +12,7 @@ from .helper import setRestaurantOrderAvailable, getRestaurantOrderAvailable
 from django.contrib.auth import decorators
 from django.urls import reverse_lazy as reverse
 from django.contrib import admin
+from Payments.tasks import refund_payment_for_order
 from rest_framework.response import Response
 # Create your views here.
 
@@ -75,6 +76,9 @@ class UpdateOrderView(generics.RetrieveUpdateAPIView):
         instance = self.get_object()
         reqData = {}
         if instance.orderStatus not in [Order.OrderStatusChoices.CANCELLED, Order.OrderStatusChoices.COMPLETE]:
+            if newOrderStatus == Order.OrderStatusChoices.CANCELLED:
+                refund_payment_for_order.delay(instance.pk)
+                
             reqData['orderStatus'] = newOrderStatus    
 
         partial = kwargs.pop('partial', False)
