@@ -5,6 +5,7 @@ from ResOwner.helper import setRestaurantOrderAvailable
 from phonepe.sdk.pg.payments.v1.payment_client import PhonePePaymentClient
 from phonepe.sdk.pg.env import Env
 import uuid
+from django.conf import settings
 
 @shared_task
 def process_payment_for_order(paymentId : int, data , success : bool):
@@ -74,8 +75,8 @@ def refund_payment_from_paymentid(paymnt_id):
     if paymentStatus.success == False or paymentStatus.terminal_state == False:
         return {'success': False, 'paymnt_id': paymnt_id, 'msg': 'Payment status shows failed'}
     
-    merchant_id = "PGTESTPAYUAT"
-    salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"  
+    merchant_id = settings.PHONE_PE_MERCHANT_ID
+    salt_key = settings.PHONE_PE_SALT_KEY
     salt_index = 1 # insert your salt index
     env = Env.UAT
     should_publish_events = True
