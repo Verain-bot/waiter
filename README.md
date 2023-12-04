@@ -43,6 +43,8 @@ V_FRONTEND_URL
 V_CACHE_URL                     "Redis Cache URL"
 V_CELERY_BROKER                 "Celery message broker based on redis"
 V_CELERY_RESULT_BACKEND         "Celery result storage based on redis"
+V_PHONE_PE_MERCHANT_ID
+V_PHONE_PE_SALT_KEY
 ```
 ## Other info
 

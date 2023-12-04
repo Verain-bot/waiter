@@ -31,8 +31,8 @@ class PaymentPhonePe(APIView):
         if order.paymentStatus in [Order.OrderPaymentStatusChoices.PAID, Order.OrderPaymentStatusChoices.REFUNDED] or order.price == 0 or order.time + timedelta(minutes=10) < timezone.now():
             return Response(msg.ORDER_CANT_PAY, status=400)
 
-        merchant_id = "PGTESTPAYUAT"
-        salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"  
+        merchant_id = settings.PHONE_PE_MERCHANT_ID
+        salt_key = settings.PHONE_PE_SALT_KEY
         salt_index = 1 
         env = Env.UAT if settings.DEBUG else Env.PROD
 
@@ -65,8 +65,8 @@ class PhonePeCallback(APIView):
     
     @csrf_exempt
     def post(self ,request):
-        merchant_id = "PGTESTPAYUAT"  
-        salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"  
+        merchant_id = settings.PHONE_PE_MERCHANT_ID
+        salt_key = settings.PHONE_PE_SALT_KEY
         salt_index = 1 
 
         env = Env.UAT if settings.DEBUG else Env.PROD
@@ -89,8 +89,8 @@ class PhonePeUPI_Intent(APIView):
 
     def get(self, request):
 
-        merchant_id = "PGTESTPAYUAT"
-        salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"  
+        merchant_id = settings.PHONE_PE_MERCHANT_ID
+        salt_key = settings.PHONE_PE_SALT_KEY
         salt_index = 1 # insert your salt index
         
         env = Env.UAT
@@ -132,8 +132,8 @@ class PhonePeCheckStatus(APIView):
         payments = get_list_or_404(PaymentStatus, order=order)
         latest_payment = payments[0]
 
-        merchant_id = "PGTESTPAYUAT"
-        salt_key = "099eb0cd-02cf-4e2a-8aca-3e6c6aff0399"  
+        merchant_id = settings.PHONE_PE_MERCHANT_ID
+        salt_key = settings.PHONE_PE_SALT_KEY
         salt_index = 1 
         env = Env.UAT
         should_publish_events = True
