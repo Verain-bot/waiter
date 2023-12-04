@@ -151,6 +151,8 @@ const App = ()=>{
     }
 
     const retryPayment = async () =>{
+        const windowReference = window.open();
+
         const requestForPayment = new Request(APIRoutes.PHONE_PE_INITITATE,{
             method: 'POST',
         })
@@ -170,7 +172,7 @@ const App = ()=>{
             return
         }
         
-        window.open(json.url, '_blank')
+        windowReference?.location.assign(json.url)
         return
     }
 

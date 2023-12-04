@@ -24,6 +24,10 @@ redis-server
 redis-cli
 ```
 
+Command to kill process on a port
+```bash
+kill $(lsof -t -i:8080)
+```
 ## ENV Variables to configure
 
 ```bash

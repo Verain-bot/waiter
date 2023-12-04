@@ -8,8 +8,14 @@ const pathsToCache = [
     '/static/media/bootstrap-icons.6d63d0501e5ed7b79dab.woff2',
     '/manifest.json',
     '/index.html',
-    '/logo192.png',
-    '/favicon.ico'
+    '/favicon.ico',
+    'icon/1024.png',
+    'icon/512.png',
+    'icon/1080.png',
+    'icon/256.png',
+    'icon/192.png',
+    'icon/180.png',
+    'icon/152.png',
 ]
 
 const addCache =async ()=>{
