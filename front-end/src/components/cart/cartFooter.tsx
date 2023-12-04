@@ -37,6 +37,7 @@ export const CartFooter = (props : CartFooterProps) =>{
 }
 
 export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction= (LoginContext ) => async ({params, request }) : Promise<ActionErrorDataType | Response> => {
+    var windowReference = window.open();
     const r = localStorage.getItem('cart')
     if (!r){
         return null
@@ -59,7 +60,7 @@ export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.Se
 
     const x = await makeRequest(APIRoutes.PHONE_PE_INITITATE,requestForPayment, fd2)
 
-    window.open(x.json.url, '_blank')
+    windowReference?.location.assign(x.json.url)
 
     if(!response.ok){
         localStorage.setItem('cart', '[]')
