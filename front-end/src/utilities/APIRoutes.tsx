@@ -12,6 +12,10 @@ export const APIRoutes = {
     "ORDER_DETAILS": "/api/account/orders/details/:pk",
     "ORDER_CREATE" : '/api/account/orders/create/',
     "CART_PRICE" : '/api/account/orders/cart/verify/',
+    "PHONE_PE_INITITATE": '/pay/phonepe/initiate/',
+    "PHONE_PE_CALLBACK": '/pay/phonepe/callback/',
+    "PHONE_PE_UPI_INTENT": '/pay/phonepe/upi/',
+    "PHONE_PE_CHECK_STATUS": '/pay/phonepe/checkstatus/',
 }
 
 export const makeURL = (route: string, params: Record<string, string | number>) => {

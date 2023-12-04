@@ -1,5 +1,7 @@
 from celery import shared_task
 from .models import Order,SubOrder
+from ResOwner.helper import setRestaurantOrderAvailable
+from Payments.tasks import refund_payment_for_order
 
 @shared_task
 def cancel_order_if_not_accepted(order_id):
@@ -8,12 +10,12 @@ def cancel_order_if_not_accepted(order_id):
     
     if order.orderStatus == Order.OrderStatusChoices.NOT_CONFIRMED:
         order.orderStatus = Order.OrderStatusChoices.CANCELLED
+        setRestaurantOrderAvailable(order.restaurant.owner.pk, True)
+        refund_payment_for_order.delay(order_id)
         order.save()
-        
         return f"Order {order_id} cancelled"
     
-    else:
-        return f"Order {order_id} already confirmed"
+    return f"Order {order_id} already confirmed"
     
 @shared_task
 def add_comment_for_order(order_id, comment, rating ):

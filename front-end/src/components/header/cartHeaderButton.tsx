@@ -10,7 +10,7 @@ const App = ()=>{
     const qty = getCartQuantity(cart)
     if(login.login)
     return (
-        <li className="nav-item d-block d-lg-none">
+        <li className="nav-item d-block ">
         <Link to={PATHS.CART} className="nav-link nav-icon search-bar-toggle" >
             <i className="bi bi-bag"></i>
             {qty > 0 && (

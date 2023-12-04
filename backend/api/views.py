@@ -104,10 +104,7 @@ class OrderCreate(views.APIView):
             
         order.save()
         suborder.save()
-
-        setRestaurantOrderAvailable(restaurant.owner.pk, True)
-        cancel_order_if_not_accepted.apply_async((order.pk,), countdown=120)
-
+        
         return Response(msg.ORDER_CREATED(x['price'],order.pk), status=200)
         
 class CartTotalPriceView(views.APIView):

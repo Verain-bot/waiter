@@ -1,4 +1,5 @@
 from OTPAuth.models import Analytics
+from django.conf import settings
 
 class AnalyticsMiddleware:
     def __init__(self, get_response):
@@ -10,10 +11,16 @@ class AnalyticsMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+        if settings.DEBUG:
+            return None
+
         if request.path.startswith('/media') or request.path.startswith('/static'):
             return None
         
-        pathname = str(view_func.view_class.__name__).lower().removesuffix('view')
+        pathname = str(view_func.__name__).lower().removesuffix('view')
+
+        if 'view_class' in dir(view_func):
+            pathname = str(view_func.view_class.__name__).lower().removesuffix('view')
 
         a = Analytics.objects.create(
             path = pathname,

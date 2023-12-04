@@ -44,7 +44,7 @@ V_CELERY_RESULT_BACKEND         "Celery result storage based on redis"
 
 To generate test data run setUpTestData method of backend.tests.TestViews
 
-# PostGreSQL Commands
+### PostGreSQL Commands
 
 ```bash
 alias runpsql="/opt/homebrew/opt/postgresql@14/bin/postgres -D /opt/homebrew/var/postgresql@14"

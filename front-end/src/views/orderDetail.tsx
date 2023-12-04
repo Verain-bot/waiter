@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react"
 import Table from "../components/table/table"
 import { TableHeading, TableItem } from "../components/table/tableItems"
 import { useRatingContext } from "../context/RatingContext"
-import { ActionFunction, LoaderFunction, redirect, useLoaderData } from "react-router-dom"
+import { ActionFunction, LoaderFunction, redirect, useLoaderData, useNavigation } from "react-router-dom"
 import APIRoutes, { makeURL } from "../utilities/APIRoutes"
 import { getData, makeRequest } from "../utilities/fetchData"
 import { PATHS } from "../utilities/routeList"
@@ -11,6 +11,7 @@ import { MenuItemListFetch } from "./menu"
 import { RestaurantListItemFetch } from "./restaurantList"
 import { LoginContextType } from "../context/LoginContext"
 import { ActionErrorDataType } from "../hooks/useActionError"
+import { useMessageContext } from "../context/MessageContext"
 
   
 export type ItemOptionFetch = {
@@ -64,6 +65,7 @@ export type OrderData = {
     rating: number | null;
     comment: string;
     address: string;
+    paymentStatus: string;
     takeawayOrDinein: number;
 };
   
@@ -72,7 +74,10 @@ type OrderStatusType = 'NOT_CONFIRMED'|'CONFIRMED'|'PREPARING'|'DISPATCHING'|'RE
 const App = ()=>{
 
     const [rate, setRate]= useRatingContext()
+    const [message, setMessage] = useMessageContext()
     const data = useLoaderData() as OrderData
+    const disabled =  data.paymentStatus=='PAID' || data.paymentStatus=='REFUNDED'
+
     const review = ()=>{
         setRate({...rate,
             canRate:true,
@@ -114,6 +119,61 @@ const App = ()=>{
         })
     })
 
+    const checkPaymentStatus = async ()=>{
+        const req = new Request(APIRoutes.PHONE_PE_CHECK_STATUS, {
+            method: 'POST',
+        })
+        
+        const fd = new FormData()
+        fd.append('order_id', String(data.id))
+
+        const {json, response, message} = await makeRequest(APIRoutes.PHONE_PE_CHECK_STATUS, req, fd)
+
+        if(!response.ok){
+            setMessage({
+                heading: 'Something went wrong',
+                body: message,
+                type: 'error',
+            })
+            return
+        }
+    
+        
+        setMessage({
+            heading: 'Payment Info',
+            body: json.message + ' Please refresh the page.',
+            type: 'success',
+        })
+
+        return
+        
+        
+    }
+
+    const retryPayment = async () =>{
+        const requestForPayment = new Request(APIRoutes.PHONE_PE_INITITATE,{
+            method: 'POST',
+        })
+    
+        const fd2 = new FormData()
+        fd2.append('order_id', String(data.id))
+        const {json, response, message} = await makeRequest(APIRoutes.PHONE_PE_INITITATE,requestForPayment, fd2)
+
+        console.log('Messagee', message, json)
+
+        if(!response.ok){
+            setMessage({
+                heading: 'Something went wrong',
+                body: message,
+                type: 'error',
+            })
+            return
+        }
+        
+        window.open(json.url, '_blank')
+        return
+    }
+
     const time = new Date(data.time)
 
 
@@ -127,12 +187,29 @@ const App = ()=>{
             <TableItem left='Restaurant' right={data.restaurant.name} width={4} nohr/>
             <TableItem left='Time' right={time.toLocaleString()} width={4} nohr />
             <TableItem left='Order ID' right={data.id} width={4} nohr />
-            <TableItem left='Address' right={data.address} width={4} nohr />
-
-
             <TableItem left='Need Help?' right={<a href={`tel:${data.restaurant.phone}`} className="">Call Restaurant</a>} width={4} nohr />
             
         </Table>
+        
+        <Table title="Payment details" subTitle={`Order no.: #${data.id}`} info={`Payment details for Order Number #${data.id}`}>
+        <TableItem left='Payment Status' right={<strong>{data.paymentStatus}</strong>} width={6} nohr />
+            
+            <div className="col-12 pb-4 mx-0 px-0">
+                <button className='btn btn-outline-dark col-6 ' onClick={checkPaymentStatus} disabled={disabled} >
+                    <strong>
+                        Check Status
+                    </strong>
+                </button>
+
+                <button className='btn btn-dark col-6' onClick={retryPayment} disabled={disabled} >
+                    <strong>
+                        Retry Payment
+                    </strong>
+                </button>
+
+            </div>     
+
+        </Table>   
 
         <Table title="Item Details" subTitle={`Order no.: #${data.id}`} info={`Items for Order Number #${data.id}`}>
 
@@ -152,7 +229,7 @@ const App = ()=>{
         </Table>
 
         <Table title='Order Status' >
-            <TableItem right={<strong className='text-success'>{data.orderStatus.split('_').join(' ')}</strong>} left='Status' width={7} />
+            <TableItem right={<strong className='text-dark'>{data.orderStatus.split('_').join(' ')}</strong>} left='Status' width={7} />
         </Table>
 
 

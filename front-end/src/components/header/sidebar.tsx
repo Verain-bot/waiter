@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 import RouteList, { PathType } from '../../utilities/routeList';
 import { useLoginContext } from '../../context/LoginContext';
 import LogoutButton from '../forms/logoutButton';
+import logo from '../../logo.svg';
+
 
 type SideBarItemProps = {
     name: string;
@@ -50,6 +52,24 @@ export const SideBar: React.FC<SideBarProps> = (props) => {
 
     return (
         <aside id="sidebar" className="sidebar">
+            <div className='container mb-4'>
+                <div className="row">
+                    <div className="col-12 d-flex align-items-center justify-content-center">
+                        <img src={logo} alt="logo" className='img' width={80} />
+                    </div>
+                    <div className="col-12 d-flex align-items-end justify-content-center">
+                        <h1 className='p-0 m-0'>
+                            <strong>
+                                toOne
+                            </strong>
+                        </h1>
+                        <h4 style={{paddingBottom: '1px'}} className='m-0'>
+                            .in
+                        </h4>
+                    </div>
+                </div>
+            </div>  
+
             <ul className="sidebar-nav" id="sidebar-nav">
                 {Items.map((item, key) => (
                     <SideBarItem name={item.name} iconName={`bi-${item.icon}`} link={item.path} key={key} />

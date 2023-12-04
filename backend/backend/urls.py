@@ -32,6 +32,7 @@ class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
     API = 'api/'
     OTP_AUTH = 'api/account/'
     RES_OWNER = 'restaurant/admin/'
+    PAYMENTS = 'pay/'
 
     BASE = ''
 
@@ -41,5 +42,7 @@ urlpatterns = [
     path(URL_FOR_APPS.API,include('api.urls')),
     path(URL_FOR_APPS.OTP_AUTH,include('OTPAuth.urls'),name='otp-auth'),
     path(URL_FOR_APPS.RES_OWNER,include('ResOwner.urls')),
+    path(URL_FOR_APPS.PAYMENTS,include('Payments.urls')),
+    
     path('_nested_admin/', include('nested_admin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

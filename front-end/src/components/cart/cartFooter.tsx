@@ -43,13 +43,23 @@ export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.Se
     }
     const cart = JSON.parse(r) as CartItemType[]
 
-    const address = localStorage.getItem('address')
 
     const fd = new FormData()
     fd.append('cart', r)
     fd.append('restaurantID', cart[0].restaurantID.toString())
-    fd.append('address',address? address: '')
+
     const {json, response, message} = await makeRequest(APIRoutes.ORDER_CREATE,request, fd )
+
+    const requestForPayment = new Request(APIRoutes.PHONE_PE_INITITATE,{
+        method: 'POST',
+    })
+
+    const fd2 = new FormData()
+    fd2.append('order_id', json.orderID)
+
+    const x = await makeRequest(APIRoutes.PHONE_PE_INITITATE,requestForPayment, fd2)
+
+    window.open(x.json.url, '_blank')
 
     if(!response.ok){
         localStorage.setItem('cart', '[]')
