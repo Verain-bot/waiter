@@ -9,13 +9,14 @@ const pathsToCache = [
     '/manifest.json',
     '/index.html',
     '/favicon.ico',
-    'icon/1024.png',
-    'icon/512.png',
-    'icon/1080.png',
-    'icon/256.png',
-    'icon/192.png',
-    'icon/180.png',
-    'icon/152.png',
+    '/icon/1024.png',
+    '/icon/512.png',
+    '/icon/1080.png',
+    '/icon/256.png',
+    '/icon/192.png',
+    '/icon/180.png',
+    '/icon/152.png',
+    '/static/media/logo.e7f24427f4309072a133c7e4ca36cedd.svg',
 ]
 
 const addCache =async ()=>{

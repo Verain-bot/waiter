@@ -26,4 +26,5 @@ urlpatterns = [
     path(URL_FOR_RESOwner.OWNER_MANAGE_ORDERS, views.ManageOrdersView, name='owner-order-manage'),
     path(URL_FOR_RESOwner.OWNER_LOGOUT, views.OwnerLogoutView.as_view(), name='owner-logout'),
     path(URL_FOR_RESOwner.OWNER_ACCEPTING_ORDERS, views.ToggleViewRestaurantAcceptingOrders.as_view(), name='owner-toggle-accepting-orders'),
+    
 ]
