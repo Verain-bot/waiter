@@ -145,8 +145,6 @@ export default function orderCard(props : OrderType) {
                         Details: 
                     </strong>
                     <br/>
-                        Address : {props.address?props.address:'Not Provided'}
-                    <br/>
                         Time : {orderTime.toLocaleTimeString()}
                     <br/>
                         Customer: {props.customers[0].customer.first_name}

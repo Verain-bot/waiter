@@ -5,7 +5,7 @@ const pathsToCache = [
     '/restaurant/admin/orders/view',                            // Path for order dashboard
     '/static/bootstrap-icons-4d4572ef.woff',
     '/static/bootstrap-icons-bacd70af.woff2',
-    '/static/index-03a4c9db.js',
+    '/static/index-e50d5ba8.js',
     '/static/index-88e3c07b.css',
     '/static/favicon.ico',
     '/static/manifest.json',
