@@ -12,6 +12,7 @@ click-plugins==1.1.1
 click-repl==0.3.0
 dataclasses-json==0.5.8
 Django==4.2.7
+django-celery-results==2.5.1
 django-cors-headers==4.2.0
 django-nested-admin==4.0.2
 djangorestframework==3.14.0
@@ -37,6 +38,7 @@ redis==4.6.0
 requests==2.31.0
 shellescape==3.8.1
 six==1.16.0
+SQLAlchemy==2.0.23
 sqlparse==0.4.4
 typing-inspect==0.9.0
 typing_extensions==4.8.0
