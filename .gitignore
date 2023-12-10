@@ -17,4 +17,6 @@
 **/*.pyzachefile
 **/*.rdb
 
+**/staticfiles
+
 .venv
