@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 import enum
 from .mixins import URLEnumMixin
 import nested_admin
+from django.views.generic import TemplateView
 
 admin.site.site_header = 'toOne Admin'
 admin.site.site_title = 'toOne Admin Portal'
@@ -37,12 +38,18 @@ class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
     BASE = ''
 
 
+from django.http import FileResponse
+from django.conf import settings
+from pathlib import Path
+
+
 urlpatterns = [
+    path('sw.js', (TemplateView.as_view(template_name="sw.js", content_type='application/javascript', )), name='sw.js'),
     path(URL_FOR_APPS.ADMIN, admin.site.urls),
     path(URL_FOR_APPS.API,include('api.urls')),
     path(URL_FOR_APPS.OTP_AUTH,include('OTPAuth.urls'),name='otp-auth'),
     path(URL_FOR_APPS.RES_OWNER,include('ResOwner.urls')),
     path(URL_FOR_APPS.PAYMENTS,include('Payments.urls')),
-    
+
     path('_nested_admin/', include('nested_admin.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

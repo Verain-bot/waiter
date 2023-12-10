@@ -50,7 +50,7 @@ export default function App() {
 
         <div className="">
           <h3>
-            Pizza Hut
+            Orders
           </h3>
         </div>
         <div className="ms-auto dropdown">
