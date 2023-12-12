@@ -1,0 +1,18 @@
+[Unit]
+Description=Celery Service
+After=redis.service
+Requires=redis.service
+
+[Service]
+Type=forking
+User=root
+EnvironmentFile=/home/ec2-user/.envvar.txt
+Environment="PATH=/home/ec2-user/.venv/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/ec2-user/.local/bin:/home/ec2-user/bin"
+WorkingDirectory=/home/ec2-user/waiter/backend/
+ExecStart=/home/ec2-user/.venv/bin/celery -A backend multi start 2 --loglevel=INFO --concurrency=10 --pool=threads
+ExecStop=/home/ec2-user/.venv/bin/celery multi stopwait 2 --loglevel=INFO
+ExecReload=/home/ec2-user/.venv/bin/celery -A backend multi restart 2 --loglevel=INFO
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

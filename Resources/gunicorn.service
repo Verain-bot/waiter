@@ -1,0 +1,15 @@
+[Unit]
+Description=Gunicorn service for Django App
+After=network.target celery.service
+Requires=network.target
+
+[Service]
+User=ec2-user
+EnvironmentFile=/home/ec2-user/.envvar.txt
+WorkingDirectory=/home/ec2-user/waiter/backend/
+Environment="PATH=/home/ec2-user/.venv/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/ec2-user/.local/bin:/home/ec2-user/bin"
+ExecStart=/home/ec2-user/.venv/bin/gunicorn backend.wsgi:application -w 4 --bind unix:backend.sock
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

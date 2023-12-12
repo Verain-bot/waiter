@@ -1,0 +1,11 @@
+[Unit]
+Description=Service to start redis server locally
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/redis-server
+Restart=always
+
+[Install]
+WantedBy=default.target

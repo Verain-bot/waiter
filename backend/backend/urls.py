@@ -20,8 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 import enum
 from .mixins import URLEnumMixin
-import nested_admin
 from django.views.generic import TemplateView
+from .health import health_check
 
 admin.site.site_header = 'toOne Admin'
 admin.site.site_title = 'toOne Admin Portal'
@@ -37,13 +37,10 @@ class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
 
     BASE = ''
 
-
-from django.http import FileResponse
-from django.conf import settings
-from pathlib import Path
-
+    
 
 urlpatterns = [
+    path('health', health_check),
     path('sw.js', (TemplateView.as_view(template_name="sw.js", content_type='application/javascript', )), name='sw.js'),
     path(URL_FOR_APPS.ADMIN, admin.site.urls),
     path(URL_FOR_APPS.API,include('api.urls')),
