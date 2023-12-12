@@ -40,7 +40,7 @@ class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
     
 
 urlpatterns = [
-    path('health', health_check),
+    path('health/', health_check),
     path('sw.js', (TemplateView.as_view(template_name="sw.js", content_type='application/javascript', )), name='sw.js'),
     path(URL_FOR_APPS.ADMIN, admin.site.urls),
     path(URL_FOR_APPS.API,include('api.urls')),
