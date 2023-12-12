@@ -30,8 +30,6 @@ else:
     DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("V_ALLOWED_HOSTS").split(",")
-if DEBUG:
-    ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -63,7 +61,7 @@ MIDDLEWARE = [
     'backend.middleware.AnalyticsMiddleware'
 ]
 
-CSRF_TRUSTED_ORIGINS = [os.environ.get("V_FRONTEND_URL")] + ALLOWED_HOSTS
+CSRF_TRUSTED_ORIGINS = [os.environ.get("V_FRONTEND_URL")] + ['https://'+ah for ah in ALLOWED_HOSTS] + ['http://'+ah for ah in ALLOWED_HOSTS]
 
 ROOT_URLCONF = 'backend.urls'
 

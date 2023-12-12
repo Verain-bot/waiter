@@ -16,6 +16,14 @@
 Celery Worker command
 ```bash
 celery -A backend worker -l INFO
+celery multi start -A backend --pool=threads --concurrency=5 1 2 3
+celery multi stopwait -A backend --pool=threads --concurrency=5 1 2 3
+```
+
+Celery info path
+```bash
+PID:  /var/run/celery
+Logs: /var/log/celery
 ```
 
 Redis Server Command
