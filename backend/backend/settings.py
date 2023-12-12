@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'backend.middleware.AnalyticsMiddleware'
 ]
 
-CSRF_TRUSTED_ORIGINS = [os.environ.get("V_FRONTEND_URL")]
+CSRF_TRUSTED_ORIGINS = [os.environ.get("V_FRONTEND_URL")] + ALLOWED_HOSTS
 
 ROOT_URLCONF = 'backend.urls'
 
