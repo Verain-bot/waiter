@@ -53,6 +53,7 @@ V_CELERY_BROKER                 "Celery message broker based on redis"
 V_CELERY_RESULT_BACKEND         "Celery result storage based on redis"
 V_PHONE_PE_MERCHANT_ID
 V_PHONE_PE_SALT_KEY
+V_MEDIA_STORAGE
 ```
 ## Other info
 

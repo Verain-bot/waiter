@@ -108,8 +108,7 @@ DATABASES = {
         'PORT': os.environ.get("V_DB_PORT"),
 
         'TEST':{
-            'NAME': 'testing',
-            
+            'NAME': 'testing',            
         },
         
     },
@@ -162,8 +161,21 @@ STATICFILES_DIRS = [
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = 'media/'
-
 MEDIA_URL = '/media/view/'
+
+if os.environ.get("V_MEDIA_STORAGE") == "S3":
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                'bucket_name': 'toone-data',
+                'region_name': 'ap-south-1',
+            }
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 #REST FRAMEWORK SETTINGS
 REST_FRAMEWORK = {
@@ -171,6 +183,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
 
 }
+
 
 #Using Cache as Session Engine
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"

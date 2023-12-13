@@ -4,12 +4,8 @@ from django.contrib.auth import get_user_model
 
 Customer = get_user_model()
 
-class BooleanChoices(models.TextChoices):
-    YES = True, 'Yes'
-    NO = False, 'No'
-
 def MenuUploadTo(instance, filename):
-    return f"menu/{instance.restaurant.id}/{filename}"
+    return f"menu/{instance.restaurant.id}/{instance.name+'.'+filename.split('.')[-1]}"
 
 def restaurantUploadTo(instance, filename):
     return f"restaurant/{instance.id}/{filename}"
@@ -98,6 +94,11 @@ class MenuItem(models.Model):
         NON_VEG = 'NON_VEG', 'Non-Vegetarian'
         EGG = 'EGG', 'Egg'
 
+    IS_ACTIVE_CHOICES = [
+        (True, 'Available'),
+        (False, 'Not Available')
+    ]
+
     restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, related_name='restaurant', null=True)
     name = models.CharField('Item Name',max_length=100, blank=True)
     itemType = models.ForeignKey(ItemType, related_name='itemtype',on_delete=models.CASCADE, null=False, verbose_name='Item Type')
@@ -108,7 +109,7 @@ class MenuItem(models.Model):
     totalRatings = models.PositiveIntegerField('Total Ratings',default=0)
     itemPhoto = models.ImageField('Item Photo',upload_to=MenuUploadTo, blank=True)
     dietaryType = models.CharField('Food Type',max_length=10, choices=DietaryTypeChoices.choices, default=DietaryTypeChoices.VEG)
-    isActive = models.BooleanField('Currently Available',default=True, choices=BooleanChoices.choices)
+    isActive = models.BooleanField('Currently Available',default=True, choices=IS_ACTIVE_CHOICES)
 
     class Meta:
         constraints = [
@@ -149,6 +150,11 @@ class CustomatizationOptions(models.Model):
 
 class Restaurant(models.Model):
 
+    ACCEPTING_ORDERS_CHOICES = [
+        (True, 'Accepting Orders'),
+        (False, 'Not Accepting Orders')
+    ]
+
     name = models.CharField(max_length=50, blank=True)
     licenceNo = models.CharField(max_length=15, blank =True)
     restaurantType = models.CharField(max_length=30, blank = True)
@@ -159,7 +165,7 @@ class Restaurant(models.Model):
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)
     joinDate = models.DateField(default=now)
-    acceptingOrders = models.BooleanField(default=True, choices=BooleanChoices.choices)
+    acceptingOrders = models.BooleanField(default=True, choices=ACCEPTING_ORDERS_CHOICES)
     rating = models.FloatField(null=True, blank=True)
     totalRatings = models.PositiveIntegerField(default=0)
     
