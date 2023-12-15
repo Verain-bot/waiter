@@ -16,7 +16,7 @@ const App = () => {
 
     return (
         
-        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center" style={{'height':'80vh'}}>
+        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center view">
         <FormCard title='Enter Phone' subtitle='Please enter your phone for verification' method='POST' error={err} >
 
                 <Input name='Phone'  type={'number'} prepend={'+91'} maxLength={10} inputName='phone' />

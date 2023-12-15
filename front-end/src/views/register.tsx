@@ -25,7 +25,7 @@ const App = ()=>{
     })
 
     return(
-        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center">
+        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center view">
         <FormCard title='Register' subtitle='Please enter your details to register' error={err} method="POST">
             <Input name='First Name' type={'text'} inputName="first_name" />
             <Input name='Last Name' type={'text'} inputName="last_name" />

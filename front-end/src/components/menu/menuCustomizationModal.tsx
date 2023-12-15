@@ -57,9 +57,8 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
     const modal = useModal(props.id, ()=>{onOpen()}, ()=>{onClose()})
     const [isLoading,setIsLoading] = useState(true)
     const controller = new AbortController()
-    
     const [message, setMessage] = useMessageContext()
-
+    
     const getCustomizations = useCallback(async () =>{
         const URLid =String(props.menuItemID)
         let response
@@ -89,7 +88,6 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
     const onClose = ()=>{
         setUseLast(false)
         controller.abort()
-        
     }
 
     const onOpen= useCallback(()=>{

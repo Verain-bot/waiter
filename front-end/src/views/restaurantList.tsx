@@ -6,6 +6,8 @@ import APIRoutes from "../utilities/APIRoutes"
 import Search from "../utilities/search"
 import useSearchBar from "../hooks/useSearchBar"
 import { Link, useLoaderData, useOutletContext } from "react-router-dom"
+import { ErrorBoundary } from "react-error-boundary"
+import ErrorComp from "../components/error/ErrorComp"
 
 export type RestaurantListItemFetch = {
     id: number;
@@ -36,17 +38,20 @@ const App = ()=>{
     
 
     return(
-            <div className='col-md-5 col-12'>
+            <div className='col-md-5 col-12 view'>
             
-            <div className="col-12">
-                <h2>Explore</h2>
-            </div>
-            <SearchResultMessage />
-            {
-                filteredRestaurants.map((item)=>{
-                    return <RestaurantListItem id={item.id} key={item.id} name={item.name} type={item.restaurantType} img={item.logo} totalRatings={item.totalRatings} rating={item.rating} />
-                })
-            }
+            <ErrorBoundary fallbackRender={ErrorComp} onReset={()=>window.location.reload()}>
+                <div className="col-12">
+                    <h2>Explore</h2>
+                </div>            
+
+                <SearchResultMessage />
+                {
+                    filteredRestaurants.map((item)=>{         
+                        return <RestaurantListItem id={item.id} key={item.id} name={item.name} type={item.restaurantType} img={item.logo} totalRatings={item.totalRatings} rating={item.rating} />
+                    })
+                }
+            </ErrorBoundary>
             
             </div>
     )

@@ -28,7 +28,7 @@ const App = ()=>{
     
 
     return(
-        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center" style={{'height':'80vh'}}>
+        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center view" >
         <FormCard title='Verify Phone' subtitle={`Please enter the OTP sent to +91 ${login.temp?.phone}`} method="POST" error={error} action={'/otp'} noStyle>
             <Input name='OTP' type={'number'} maxLength={4} inputName="otp" valid={valid} />
             <Button name='Submit' />

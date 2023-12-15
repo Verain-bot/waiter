@@ -2,13 +2,14 @@ import React, { memo, useEffect, useState } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
 import PlaceholderImage from '../../Media/placeholderMenuItem.jpeg'
-
 import { MenuItemListFetch } from "../../views/menu"
 import { AddOrUpdateAction, useCartContext } from "../../context/CartContext"
 import { CartActions, CustomizationsType } from "../../context/CartContext"
 import { getCartItemQuantity as getCartQuantity } from "../../utilities/getCartQuantity"
 import { useMenuContext } from "../../context/MenuContext"
 import MenuDescription from './menuItemDescription'
+import { ErrorBoundary } from "react-error-boundary"
+import MenuCustModalError from "../error/MenuCustModalError"
 
 export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
     const RestaurantDetails = useMenuContext()
@@ -128,17 +129,21 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
 
                 </div>
             </div>
+        <ErrorBoundary fallbackRender={MenuCustModalError}>
+            <>
+                {props.hasCustomization&&
+                <MenuCustomizationModal 
+                id={`${modalId}`} 
+                menuItemID = {props.id} 
+                customizations={customizations}
+                addOrUpdate = {AddOrUpdate}
+                />}
+            </>
+        </ErrorBoundary>
             <hr className='mx-auto'/>
         </div>
 
     </div>
-        {props.hasCustomization&&
-        <MenuCustomizationModal 
-            id={`${modalId}`} 
-            menuItemID = {props.id} 
-            customizations={customizations}
-            addOrUpdate = {AddOrUpdate}
-        />}
     </>
     )
 })

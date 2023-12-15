@@ -3,7 +3,7 @@ import { MenuHeader } from "../components/menu/menuFilterHeader";
 import { MenuTitle } from "../components/menu/menuTitle";
 import { MenuSection } from "../components/menu/menuSubSection";
 import useSearchBar from "../hooks/useSearchBar"
-import { useLoaderData, LoaderFunction } from "react-router-dom";
+import { useLoaderData, LoaderFunction, useNavigate, useNavigation } from "react-router-dom";
 import { getData } from "../utilities/fetchData";
 import Search from "../utilities/search";
 import { SearchResultMessage } from "../components/header/search";
@@ -11,6 +11,9 @@ import APIRoutes, { makeURL } from "../utilities/APIRoutes";
 import { RestaurantListItemFetch } from "./restaurantList";
 import { MenuContextProvider } from "../context/MenuContext";
 import { useEffect, useState } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import ErrorComp from "../components/error/ErrorComp";
+import { PATHS } from "../utilities/routeList";
 
 export type MenuItemListFetch = {
     id: number;
@@ -60,6 +63,7 @@ const App = () =>{
     const [menuItems, setMenuItems] = useState<MenuItemListFetch[]>(data.menu)
     
     const MItoDisplay = getSectionsFromMenu(Search(menuItems,search,'name'))
+    const navigate = useNavigate()
     
     useEffect(()=>{
 
@@ -87,16 +91,18 @@ const App = () =>{
 
     return(
     
-        <div className='col-md-7 col-12 p-0'>
-            <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} />
-            <MenuHeader  selections={filterSelections} setSelections={setFilterSelections} />
+        <div className='col-md-7 col-12 p-0 view'>
+            <ErrorBoundary fallbackRender={ErrorComp} onReset={()=>navigate(PATHS.RESTAURANT_LIST)}>
 
-            <SearchResultMessage /> 
-            <MenuContextProvider value={{ restaurantAcceptingOrders: data.acceptingOrders, restaurantID: data.id}}>
-                {MItoDisplay.map((section)=>(<MenuSection name={section.name} items={section.items} key={section.name} />))}
-            </MenuContextProvider>
-            <MenuFooter sections={getSectionsFromMenu(data.menu).map((item)=>item.name)} />
-            <MenuCartFooter />
+                <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} />
+                <MenuHeader  selections={filterSelections} setSelections={setFilterSelections} />
+                <SearchResultMessage /> 
+                <MenuContextProvider value={{ restaurantAcceptingOrders: data.acceptingOrders, restaurantID: data.id}}>
+                    {MItoDisplay.map((section)=>(<MenuSection name={section.name} items={section.items} key={section.name} />))}
+                </MenuContextProvider>
+                <MenuFooter sections={getSectionsFromMenu(data.menu).map((item)=>item.name)} />
+                <MenuCartFooter />
+            </ErrorBoundary>
 
         </div>
     )

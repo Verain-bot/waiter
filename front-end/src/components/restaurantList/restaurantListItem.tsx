@@ -20,7 +20,7 @@ const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
 
 const RestaurantListItem: React.FC<RestaurantListItemProps> = (props) => {
     const href = makeURL(PATHS.MENU, {'restaurantID' : props.id})
-
+    
     return (
         <Link to={href}>
 

@@ -8,7 +8,6 @@ import OrderList, { orderListLoader } from '../views/orderList';
 import Credits from '../views/credits'
 import OTP, { otpAction } from '../views/otp';
 import Register, { registerAction } from '../views/register';
-import Address, { addressChangeAction } from '../views/deliveryAddress'
 import { ActionFunction, LoaderFunction } from 'react-router-dom';
 import { LoginContextType } from '../context/LoginContext';
 import AccountDetailsView, { accountDetailsLoader } from '../views/accountDetails';
@@ -50,7 +49,6 @@ export enum PATHS {
     CREDITS = '/credits',
     OTP = '/otp',
     REGISTER = '/register',
-    ADDRESS = '/address',
     ACCOUNT_DETAILS = '/account/details',
     ACCOUNT_DETAILS_EDIT = '/account/edit',
     ORDER_CREATED_SUCCESS = '/order/success/:orderID',
@@ -144,14 +142,6 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_OUT],
       icon: "person-plus-fill",
       action: registerAction
-    },
-    {
-      path: PATHS.ADDRESS,
-      element: <Address />,
-      name: 'Address',
-      pathType: [PathType.LOGGED_IN],
-      icon: "geo-alt-fill",
-      action: addressChangeAction,
     },
     {
       path: PATHS.ACCOUNT_DETAILS,

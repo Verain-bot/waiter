@@ -3,8 +3,8 @@ import { PATHS } from "../../utilities/routeList"
 
 const  App = ()=>{
     return(
-        <div className='col-12 col-md-6'>
-            <div className="row" style={{marginTop: '200px', marginBottom: '200px'}}>
+        <div className='col-12 col-md-6 view'>
+            <div className="row" style={{marginTop: '200px'}}>
                 <div className="col-12 d-flex alignt-items-center justify-content-center">
                         <i className='bi bi-cart-x text-danger' style={{fontSize: '70px'}}></i>
                 </div>

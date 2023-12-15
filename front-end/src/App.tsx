@@ -12,6 +12,8 @@ import { useMessageContext } from './context/MessageContext';
 import { useLoginContext } from './context/LoginContext';
 import RouteList, { PATHS, PathType } from './utilities/routeList';
 import Footer from './components/footer/footer';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorComp from './components/error/ErrorComp';
 
 const App = () => {
   const [login, setLogin] = useLoginContext()
@@ -61,7 +63,9 @@ const App = () => {
           }
 
           {navigation.state !== 'loading' &&
+          <ErrorBoundary FallbackComponent={ErrorComp} onReset={()=> window.location.reload()}>
             <Outlet />
+          </ErrorBoundary>
           }
         
           

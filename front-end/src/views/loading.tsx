@@ -4,7 +4,7 @@ const App = ()=>{
 
     return(
 
-        <div className='col-12 loading' >
+        <div className='col-12 loading view' >
             <div className='row ' style={{width: "100%"}}>
                 <PlaceHolder />
                 <PlaceHolder />

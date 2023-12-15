@@ -18,7 +18,7 @@ const App = ()=>{
         <>
         <ErrHeader />
         <main id="main" className="main">
-        <div className='row p-2 d-flex align-items-center justify-content-center'>
+        <div className='row p-2 d-flex align-items-center justify-content-center view'>
             <div className='col-12 col-md-6'>
                 <div className="row" style={{marginTop: '150px', marginBottom: '200px'}}>
                     <div className="col-12 text-danger text-center my-4">

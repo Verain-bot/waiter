@@ -10,7 +10,6 @@ type MenuTitleProps = {
 
 export const MenuTitle: React.FC<MenuTitleProps> = (props) => {
     const [restaurantType, setRestaurantType] = useState<string>('');
-
     useEffect(() => {
         let type = '';
         props.type.forEach((item) => {

@@ -74,7 +74,7 @@ const App = ()=>{
     return(
         <>
         
-        <div className='col-12 col-md-6'>
+        <div className='col-12 col-md-6 view'>
 
             <div className='row card shadow'>
                 <h5 className='card-title'>Cart</h5>
