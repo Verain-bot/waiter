@@ -3,10 +3,10 @@ const cacheName = 'assets-v2.3'
 const pathsToCache = [
     '/',
     '/static/js/bundle.js',
-    '/static/media/placeholderRestaurant.d9bbbd70346fdfa9ddcf.jpeg',
-    '/static/media/placeholderMenuItem.d9bbbd70346fdfa9ddcf.jpeg',
     '/static/media/bootstrap-icons.6d63d0501e5ed7b79dab.woff2',
-    '/manifest.json',
+    '/media/placeholderMenuItem.png',
+    '/media/placeholderRestaurant.svg',
+    '/logo.svg',
     '/index.html',
     '/favicon.ico',
     '/icon/1024.png',

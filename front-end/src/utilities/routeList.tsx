@@ -28,6 +28,7 @@ export enum PathType{
 
 
 type CustomRouteType = {
+    viewFileName: string
     path: PATHS,
     element: JSX.Element,
     name: string,
@@ -68,7 +69,7 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_OUT, PathType.NAVBAR],
       icon: "person-fill",
       action: loginAction,
-      
+      viewFileName: 'login.tsx',
     },
     {
       path: PATHS.MENU,
@@ -77,6 +78,7 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "grid-fill",
       ldr: MenuListLoader,
+      viewFileName:'menu.tsx'
     },
     {
       path: PATHS.RESTAURANT_LIST,
@@ -85,13 +87,7 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
       icon: "house-door-fill",
       ldr: RestaurantListLoader,
-    },
-    {
-      path: PATHS.LOADING,
-      element: <Loading />,
-      name: 'Loading',
-      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
-      icon: "hourglass-split"
+      viewFileName: 'restaurantList.tsx'
     },
     {
       path: PATHS.CART,
@@ -101,6 +97,7 @@ const list : CustomRouteType[] = [
       icon: "cart-fill",
       ldr: cartLoader,
       action: cartFooterAction,
+      viewFileName: 'cart.tsx'
     },
     {
       path: PATHS.ORDER_DETAIL,
@@ -109,7 +106,8 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN],
       icon: "file-earmark-text-fill",
       ldr: orderDetailLoader,
-      action: orderDetailAction
+      action: orderDetailAction,
+      viewFileName: 'orderDetail.tsx'
     },
     {
       path: PATHS.ORDER_LIST,
@@ -118,13 +116,15 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "list-ul",
       ldr: orderListLoader,
+      viewFileName: 'orderList.tsx'
     },
     {
       path: PATHS.CREDITS,
       element: <Credits />,
       name: 'Credits',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
-      icon: "credit-card-fill"
+      icon: "credit-card-fill",
+      viewFileName: 'credits.tsx'
     },
     {
       path: PATHS.OTP,
@@ -133,6 +133,7 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_OUT],
       icon: "key-fill",
       action: otpAction,
+      viewFileName: 'otp.tsx'
       
     },
     {
@@ -141,7 +142,8 @@ const list : CustomRouteType[] = [
       name: 'Register',
       pathType: [PathType.LOGGED_OUT],
       icon: "person-plus-fill",
-      action: registerAction
+      action: registerAction,
+      viewFileName: 'register.tsx'
     },
     {
       path: PATHS.ACCOUNT_DETAILS,
@@ -150,6 +152,7 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR],
       icon: "person-circle",
       ldr: accountDetailsLoader,
+      viewFileName: 'accountDetails.tsx'
     },
     {
       path: PATHS.ACCOUNT_DETAILS_EDIT,
@@ -158,6 +161,7 @@ const list : CustomRouteType[] = [
       pathType: [PathType.LOGGED_IN],
       icon: "person-circle",
       action: accountDetailsEditAction,
+      viewFileName: 'accountDetailsEdit.tsx'
     },
     {
       path: PATHS.ORDER_CREATED_SUCCESS,
@@ -165,6 +169,7 @@ const list : CustomRouteType[] = [
       name: 'Order Created Successfully ',
       pathType: [PathType.LOGGED_IN],
       icon: "person-circle",
+      viewFileName: 'orderSuccess.tsx'
     },
     {
       path: PATHS.CONTACT,
@@ -172,6 +177,7 @@ const list : CustomRouteType[] = [
       name: 'Contact Us',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
       icon: "telephone-fill",
+      viewFileName: 'contact.tsx'
     },
     {
       path: PATHS.ABOUT,
@@ -179,6 +185,7 @@ const list : CustomRouteType[] = [
       name: 'About Us',
       pathType: [PathType.LOGGED_IN, PathType.NAVBAR, PathType.LOGGED_OUT],
       icon: "at",
+      viewFileName: 'about.tsx'
     },
     {
       path: PATHS.PRIVACY_POLICY,
@@ -186,6 +193,7 @@ const list : CustomRouteType[] = [
       name: 'Privacy Policy',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "at",
+      viewFileName: 'privacyPolicy.tsx'
     },
     {
       path: PATHS.TERMS,
@@ -193,6 +201,7 @@ const list : CustomRouteType[] = [
       name: 'Terms and Conditions',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "at",
+      viewFileName: 'tnc.tsx'
     },
     {
       path: PATHS.PWA_INFO,
@@ -200,6 +209,7 @@ const list : CustomRouteType[] = [
       name: 'PWA Info',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       icon: "at",
+      viewFileName: 'pwainfo.tsx'
     },
   ];
 

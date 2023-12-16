@@ -4,6 +4,7 @@ import { AccountDropDown } from './accountDropDown';
 import { SideBar, ToggleSideBar } from './sidebar';
 import { useSearchBarContext } from '../../context/SearchBarContext';
 import CartHeader from './cartHeaderButton'
+import ReloadHeaderBtn from './ReloadHeaderBtn';
 
 type HeaderProps = {};
 
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
                 <nav className="header-nav ms-auto">
                     <ul className="d-flex align-items-center">
                         {searchBarState && <ToggleSearchBar cref={searchBar} />}
+                        <ReloadHeaderBtn />
                         <CartHeader />
                         <AccountDropDown />
                     </ul>

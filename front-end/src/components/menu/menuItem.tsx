@@ -1,7 +1,6 @@
 import React, { memo, useEffect, useState } from "react"
 import { Stars } from "./stars"
 import { MenuCustomizationModal } from "./menuCustomizationModal"
-import PlaceholderImage from '../../Media/placeholderMenuItem.jpeg'
 import { MenuItemListFetch } from "../../views/menu"
 import { AddOrUpdateAction, useCartContext } from "../../context/CartContext"
 import { CartActions, CustomizationsType } from "../../context/CartContext"
@@ -66,7 +65,7 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
 
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         //change source
-        e.currentTarget.src = PlaceholderImage
+        e.currentTarget.src = '/media/placeholderMenuItem.png'
     }
 
 

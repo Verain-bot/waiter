@@ -3,7 +3,7 @@ import { Stars } from '../menu/stars';
 import { Link } from 'react-router-dom';
 import { PATHS } from '../../utilities/routeList';
 import { makeURL } from '../../utilities/APIRoutes';
-import PlaceHolderImage from '../../Media/placeholderRestaurant.jpeg';
+
 type RestaurantListItemProps = {
     img: string;
     name: string;
@@ -14,7 +14,7 @@ type RestaurantListItemProps = {
 };
 
 const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = PlaceHolderImage;
+    e.currentTarget.src = '/media/placeholderRestaurant.svg'
 }
 
 
@@ -27,7 +27,7 @@ const RestaurantListItem: React.FC<RestaurantListItemProps> = (props) => {
         <div className="col-12 card pointer p-2 mb-3 d-flex flex-row shadow align-items-center m-md-3">
             <div className="row">
                 <div className="col-4">
-                    <img className="img-thumbnail rounded border-0 p-0 img-restaurant" src={props.img || PlaceHolderImage} alt="No Image Found" onError={handleImageError} />
+                    <img className="img-thumbnail rounded border-0 p-0 img-restaurant" src={props.img || '/media/placeholderRestaurant.svg'} alt="No Image Found" onError={handleImageError} />
                 </div>
 
                 <div className="col-8">
