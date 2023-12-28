@@ -24,7 +24,6 @@ const App = () => {
 
 
   useEffect(()=>{
-    console.log(navigation)
     window.scrollTo(0,0)
     if(matches.length > 0 && login.login !== null)
       {

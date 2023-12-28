@@ -18,8 +18,7 @@ export const CartItem = (props : CartItemPropsType)=>{
     const [cart, dispatch] = useCartContext()
 
     const increase = ()=>{
-        //console.log(props.index, props.menuItemID)
-        console.log('increased')
+        
         dispatch({
             type: CartActions.INCREASE_CUSTOMIZATION_QUANTITY,
             menuItemID: props.menuItemID,
@@ -28,7 +27,7 @@ export const CartItem = (props : CartItemPropsType)=>{
     }
 
     const decrease = ()=>{
-        console.log('decreased')
+        
         dispatch({
             type: CartActions.DECREASE_CUSTOMIZATION_QUANTITY,
             menuItemID: props.menuItemID,

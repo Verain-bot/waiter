@@ -27,7 +27,6 @@ export const LogoutButton = (props: LogoutButtonProps ) => {
             r = await makeRequest(APIRoutes.LOGOUT, request, data)
         }
         catch(error){
-            console.log(error)
             setMsg({heading:'Error', body:'Something went wrong', type:'error'})
             return
         }
@@ -40,10 +39,10 @@ export const LogoutButton = (props: LogoutButtonProps ) => {
         }
 
         else{
-            console.log(message)
+            
             setMsg({heading:'Error', body:message, type:'error'})
         }
-        console.log(json)
+        
     }
 
     return (

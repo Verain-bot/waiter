@@ -1,4 +1,4 @@
-import { Link, LoaderFunction, redirect, useLoaderData } from "react-router-dom"
+import { Link, LoaderFunction, redirect, useLoaderData, useNavigate } from "react-router-dom"
 import { FormCard } from "../components/forms/formCard"
 import { Button, LinkFooter } from "../components/forms/inputsControlled"
 import Table from "../components/table/table"
@@ -7,17 +7,22 @@ import { fetchUserData } from "../utilities/fetchUser"
 import { useEffect } from "react"
 import { UserContextType, useLoginContext } from "../context/LoginContext"
 import { PATHS } from "../utilities/routeList"
+import { checkUserDetailsEntered } from "../utilities/LoginHelper"
 
 const App = ()=>{
     
     const data  = useLoaderData() as UserContextType
     const [login, setLogin] = useLoginContext()
-    
+    const navigate = useNavigate()
+
     useEffect(()=>{
         setLogin({
             login: true,
             user: data,
         })
+
+        !checkUserDetailsEntered(login) && navigate(PATHS.REGISTER)
+
     },[])
 
     return(

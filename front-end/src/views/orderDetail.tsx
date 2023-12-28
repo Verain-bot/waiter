@@ -161,8 +161,6 @@ const App = ()=>{
         fd2.append('order_id', String(data.id))
         const {json, response, message} = await makeRequest(APIRoutes.PHONE_PE_INITITATE,requestForPayment, fd2)
 
-        console.log('Messagee', message, json)
-
         if(!response.ok){
             setMessage({
                 heading: 'Something went wrong',
@@ -177,9 +175,6 @@ const App = ()=>{
     }
 
     const time = new Date(data.time)
-
-
-    console.log(JSON.stringify(data), items)
 
     return(
     <>

@@ -23,7 +23,6 @@ const App = ()=>{
             setValid(login.temp.isOTPCorrect)
         }
         
-        console.log(login.temp)
     }, [error])
     
 
@@ -31,6 +30,7 @@ const App = ()=>{
         <div className="col-lg-4 col-md-6 col-12 d-flex flex-column my-5" >
         <FormCard title='Verify Phone' subtitle={`Please enter the OTP sent to +91 ${login.temp?.phone}`} method="POST" error={error} action={'/otp'} noStyle>
             <Input name='OTP' type={'number'} maxLength={4} inputName="otp" valid={valid} />
+            <input type="hidden" value={login.temp?.phone} name="username" />
             <Button name='Submit' />
             <LinkFooter text="Didn't recieve OTP?" linkText="Resend OTP" href={PATHS.LOGIN} />
         </FormCard>
@@ -44,7 +44,6 @@ export const otpAction : (val : [LoginContextType, React.Dispatch<React.SetState
     const [login, setLogin] = LoginContext
     
     const otp = String(data.get('otp'))
-    console.log(otp.length)
     if (otp.length !== 6) {
         return{
             heading:'Invalid OTP',
@@ -72,22 +71,29 @@ export const otpAction : (val : [LoginContextType, React.Dispatch<React.SetState
         }
     }
 
-    console.log(json)
 
     if(json.existingUser){
         return loginUser(setLogin)
     }
+    const r = new Request(APIRoutes.CREATE, {
+        method: 'POST',
+    })
 
-    setLogin((prev)=>({
-        ...prev,
-        temp:{
-            ...prev.temp as LoginTempDataType,
-            verified: true,
-            isOTPCorrect: 1
+    const response2 = await makeRequest(APIRoutes.CREATE, r, data)
+
+    if (!response2.response.ok) {
+        var m : string = response2.json.phone || response2.json.email || response2.message
+        m = String(m)
+        m = m[0].toUpperCase() + m.slice(1)
+
+        return {
+            heading: 'Error',
+            body: m,
+            type:'error',
         }
-    }))
+    }
 
-    return redirect(PATHS.REGISTER)
+    return loginUser(LoginContext[1])
 }
 
 export default App

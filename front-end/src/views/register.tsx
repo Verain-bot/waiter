@@ -9,8 +9,9 @@ import { checkEmail, checkPhone } from "../utilities/formChecks"
 import { makeRequest } from "../utilities/fetchData"
 import { PATHS } from "../utilities/routeList"
 import APIRoutes from "../utilities/APIRoutes"
-import { loginUser } from "../utilities/fetchUser"
+import { fetchUserData, loginUser } from "../utilities/fetchUser"
 import { Link } from "react-router-dom"
+import { checkUserDetailsEntered } from "../utilities/LoginHelper"
 
 const App = ()=>{
 
@@ -19,9 +20,7 @@ const App = ()=>{
     const [login, setLogin] = useLoginContext()
 
     useEffect(()=>{
-        if(!('temp' in login) || !login.temp?.verified || !login.temp?.phone)
-            navigate(PATHS.LOGIN)
-
+        checkUserDetailsEntered(login)&&navigate(PATHS.RESTAURANT_LIST)
     })
 
     return(
@@ -44,11 +43,10 @@ const App = ()=>{
                     Finish
                 </div>
             </div>
-        <FormCard title='Register' subtitle='Please enter your details to register' error={err} method="POST">
-            <Input name='First Name' type={'text'} inputName="first_name" />
-            <Input name='Last Name' type={'text'} inputName="last_name" />
-            <Input name='Email' type={'email'} inputName="email" />
-            <Input name='Phone' type={'number'} maxLength={10} prepend={'+91'} inputName="username" defaultValue={String(login.temp?.phone)} readonly />
+        <FormCard title='Register' subtitle='Please enter your details to complete registration' error={err} method="PATCH">
+            <Input name='First Name' type={'text'} inputName="first_name" defaultValue={login.user?.first_name} />
+            <Input name='Last Name' type={'text'} inputName="last_name"  defaultValue={login.user?.last_name} />
+            <Input name='Email' type={'email'} inputName="email" defaultValue={login.user?.email} />
             <Check name={<> I agree to the <Link to={PATHS.TERMS}>Terms and Conditions</Link> </>} inputName="tnc" required invalidText='Please accept to continue' />
             <Button name='Submit' />
             <LinkFooter text="Already registered?" linkText="Login" href={PATHS.LOGIN} />
@@ -60,10 +58,8 @@ const App = ()=>{
 export const registerAction : (val : [LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction = (LoginContext ) => async({request, params}) : Promise<ActionErrorDataType | Response>=>{
     const data = await request.formData()
     const email = String(data.get('email'))
-
+    const [login,setLogin] = LoginContext
     const [mailCheck, mailMsg] = checkEmail(email)
-    
-    console.log()
 
     if (!mailCheck ){
         return {
@@ -76,20 +72,32 @@ export const registerAction : (val : [LoginContextType, React.Dispatch<React.Set
     }
 
 
-    const {json, message, response} = await makeRequest(APIRoutes.CREATE, request, data)
-    var m : string = json.phone || json.email || message
-    m = String(m)
-    m = m[0].toUpperCase() + m.slice(1)
-    console.log(json)
+    const {json, message, response} = await makeRequest(APIRoutes.ACCOUNT_VIEW_UPDATE, request, data)
     if (!response.ok) {
-        return {
-            heading: 'Error',
-            body: m,
-            type:'error',
-        }
+        var m : string = json.phone || json.email || message
+        m = String(m)
+        m = m[0].toUpperCase() + m.slice(1)
+            return {
+                heading: 'Error',
+                body: m,
+                type:'error',
+            }
     }
 
-    return loginUser(LoginContext[1])
+    setLogin(prev=>{
+        return {
+            ...prev,
+            user: {
+                username: prev.user?.username || 'xxxxxxxxxx',
+                first_name: String(data.get('first_name')) ,
+                last_name: String(data.get('last_name')) ,
+                email: String(data.get('email')) ,
+            }
+        }
+    
+    })
+
+    return redirect(PATHS.RESTAURANT_LIST)
 }
 
 export default App

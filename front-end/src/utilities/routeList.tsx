@@ -49,7 +49,7 @@ export enum PATHS {
     ORDER_LIST = '/orders/list',
     CREDITS = '/credits',
     OTP = '/otp',
-    REGISTER = '/register',
+    REGISTER = '/complete-registration',
     ACCOUNT_DETAILS = '/account/details',
     ACCOUNT_DETAILS_EDIT = '/account/edit',
     ORDER_CREATED_SUCCESS = '/order/success/:orderID',
@@ -138,7 +138,7 @@ const list : CustomRouteType[] = [
       path: PATHS.REGISTER, 
       element: <Register />,
       name: 'Register',
-      pathType: [PathType.LOGGED_OUT],
+      pathType: [PathType.LOGGED_IN],
       action: registerAction,
       viewFileName: 'register.tsx'
     },

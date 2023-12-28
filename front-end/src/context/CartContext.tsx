@@ -72,7 +72,6 @@ const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType
       }
   
       case CartActions.DECREASE_QUANTITY:{
-        console.log('decrease quantity' , action)
         const itemIndex = newState.findIndex((item) => item.menuItemID === action.menuItemID);
         if (itemIndex >= 0) {
           var item = newState.splice(itemIndex, 1)
@@ -92,7 +91,6 @@ const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType
       }
       
       case CartActions.ADD_OR_UPDATE: {
-        console.log('add or update', action)
         const itemIndex = newState.findIndex((item) => item.menuItemID === action.menuItemID)
 
         
@@ -117,7 +115,6 @@ const CartContext = createContext<[CartItemType[], React.Dispatch<CartActionType
       }
 
       case CartActions.INCREASE_QUANTITY:{
-        console.log('increase quantity', action)
         const itemIndex = newState.findIndex((item) => item.menuItemID === action.menuItemID);
         if (itemIndex >= 0) {
           var item = newState.splice(itemIndex, 1)

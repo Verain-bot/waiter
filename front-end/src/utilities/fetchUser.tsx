@@ -19,7 +19,6 @@ export const fetchUserData = async () : Promise<null | UserContextType> => {
         return null
     }
     
-    console.log('req',req)
     if (req.response.ok) {
         return req.json as UserContextType
     }

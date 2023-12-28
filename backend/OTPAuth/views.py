@@ -132,7 +132,7 @@ class RegisterView(generics.CreateAPIView):
         phone = request.session.get(Ath.PHONE, False)
         phone2 = request.data.get('username', False)
 
-        if phone and phone2 and int(phone) == int(phone2):
+        if phone and phone2 and (int(phone) == int(phone2)):
             if Customer.objects.filter(username=phone).exists():
                 return Response(msg.USER_ALREADY_REGISTERED, 400)
             return super().post(request, *args, **kwargs)
