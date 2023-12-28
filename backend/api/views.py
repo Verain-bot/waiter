@@ -108,8 +108,7 @@ class OrderCreate(views.APIView):
         return Response(msg.ORDER_CREATED(x['price'],order.pk), status=200)
         
 class CartTotalPriceView(views.APIView):
-    permission_classes = [IsAuthenticated]
-
+    
     def post(self, request, *args, **kwargs):
         
         x = validate_cart_data(request.data.get('cart'), request.data.get('restaurantID'))

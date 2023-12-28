@@ -26,7 +26,7 @@ const App = ()=>{
     },[])
 
     return(
-            <div className='col-md-6 col-12 d-flex align-items-center justify-content-center flex-column view' style={{paddingBottom: 200}}>
+            <div className='col-md-6 col-12 d-flex align-items-center justify-content-center flex-column' style={{paddingBottom: 200}}>
                 <i className="bi bi-check-circle text-success" style={{fontSize: '100px'}}></i>
                 <h1 className="text-success">
                     <strong>

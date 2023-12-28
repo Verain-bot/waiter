@@ -37,8 +37,21 @@ const App = ()=>{
     const filteredRestaurants = Search(data.results,search,'name').filter((item)=>item.acceptingOrders)
     
 
+    if (filteredRestaurants.length === 0)
+        return(
+            <div className='col-md-5 col-12'>
+                <SearchResultMessage />
+                <div className="col-12 mt-5">
+                    <h2>Not found.</h2>
+                    <span>
+                        Unable to find restaurants nearby. Please try again later.
+                    </span>
+                </div>            
+            </div>
+        )
+
     return(
-            <div className='col-md-5 col-12 view'>
+            <div className='col-md-5 col-12'>
             
             <ErrorBoundary fallbackRender={ErrorComp} onReset={()=>window.location.reload()}>
                 <div className="col-12">

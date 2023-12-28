@@ -25,7 +25,7 @@ const App = ()=>{
     const results = Search(data.results,search,'restaurant.name')
     if (results.length==0)
         return(
-    <div style={{marginTop: '200px'}} className="text-center view">
+    <div style={{marginTop: '200px'}} className="text-center">
         <h2>
             You don't have any orders yet.
             Please place a order and then come back.
@@ -36,13 +36,13 @@ const App = ()=>{
     </div>)
     return(
         <>
-        <div className='col-12 col-md-6 m-0 p-0 view'>
+        <div className='col-12 col-md-6 m-0 p-0'>
             <SearchResultMessage />
             <Table title='Orders' subTitle={'Your orders from all the restaurants available'} info={'Check your order history here. In case you need help, please contact the restaurant.'}  >
                 <TableHeading left='Restaurant' right='Amount' width={8} />
                 {
                     results.map((item)=>
-                    <Link to={makeURL(PATHS.ORDER_DETAIL, {'orderID' : item.id})} className='text-decoration-none text-dark'>
+                    <Link to={makeURL(PATHS.ORDER_DETAIL, {'orderID' : item.id})} className='text-decoration-none text-dark' key={item.id}>
                         <TableItem left={<Left id={item.id} restaurant={item.restaurant.name} time={item.time} />} right={<Right price={item.price} />} width={8}/>
                     </Link>
                     )

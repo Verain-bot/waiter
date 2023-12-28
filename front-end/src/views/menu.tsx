@@ -88,19 +88,31 @@ const App = () =>{
         }
 
     },[filterSelections])
-
+    
     return(
     
-        <div className='col-md-7 col-12 p-0 view'>
+        <div className='col-md-7 col-12 p-0'>
             <ErrorBoundary fallbackRender={ErrorComp} onReset={()=>navigate(PATHS.RESTAURANT_LIST)}>
 
-                <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} />
-                <MenuHeader  selections={filterSelections} setSelections={setFilterSelections} />
+                <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} phone={data.phone} />
+                {data.menu.length>0&&<MenuHeader  selections={filterSelections} setSelections={setFilterSelections} />}
                 <SearchResultMessage /> 
-                <MenuContextProvider value={{ restaurantAcceptingOrders: data.acceptingOrders, restaurantID: data.id}}>
+
+                {data.menu.length===0&&<div className="col-12 mt-5">
+                    <h2>
+                        <strong>
+                            Not found.
+                        </strong>
+                    </h2>
+                    <span>
+                        Unable to find menu items. Please try again later.
+                    </span>
+                </div>}
+
+                {data.menu.length>0&&<MenuContextProvider value={{ restaurantAcceptingOrders: data.acceptingOrders, restaurantID: data.id}}>
                     {MItoDisplay.map((section)=>(<MenuSection name={section.name} items={section.items} key={section.name} />))}
-                </MenuContextProvider>
-                <MenuFooter sections={getSectionsFromMenu(data.menu).map((item)=>item.name)} />
+                </MenuContextProvider>}
+                {data.menu.length>0&&<MenuFooter sections={getSectionsFromMenu(data.menu).map((item)=>item.name)} />}
                 <MenuCartFooter />
             </ErrorBoundary>
 

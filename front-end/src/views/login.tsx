@@ -16,7 +16,24 @@ const App = () => {
 
     return (
         
-        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center view">
+        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column">
+            <div className="row mb-5">
+                <div className="col-12 d-flex align-items-center">
+                    <img src="/logo.svg" alt="Logo" style={{width: '70px'}} className='' />
+                    <div className='w-100 d-flex align-items-center justify-content-center flex-column'>
+                        <h4 className='text-primary-emphasis pb-0 mb-0'>
+                            <strong>
+                                Order &bull; Pay &bull; Track<br/>
+                            </strong>
+                        </h4>
+                        <span className='text-secondary'>
+                            From your phone
+                        </span>
+                    </div>
+                </div>
+                
+            </div>
+
         <FormCard title='Enter Phone' subtitle='Please enter your phone for verification' method='POST' error={err} >
 
                 <Input name='Phone'  type={'number'} prepend={'+91'} maxLength={10} inputName='phone' />

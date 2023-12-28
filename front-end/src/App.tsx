@@ -25,12 +25,12 @@ const App = () => {
 
   useEffect(()=>{
     console.log(navigation)
-
+    window.scrollTo(0,0)
     if(matches.length > 0 && login.login !== null)
       {
         // find index
         const index = parseInt(matches[matches.length-1].id.split('-')[1])
-
+        
         if(RouteList[index].pathType.includes(PathType.LOGGED_IN) && !RouteList[index].pathType.includes(PathType.LOGGED_OUT) && (login.login == false || login.user == null))
         {
           navigate(PATHS.LOGIN)
@@ -56,16 +56,18 @@ const App = () => {
           <Message />
           <Review />
           <Header />
-        <div className='row p-2 d-flex align-items-center justify-content-center'>
+        <div className='row'>
 
           {navigation.state === 'loading' &&
             <LoadingScreen />
           }
 
           {navigation.state !== 'loading' &&
-          <ErrorBoundary FallbackComponent={ErrorComp} onReset={()=> window.location.reload()}>
-            <Outlet />
-          </ErrorBoundary>
+          <div className='view  d-flex  justify-content-center'>
+            <ErrorBoundary FallbackComponent={ErrorComp} onReset={()=> window.location.reload()}>
+              <Outlet />
+            </ErrorBoundary>
+          </div>
           }
         
           

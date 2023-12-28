@@ -27,7 +27,7 @@ const RestaurantListItem: React.FC<RestaurantListItemProps> = (props) => {
         <div className="col-12 card pointer p-2 mb-3 d-flex flex-row shadow align-items-center m-md-3">
             <div className="row">
                 <div className="col-4">
-                    <img className="img-thumbnail rounded border-0 p-0 img-restaurant" src={props.img || '/media/placeholderRestaurant.svg'} alt="No Image Found" onError={handleImageError} />
+                    <img className="img-thumbnail rounded border-0 p-0 " src={props.img || '/media/placeholderRestaurant.svg'} alt="No Image Found" onError={handleImageError} />
                 </div>
 
                 <div className="col-8">

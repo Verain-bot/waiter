@@ -183,7 +183,7 @@ const App = ()=>{
 
     return(
     <>
-    <div className='col-12 col-md-6 view'>
+    <div className='col-12 col-md-6'>
 
         <Table title="Order Details" subTitle={`Order no.: #${data.id}`} info={`Order details for Order Number #${data.id}`}>
             <TableItem left='Restaurant' right={data.restaurant.name} width={4} nohr/>

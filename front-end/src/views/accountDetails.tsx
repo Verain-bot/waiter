@@ -21,7 +21,7 @@ const App = ()=>{
     },[])
 
     return(
-        <div className='col-12 col-md-6 view'>
+        <div className='col-12 col-md-6'>
             <FormCard title='Account' subtitle="View your account information here" >
                 <TableItem width={4} left={<strong>First Name</strong>} right={<span>{data?.first_name}</span>} nohr />
                 <TableItem width={4} left={<strong>Last Name</strong>} right={<span>{data?.last_name}</span>} nohr />

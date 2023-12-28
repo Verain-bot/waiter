@@ -28,7 +28,7 @@ const Table: React.FC<TableProps> = (props) => {
                         {props.info && (
                             <button
                                 type="button"
-                                className="btn"
+                                className="btn  rounded-circle"
                                 data-bs-container="body"
                                 data-bs-toggle="popover"
                                 data-bs-placement="left"

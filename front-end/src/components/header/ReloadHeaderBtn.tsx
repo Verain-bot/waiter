@@ -6,7 +6,7 @@ export default function ReloadHeaderBtn() {
     return (
         <li className="nav-item d-block ">
             <Link to={r.pathname} className="nav-link nav-icon search-bar-toggle"  replace={true}>
-                <i className="bi bi-arrow-counterclockwise"></i>
+                <i className="bi bi-arrow-clockwise"></i>
             </Link>
         </li>
     )

@@ -7,6 +7,7 @@ const pathsToCache = [
     '/media/placeholderMenuItem.png',
     '/media/placeholderRestaurant.svg',
     '/logo.svg',
+    '/progress.svg',
     '/index.html',
     '/favicon.ico',
     '/icon/1024.png',

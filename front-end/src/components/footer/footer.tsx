@@ -21,16 +21,17 @@ export default function Footer() {
         </span>
 
         <span className='text-secondary text-center my-2 ' style={style}>
-            For any help please click <Link to={PATHS.CONTACT}>here</Link>.
+            For any assistance or if you would like to contact us please click <Link to={PATHS.CONTACT}>here</Link>.
         </span>
 
         <span className='text-secondary text-center my-2 ' style={style}>
-            For more info on us and our team please click <Link to={PATHS.ABOUT}>here</Link>.
+            For more information on us and our team please click <Link to={PATHS.ABOUT}>here</Link>.
         </span>
 
         <span className='text-secondary text-center my-2 ' style={style}>
             For terms and conditions please click <Link to={PATHS.TERMS} > here </Link> <br/>
-            For our privacy policy please click <Link to={PATHS.PRIVACY_POLICY} > here </Link>
+            For our privacy policy please click <Link to={PATHS.PRIVACY_POLICY} > here </Link><br/>
+            For information on cancellations and refunds please click <Link to={PATHS.REFUND_POLICY} > here </Link>
         </span>
 
         <span className='text-secondary text-center my-2 ' style={style}>

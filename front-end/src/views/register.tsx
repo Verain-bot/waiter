@@ -25,7 +25,25 @@ const App = ()=>{
     })
 
     return(
-        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center view">
+        <div className="col-lg-4 col-md-6 col-12 d-flex flex-column align-items-center justify-content-center">
+            <div className="row mb-3">
+                <div className="col-12">
+                    <h2 className="mb-3">Almost there!</h2>
+                    <img src="/progress.svg" alt="Almost complete" style={{width: '100%'}} />
+                </div>
+                <div className="col-3 text-start medium">
+                    Start
+                </div>
+                <div className="col-3 text-center medium">
+                    Enter Phone
+                </div>
+                <div className="col-3 text-center medium">
+                    Verify OTP
+                </div>
+                <div className="col-3 text-end medium">
+                    Finish
+                </div>
+            </div>
         <FormCard title='Register' subtitle='Please enter your details to register' error={err} method="POST">
             <Input name='First Name' type={'text'} inputName="first_name" />
             <Input name='Last Name' type={'text'} inputName="last_name" />

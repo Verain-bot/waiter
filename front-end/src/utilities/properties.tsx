@@ -1,7 +1,7 @@
 export const Properties = {
-    ContactHelpEmail : 'verainsardana@gmail.com',
-    ContactHelpPhone : '1234567890',
-    BusinessHelpEmail: 'verainsardana@gmail.com',
-    BusinessHelpPhone: '1234567890',
-    FeedbackEmail: 'verainsa@gmail.com',
+    ContactHelpEmail : 'contact@toone.in',
+    ContactHelpPhone : '7988254983',
+    BusinessHelpEmail: 'contact@toone.in',
+    BusinessHelpPhone: '9996911611',
+    FeedbackEmail: 'contact@toone.in',
 }

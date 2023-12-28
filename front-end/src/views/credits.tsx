@@ -7,7 +7,7 @@ const App = ()=>{
     const search = useSearchBar()
     
     return(    
-        <div className='col-12 col-md-6 view'>
+        <div className='col-12 col-md-6'>
             <Table title='Credits' subTitle={'Your credits for all the restaurants available'} info={'The credits vary with each restaurant. Some restaurants may choose to not support credits.'} >
                 <br />
                 <br />

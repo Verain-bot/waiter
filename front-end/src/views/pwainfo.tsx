@@ -23,7 +23,6 @@ const App = ()=>{
                         </strong>
                     </h5>
 
-                    <p className="card-text">
                         <ul>
                             <li>
                                 <strong> Open Safari</strong>
@@ -52,7 +51,6 @@ const App = ()=>{
                             
 
                         </ul>
-                    </p>
 
 
                     <h5 className="card-title">
@@ -61,7 +59,7 @@ const App = ()=>{
                         </strong>
                     </h5>
 
-                    <p className="card-text">
+                    
                         <ul>
                             <li>
                                 <strong> Open Google Chrome</strong>
@@ -95,9 +93,7 @@ const App = ()=>{
                             
 
                         </ul>
-                    </p>
-
-
+                    
                 </div>
             </div>
         </div>

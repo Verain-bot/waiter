@@ -19,6 +19,7 @@ import AboutUs from '../views/about';
 import PrivacyPolicy from '../views/privacyPolicy'
 import Terms from '../views/tnc'
 import PWAInfo from '../views/pwainfo'
+import RefundPolicy from '../views/refundPolicy'
 
 export enum PathType{
     LOGGED_IN,
@@ -26,14 +27,13 @@ export enum PathType{
     NAVBAR
 }
 
-
 type CustomRouteType = {
     viewFileName: string
     path: PATHS,
     element: JSX.Element,
     name: string,
     pathType: PathType[],
-    icon: string,
+    icon?: string,
     ldr?: LoaderFunction,
     action?: (val : [LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction
 }
@@ -58,6 +58,7 @@ export enum PATHS {
     PRIVACY_POLICY = '/privacy-policy',
     TERMS = '/terms-and-conditions',
     PWA_INFO = '/pwa-info',
+    REFUND_POLICY = '/return-policy',
 }
 
 
@@ -76,7 +77,6 @@ const list : CustomRouteType[] = [
       element: <Menu />,
       name: 'Menu',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
-      icon: "grid-fill",
       ldr: MenuListLoader,
       viewFileName:'menu.tsx'
     },
@@ -104,7 +104,6 @@ const list : CustomRouteType[] = [
       element: <OrderDetail />,
       name: 'Order Detail',
       pathType: [PathType.LOGGED_IN],
-      icon: "file-earmark-text-fill",
       ldr: orderDetailLoader,
       action: orderDetailAction,
       viewFileName: 'orderDetail.tsx'
@@ -131,7 +130,6 @@ const list : CustomRouteType[] = [
       element: <OTP />,
       name: 'OTP',
       pathType: [PathType.LOGGED_OUT],
-      icon: "key-fill",
       action: otpAction,
       viewFileName: 'otp.tsx'
       
@@ -141,7 +139,6 @@ const list : CustomRouteType[] = [
       element: <Register />,
       name: 'Register',
       pathType: [PathType.LOGGED_OUT],
-      icon: "person-plus-fill",
       action: registerAction,
       viewFileName: 'register.tsx'
     },
@@ -168,7 +165,6 @@ const list : CustomRouteType[] = [
       element: <OrderSuccess />,
       name: 'Order Created Successfully ',
       pathType: [PathType.LOGGED_IN],
-      icon: "person-circle",
       viewFileName: 'orderSuccess.tsx'
     },
     {
@@ -192,7 +188,6 @@ const list : CustomRouteType[] = [
       element: <PrivacyPolicy />,
       name: 'Privacy Policy',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
-      icon: "at",
       viewFileName: 'privacyPolicy.tsx'
     },
     {
@@ -200,7 +195,6 @@ const list : CustomRouteType[] = [
       element: <Terms />,
       name: 'Terms and Conditions',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
-      icon: "at",
       viewFileName: 'tnc.tsx'
     },
     {
@@ -208,9 +202,15 @@ const list : CustomRouteType[] = [
       element: <PWAInfo />,
       name: 'PWA Info',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
-      icon: "at",
       viewFileName: 'pwainfo.tsx'
     },
+    {
+      path: PATHS.REFUND_POLICY,
+      element: <RefundPolicy />,
+      name: 'Refund Policy',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
+      viewFileName: 'refundPolicy.tsx'
+    }
   ];
 
   

@@ -15,7 +15,7 @@ export const AccountDropDown: React.FC<AccountDropDownProps> = (props) => {
     return (
         <li className="nav-item dropdown pe-3">
             {login.login ? (
-                <button className='btn' data-bs-toggle='dropdown'>
+                <button className='btn rounded-circle' data-bs-toggle='dropdown'>
                     <i className="bi bi-person-circle" style={{ fontSize: '25px' }} />
                 </button>
             ) : (
