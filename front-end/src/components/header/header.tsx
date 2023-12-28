@@ -12,8 +12,6 @@ export const Header: React.FC<HeaderProps> = (props) => {
     const searchBar = useRef<HTMLInputElement | null>(null);
 
     const searchBarState = useSearchBarContext()[0]
-    
-    console.log(searchBarState, 'searchBarState')
 
     return (
         <>

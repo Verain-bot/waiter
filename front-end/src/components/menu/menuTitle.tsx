@@ -25,7 +25,6 @@ export const MenuTitle: React.FC<MenuTitleProps> = (props) => {
             className='btn btn-outline-success position-absolute border-0 rounded-circle' 
             style={{top: 10, right: 10, fontSize: 20}} 
             href={`tel:${props.phone}`}
-            onClick={()=>console.log(props.phone)}
             >
                 <i className='bi bi-telephone'></i>
             </a>

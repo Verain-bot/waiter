@@ -70,7 +70,6 @@ const App = () =>{
         const DTSet = new Set([...filterSelections].filter((item)=>item.split(',')[1]=='dt').map((item)=>item.split(',')[0]))
         const SISet = new Set([...filterSelections].filter((item)=>item.split(',')[1]=='si').map((item)=>item.split(',')[0]))
 
-        console.log('Calllledddd', DTSet, SISet)
         if (filterSelections.size===0){
             setMenuItems(data.menu)
         }

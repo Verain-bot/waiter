@@ -19,8 +19,7 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
     const quantity = getCartQuantity(customizations)
 
     useEffect(()=>{        
-        console.log(cart, 'as')
-
+        
         let cartCopy = [...cart]
         let i = cartCopy.findIndex((cartItem)=>{return cartItem.menuItemID===props.id})
 

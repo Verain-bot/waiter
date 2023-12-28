@@ -42,10 +42,8 @@ export const OrderContextProvider = ({children}: {children: React.ReactNode})=>{
             const x = await getData(APIRoutes.ADMIN_ORDERS_AVAILABLE, new AbortController().signal)
             const j = await  x.json()
             const isAvailable = j.available
-            console.log('df1')
             if (isAvailable){
                 loadData()
-                console.log('df2')
                 
             }
         }

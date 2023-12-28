@@ -16,7 +16,6 @@ import { useLoginContext } from '../context/LoginContext';
 
 const App = ()=>{
     const [cart, setCart] = useCartContext()
-    console.log(JSON.stringify(cart))
     const [msg, setMessage] = useMessageContext()
     const loaderData = useLoaderData() as {valid: boolean} | null
     const [user,setUser] = useLoginContext()
@@ -65,8 +64,7 @@ const App = ()=>{
     }
 
     const items = getItems()
-    
-    console.log(cart.length, cart)
+
 
     if (cart.length==0)
         return <EmptyCart />
@@ -158,7 +156,6 @@ export const cartLoader : LoaderFunction = async ({params, request})=>{
     fd.append('address', address? address: '')
 
     const {json, response, message} = await  makeRequest( APIRoutes.CART_PRICE, req, fd)
-    console.log('verain',json)
 
     if (parseInt(json.price) === p)
         return {

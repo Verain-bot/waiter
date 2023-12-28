@@ -48,7 +48,6 @@ export const makeRequest = async (url: string, request: Request, data: FormData)
     
     //get csrf token from cookie
     const csrfToken = cookie.split(';').find(c => c.trim().startsWith('csrftoken='))?.split('=')[1]
-    console.log(csrfToken)
 
     try{
 

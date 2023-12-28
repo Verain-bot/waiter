@@ -89,9 +89,6 @@ const App = ()=> {
 
   const [data, _] = useOrderContext()
   
-  useEffect(()=>{
-    console.log('useEffect')
-  })
 
   return (
     <>

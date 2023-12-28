@@ -136,7 +136,6 @@ export const Form = memo((props : FormProps) => {
             if(selections.length > 0)
                 setSelections([])
         }
-        console.log('asdasd')
     })
 
     const handleChange = useCallback((e : React.ChangeEvent<HTMLInputElement>)=>{
@@ -185,8 +184,6 @@ export const Form = memo((props : FormProps) => {
             
             props.setSelected(r)
         }
-        console.log(selectedCpy, 'selected', props.index)
-
 
     },[props])
 

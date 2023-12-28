@@ -12,7 +12,6 @@ const makeRegex = (str : string)=>{
 }
 
 const getLookup = (obj : Record<string, any>,str : string) : string=>{
-    console.log('getLookup',obj,str)
     var s = str.split('.')
     var r = structuredClone(obj)
     s.forEach((item)=>{

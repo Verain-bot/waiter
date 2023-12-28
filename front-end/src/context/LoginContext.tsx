@@ -37,8 +37,6 @@ export const LoginContextProvider = ({ children }: { children: ReactNode }) => {
       else{
         setLogin({login: false, user: null})
       }
-
-      console.log(login, 'login')
     },[])
     
     useEffect(()=>{
