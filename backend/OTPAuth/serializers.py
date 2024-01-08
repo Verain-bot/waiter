@@ -6,9 +6,11 @@ Customer = get_user_model()
 
 class CustomerDetailSerializer(serializers.ModelSerializer):
     #phone number cannot be updated once created
+
+    token = serializers.CharField(source='user_token.token', read_only=True)
     class Meta:
         model = Customer
-        fields = [ 'first_name','last_name', 'username', 'email' ]
+        fields = [ 'first_name','last_name', 'username', 'email', 'token' ]
 
     def update(self, instance, validated_data):
         validated_data.pop('username', None)

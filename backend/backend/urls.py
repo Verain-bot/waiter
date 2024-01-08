@@ -41,7 +41,7 @@ class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
 
 urlpatterns = [
     path('health/', health_check),
-    path('sw.js', (TemplateView.as_view(template_name="sw.js", content_type='application/javascript', )), name='sw.js'),
+    path('service-worker.js', (TemplateView.as_view(template_name="service-worker.js", content_type='application/javascript', )), name='service-worker.js'),
     path(URL_FOR_APPS.ADMIN, admin.site.urls),
     path(URL_FOR_APPS.API,include('api.urls')),
     path(URL_FOR_APPS.OTP_AUTH,include('OTPAuth.urls'),name='otp-auth'),

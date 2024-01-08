@@ -12,6 +12,8 @@ class URL_FOR_OTPAuth(URLEnumMixin,enum.StrEnum):
     ENTER_OTP = 'otp/'
     ACCOUNT_VIEW_UPDATE = 'account/'
     LOGOUT = 'logout/'
+    ADD_UPDATE_TOKEN = 'device-token/'
+
 
     BASE = URL_FOR_APPS.OTP_AUTH
 
@@ -23,5 +25,5 @@ urlpatterns = [
     path(URL_FOR_OTPAuth.ENTER_OTP, views.VerifyOTPView.as_view(), name='verify-otp'),
     path(URL_FOR_OTPAuth.ACCOUNT_VIEW_UPDATE, views.ViewUpdateAccountView.as_view(), name='update-account'),
     path(URL_FOR_OTPAuth.LOGOUT, views.CustomerLogout.as_view(), name='customer-logout'),
-    
+    path(URL_FOR_OTPAuth.ADD_UPDATE_TOKEN, views.AddUpdateDeviceToken.as_view(), name='add-update-token'),
 ]

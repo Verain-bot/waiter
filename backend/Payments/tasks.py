@@ -5,6 +5,7 @@ from ResOwner.helper import setRestaurantOrderAvailable
 from phonepe.sdk.pg.payments.v1.payment_client import PhonePePaymentClient
 from phonepe.sdk.pg.env import Env
 import uuid
+from OTPAuth.tasks import sendNotification
 from django.conf import settings
 
 @shared_task
@@ -36,6 +37,8 @@ def process_payment_for_order(paymentId : int, data , success : bool):
 
     order = obj.order
     order.paymentStatus = Order.OrderPaymentStatusChoices.PAID
+    sendNotification.delay(order.restaurant.owner.pk, 'New Order', f'New order available.')
+
     order.save()
 
     setRestaurantOrderAvailable(order.restaurant.owner.pk, True)

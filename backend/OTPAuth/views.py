@@ -13,6 +13,7 @@ from django.contrib.auth import login, logout
 from rest_framework.permissions import IsAuthenticated
 from .tasks import sendOTP
 from datetime import datetime
+
 import bcrypt
 
 class CustomerLogout(views.APIView):
@@ -139,3 +140,21 @@ class RegisterView(generics.CreateAPIView):
         
         return Response(msg.INVALID_REQUEST, 400)
     
+
+
+#Adding or updating device token for push notifications
+class AddUpdateDeviceToken(views.APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if 'deviceToken' in request.data:
+            token = UserToken.objects.get_or_create(user=request.user)[0]
+
+            if str(token.token) != str(request.data['deviceToken']):
+                token.token = str(request.data['deviceToken'])
+                token.save()
+            
+            return Response(msg.GENERAL_SUCCESS)
+        
+        return Response(msg.INVALID_REQUEST, 400)

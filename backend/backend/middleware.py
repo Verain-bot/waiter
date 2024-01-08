@@ -1,6 +1,6 @@
 from OTPAuth.models import Analytics
 from django.conf import settings
-
+import time
 class AnalyticsMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
@@ -12,6 +12,7 @@ class AnalyticsMiddleware:
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if settings.DEBUG:
+            
             return None
 
         if request.path.startswith('/media') or request.path.startswith('/static'):

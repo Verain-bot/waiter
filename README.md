@@ -34,7 +34,7 @@ redis-cli
 
 Command to kill process on a port
 ```bash
-kill $(lsof -t -i:8080)
+kill -9 $(lsof -t -i:8080)
 ```
 ## ENV Variables to configure
 
@@ -54,6 +54,7 @@ V_CELERY_RESULT_BACKEND         "Celery result storage based on redis"
 V_PHONE_PE_MERCHANT_ID
 V_PHONE_PE_SALT_KEY
 V_MEDIA_STORAGE
+GOOGLE_APPLICATION_CREDENTIALS
 ```
 ## Other info
 
