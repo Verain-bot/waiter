@@ -9,14 +9,24 @@ import { useMenuContext } from "../../context/MenuContext"
 import MenuDescription from './menuItemDescription'
 import { ErrorBoundary } from "react-error-boundary"
 import MenuCustModalError from "../error/MenuCustModalError"
+import { useMenuCustModalContext } from "../../context/MenuModalContext"
 
 export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
     const RestaurantDetails = useMenuContext()
-    const modalId = `menu-itemcutomizationModal-${props.id}`
     const [cart, dispatch] = useCartContext()
     const [customizations, setCustomizations] = useState<CustomizationsType[]>([])
-    
+    const [custModal, setCustModal] = useMenuCustModalContext()
     const quantity = getCartQuantity(customizations)
+
+    const openCustModal = ()=>{
+        setCustModal({
+            show: true,
+            menuItemID: props.id,
+            currentCustomizations: customizations,
+            setCurrentCustomizations: AddOrUpdate
+        })
+    
+    }
 
     useEffect(()=>{        
         
@@ -107,11 +117,11 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
                             {RestaurantDetails.restaurantAcceptingOrders? <>
                             <div className='row'>                                
 
-                                {props.hasCustomization && quantity===0 && <i className='bi bi-cart-plus add-to-cart-btn'  data-bs-toggle="modal" data-bs-target={`#${modalId}`}></i>}
+                                {props.hasCustomization && quantity===0 && <i className='bi bi-cart-plus add-to-cart-btn'  onClick={openCustModal}></i>}
                                 {!props.hasCustomization && quantity===0 && <i className='bi bi-cart-plus add-to-cart-btn' onClick={increaseQuantity}></i>}
 
-                                {props.hasCustomization && quantity>0&&<QuantityModifier useModal={true} modalId={`#${modalId}`} decrease={decreaseQuantity} value={quantity} />}
-                                {!props.hasCustomization && quantity>0&&<QuantityModifier increase={increaseQuantity} decrease={decreaseQuantity} useModal={false} value={quantity} />}
+                                {props.hasCustomization && quantity>0&&<QuantityModifier increase={openCustModal} decrease={decreaseQuantity} value={quantity} />}
+                                {!props.hasCustomization && quantity>0&&<QuantityModifier increase={increaseQuantity} decrease={decreaseQuantity} value={quantity} />}
                             </div>
                             {props.hasCustomization&&<div className='row'>
                             <span className='small text-secondary'>Customizable+</span>
@@ -127,7 +137,7 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
 
                 </div>
             </div>
-        <ErrorBoundary fallbackRender={MenuCustModalError}>
+        {/* <ErrorBoundary fallbackRender={MenuCustModalError}>
             <>
                 {props.hasCustomization&&
                 <MenuCustomizationModal 
@@ -137,7 +147,7 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
                 addOrUpdate = {AddOrUpdate}
                 />}
             </>
-        </ErrorBoundary>
+        </ErrorBoundary> */}
             <hr className='mx-auto'/>
         </div>
 
@@ -151,19 +161,15 @@ type QuantityModifierProps = {
     decrease?: ()=>void;
     changeQuantity?: (quantity: number)=>void;
     value: number;
-    useModal?: boolean;
-    modalId?: string;
 }
 
 export const QuantityModifier : React.FC<QuantityModifierProps> = (props) => {
     const increase = () => {
         if(props.value<10)
         {
-
             if(props.increase){
                 props.increase()
-            }
-               
+            }  
             else
                 if(props.changeQuantity)
                     props.changeQuantity(props.value+1)
@@ -189,13 +195,10 @@ export const QuantityModifier : React.FC<QuantityModifierProps> = (props) => {
                 <i className='bi bi-dash'></i>
             </button>
             <input type='number' className='form-control cart-input' value={props.value} readOnly />
-            {props.useModal&&<button className='btn btn-outline-secondary btn-sm' onClick={increase} data-bs-toggle="modal" data-bs-target={props.modalId}>
-                <i className='bi bi-plus'></i>
-            </button>}
 
-            {!props.useModal&&<button className='btn btn-outline-secondary btn-sm' onClick={increase} >
+            <button className='btn btn-outline-secondary btn-sm' onClick={increase} >
                 <i className='bi bi-plus'></i>
-            </button>}
+            </button>
         </div>
     )
 }

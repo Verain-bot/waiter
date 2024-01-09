@@ -101,7 +101,7 @@ export  const Footer = (props : FooterProps)=>{
             </div>
 
             <div className='col-3 d-flex align-items-center justify-content-center'>
-                <QuantityModifier  changeQuantity={props.setQty} useModal={false} value={props.qty} />
+                <QuantityModifier  changeQuantity={props.setQty} value={props.qty} />
             </div>
             
             <div className='col-6 text-end'>

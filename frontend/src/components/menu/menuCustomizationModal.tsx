@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useId, useMemo, useState } from "react"
 import { getData } from "../../utilities/fetchData"
-import useModal from "../../hooks/useModal"
-import { ModalLayout } from "../modal/modal"
 import {Body, Body2, Body3, Footer} from './menuCustomizationComponents' 
 import { CustomizationsListType, CustomizationsType } from "../../context/CartContext"
 import APIRoutes, { makeURL } from "../../utilities/APIRoutes"
 import { useMessageContext } from "../../context/MessageContext"
 import { PlaceHolder } from "../../views/loading"
+import { useMenuCustModalContext } from "../../context/MenuModalContext"
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 export type CustomizationOptionFetch = {
     id: number;
@@ -40,39 +41,35 @@ export type CustomizationFetch = {
   };
     
 
-type MenuCustomizationModalProps = {
-    id: string;
-    menuItemID: number;
-    customizations: CustomizationsType[];
-    addOrUpdate: (c: CustomizationsType[]) => void
-}
 
-export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
+export const MenuCustomizationModal = ()=>{
 
     const [qty,setQty] = useState(0)
     const [useLast, setUseLast] = useState(false)
     const [customizations, setCustomizations] = useState<CustomizationFetch[]>([])
     const [selectedCustomizations, setSelectedCustomizations] = useState<CustomizationsListType[]>([])
     const [screen, setScreen] = useState(1)
-    const modal = useModal(props.id, ()=>{onOpen()}, ()=>{onClose()})
     const [isLoading,setIsLoading] = useState(true)
     const controller = new AbortController()
     const [message, setMessage] = useMessageContext()
-    
+    const [props, setProps] = useMenuCustModalContext()
+    const [lastItem, setLastItem] = useState<number>(-1)
+
     const getCustomizations = useCallback(async () =>{
         const URLid =String(props.menuItemID)
         let response
         try {
             setIsLoading(true)
             response = await getData(makeURL(APIRoutes.MENU_DETAILS, {pk : URLid}), controller.signal)
-            setIsLoading(false)
         } catch (error) {
+            setIsLoading(false)
             setMessage({heading:'Error', body:'Something went wrong', type:'error'})
             return
         }
         const json : MenuItemDetailFetch = await response.json()
         const cust = json.customizations
         setCustomizations(cust)
+        setIsLoading(false)
         setSelectedCustomizations(cust.map((customization)=>{
                 const initialOption = customization.customizationType == 'radio'? [customization.customizationOptions[0]] : []
                 return {
@@ -81,53 +78,37 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
                 Options: initialOption
             }
         }
-        
         ))
-    }, [])
+    }, [props.menuItemID])
 
-    const onClose = ()=>{
-        setUseLast(false)
-        controller.abort()
-    }
 
     const onOpen= useCallback(()=>{
-        if(customizations.length===0)
+        //Fetch customizations from server if not exist
+        if(customizations.length===0 || String(lastItem)!==String(props.menuItemID))
+        {
             getCustomizations()
+            if (props.menuItemID)
+                setLastItem(props.menuItemID)
+        }
 
-        if (props.customizations.length>0){
+        // If already selected customizations, set to screen 1 (Option to select new or repeat last customization)
+        if (props.currentCustomizations.length>0){
             setScreen(1)
         }
 
+        // Select screen 0 (New customization) if no customizations selected
         else{
             setScreen(0)
         }
 
-        if(useLast && props.customizations.length>0)
-        {
-            const last = props.customizations[props.customizations.length-1]
-            setSelectedCustomizations(last.customizations)
-            setQty(last.quantity)
-        }
-        else{
-            setSelectedCustomizations(customizations.map((customization)=>{return {
-                CustomizationID: customization.id,
-                CustomizationName: customization.name,
-                Options: [],
-            }
-        }))
-        
-        setQty(1)
-
-        }
-        
-    },[selectedCustomizations.length, modal.show, customizations.length,JSON.stringify(props.customizations)])
+    },[selectedCustomizations.length, props.show, customizations.length,JSON.stringify(props.currentCustomizations), props.menuItemID])
     
     useEffect(()=>{
         
 
-        if(useLast && props.customizations.length>0)
+        if(useLast && props.currentCustomizations.length>0)
         {
-            const last = props.customizations[props.customizations.length-1]
+            const last = props.currentCustomizations[props.currentCustomizations.length-1]
             setSelectedCustomizations(last.customizations)
             setQty(last.quantity)
         }
@@ -144,17 +125,20 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
         }
 
         
-    },[useLast, screen])
+    },[useLast, screen, props.menuItemID])
 
 
-    const close = ()=>{
-        modal.close()
+    const closeModal = ()=>{
+        setProps({...props, show: false})
+        setUseLast(false)
+        controller.abort()
     }
 
     const add = useCallback( ()=>{
-        modal.close()
-        const x = [...props.customizations]
+        closeModal()
+        const x = [...props.currentCustomizations]
         
+        // If using the last customization, update the last customization
         if (useLast)
         {
             if (qty>0)
@@ -164,6 +148,7 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
                     customizations: selectedCustomizations,
                 }
             }
+            // If quantity is 0, remove the last customization
             else{
                 x.pop()
             }
@@ -178,47 +163,46 @@ export const MenuCustomizationModal = (props : MenuCustomizationModalProps)=>{
             }
             
         }
-        props.addOrUpdate(x)
+
+        if(props.setCurrentCustomizations)
+            props.setCurrentCustomizations(x)
+
     },[qty, selectedCustomizations])
     
-    if(isLoading)
-        return(
-        <ModalLayout 
-            id = {props.id}
-            title = 'Customizations'
-            body = {<PlaceHolder />}            
-        />
-        )
 
-    if (screen==0)
+        let title = ''
+        let body
+        let footer
+        switch(screen){
+            case 0:
+                title = 'Customizations'
+                body = <Body customizations={customizations} selectedCustomizations={selectedCustomizations} setSelectedCustomizations={setSelectedCustomizations}   />
+                footer = <Footer qty={qty} setQty={setQty} close={closeModal} add={add} />
+                break
+            case 1:
+                title =  'Repeat last customization?'
+                body = <Body2  setScreen={setScreen} setUseLast={setUseLast} />
+                footer = <button type="button" className="btn btn-dark" onClick={closeModal}>Close</button>
+                break
+            case 2:
+                title = 'Customizations'
+                body = <Body customizations={customizations} selectedCustomizations={selectedCustomizations} setSelectedCustomizations={setSelectedCustomizations}   />
+                footer = <Footer qty={qty} setQty={setQty} close={closeModal} add={add} />
+                break
+            default:
+                throw Error('Invalid screen')
+        }
+
     return(
-        <ModalLayout 
-            id = {props.id}
-            title = 'Customizations'
-            body = {<Body customizations={customizations} selectedCustomizations={selectedCustomizations} setSelectedCustomizations={setSelectedCustomizations}   />}
-            footer = {<Footer qty={qty} setQty={setQty} close={close} add={add} />}
-        />
+        
+        <Modal show={props.show} onHide={closeModal} onShow={onOpen} centered>
+            <Modal.Header closeButton>
+                <Modal.Title>{title}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{body}</Modal.Body>
+            <Modal.Footer>
+                {footer}
+            </Modal.Footer>
+        </Modal>
     )
-
-    if (screen==1)
-    return(
-        <ModalLayout 
-            id = {props.id}
-            title = 'Repeat last customization?'
-            body = {<Body2  setScreen={setScreen} setUseLast={setUseLast} />}  
-            footer={<button type="button" className="btn btn-dark" data-bs-dismiss="modal">Close</button>}
-        />
-    )
-
-    if (screen==2)
-    return(
-        <ModalLayout 
-            id={props.id}
-            title = 'Update'
-            body={<Body3 setScreen={setScreen} qty={qty} setQty={setQty} />}
-            footer={<button type="button" className="btn btn-danger" onClick={add} data-bs-dismiss='modal'>Update</button>}
-        />
-    )
-
-    throw Error('Invalid screen')
 }

@@ -1,11 +1,11 @@
 import './App.css';
 //import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import Message from './views/messageModal';
+import Message from './components/modal/messageModal';
 import './styles.sass'
 import { useEffect } from 'react';
 import {Outlet, useLocation, useMatches, useNavigate, useNavigation} from 'react-router-dom';
-import Review from './views/ratingModal'
+import Review from './components/modal/ratingModal'
 import { Header } from './components/header/header';
 import LoadingScreen from './views/loading'
 import { useMessageContext } from './context/MessageContext';

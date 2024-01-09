@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorComp from "../components/error/ErrorComp";
 import { PATHS } from "../utilities/routeList";
+import { MenuCustModalContextProvider } from "../context/MenuModalContext";
 
 export type MenuItemListFetch = {
     id: number;
@@ -108,9 +109,12 @@ const App = () =>{
                     </span>
                 </div>}
 
+                <MenuCustModalContextProvider>
+
                 {data.menu.length>0&&<MenuContextProvider value={{ restaurantAcceptingOrders: data.acceptingOrders, restaurantID: data.id}}>
                     {MItoDisplay.map((section)=>(<MenuSection name={section.name} items={section.items} key={section.name} />))}
                 </MenuContextProvider>}
+                </MenuCustModalContextProvider>
                 {data.menu.length>0&&<MenuFooter sections={getSectionsFromMenu(data.menu).map((item)=>item.name)} />}
                 <MenuCartFooter />
             </ErrorBoundary>

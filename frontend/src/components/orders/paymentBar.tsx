@@ -91,7 +91,7 @@ const PaymentBar = ( props : PropType )=>{
                 </button>
             </div>     
 
-        </Table>   
+        </Table>  
     )
 }
 
