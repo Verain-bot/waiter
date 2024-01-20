@@ -76,7 +76,7 @@ const App = ()=>{
                 </h5>
                 
                 <p className="card-text">
-                    If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at <a href={`mailto:${Properties.BusinessHelpEmail}`} >{Properties.BusinessHelpEmail} </a>.
+                    If you have any questions or concerns about this Refund and Cancellation policy, please contact us at <a href={`mailto:${Properties.BusinessHelpEmail}`} >{Properties.BusinessHelpEmail} </a>.
                 </p>
 
             </div>

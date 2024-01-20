@@ -4,6 +4,7 @@ from .models import PaymentStatus
 from ResOwner.helper import setRestaurantOrderAvailable
 from phonepe.sdk.pg.payments.v1.payment_client import PhonePePaymentClient
 from phonepe.sdk.pg.env import Env
+import razorpay
 import uuid
 from OTPAuth.tasks import sendNotification
 from django.conf import settings
@@ -18,7 +19,8 @@ def process_payment_for_order(paymentId : int, data , success : bool):
             return {'success': False, 'paymentId': paymentId, 'msg': 'Payment already processed'}
         
         obj.success = False
-        obj.terminal_state = True
+        if obj.payment_gateway not in [PaymentStatus.PaymentGatewayChoices.RZP]:
+            obj.terminal_state = True
         if obj.order.paymentStatus == Order.OrderPaymentStatusChoices.PENDING:
             obj.order.paymentStatus = Order.OrderPaymentStatusChoices.FAILED
             obj.order.save()
@@ -47,7 +49,7 @@ def process_payment_for_order(paymentId : int, data , success : bool):
     return {'success': True, 'paymentId': paymentId, 'msg': 'Payment successfull'}
 
 @shared_task
-def refund_payment_for_order(orderID: int):
+def refund_payment_for_order(orderID: int): 
 
     order = Order.objects.filter(pk=orderID)
     if not order:
@@ -70,6 +72,7 @@ def refund_payment_for_order(orderID: int):
 
 def refund_payment_from_paymentid(paymnt_id):
     paymentStatus = PaymentStatus.objects.filter(payment_id=paymnt_id)
+
     if not paymentStatus:
         return {'success': False, 'paymnt_id': paymnt_id, 'msg': 'Payment not found'}
     
@@ -78,28 +81,31 @@ def refund_payment_from_paymentid(paymnt_id):
     if paymentStatus.success == False or paymentStatus.terminal_state == False:
         return {'success': False, 'paymnt_id': paymnt_id, 'msg': 'Payment status shows failed'}
     
-    merchant_id = settings.PHONE_PE_MERCHANT_ID
-    salt_key = settings.PHONE_PE_SALT_KEY
-    salt_index = 1 # insert your salt index
-    env = Env.UAT
-    should_publish_events = True
-    phonepe_client = PhonePePaymentClient(merchant_id, salt_key, salt_index, env, should_publish_events)
+    client = razorpay.Client(auth=('rzp_test_LTygpkM0cIuy85','zz4WggINF67hf0YMuf0QLw62'))
+    client.set_app_details({"title" : "Django App", "version" : "121.21"})
 
-    unique_refund_transcation_id = str(uuid.uuid4())[:-2]
+    data = client.order.payments(paymnt_id)
+    x = data.get('items')
+    id_to_refund = None
+    amount_to_refund = 0
 
-    transaction_id_to_refund = paymnt_id
-    s2s_callback_url = "https://www.merchant.com/callback"
+    for item in x:
+        if item.get('status') == 'captured':
+            id_to_refund = item.get('id')
+            amount_to_refund = item.get('amount')
+            break
 
-    amount = paymentStatus.order.price * 100
-
-    refund_response = phonepe_client.refund(merchant_transaction_id= unique_refund_transcation_id,
-                                            original_transaction_id=transaction_id_to_refund,
-                                            amount=amount,
-                                            callback_url=s2s_callback_url)
+    try:
+        refund_response = client.payment.refund(id_to_refund,{
+            "amount": amount_to_refund,
+            "speed": "normal",
+            "receipt": "Refund for order #"+str(paymentStatus.order.pk),
+            })
+        
+        PaymentStatus.objects.create(payment_id=refund_response.get('id'), order=paymentStatus.order, payment_gateway=PaymentStatus.PaymentGatewayChoices.RZP, data=refund_response, terminal_state=True, success = True).save()
+        
+        return {'success': True, 'paymnt_id': paymnt_id, 'msg': 'Payment refunded'}
     
-    d = refund_response.__dict__
-    d['data'] = refund_response.data.__dict__
-
-    PaymentStatus.objects.create(payment_id=unique_refund_transcation_id, order=paymentStatus.order, payment_gateway='PhonePe', data=d).save()
-
-    return d
+    except Exception as e:
+        print(e)
+        return { 'success': False, 'paymnt_id': paymnt_id, 'msg': 'Payment not refunded'}

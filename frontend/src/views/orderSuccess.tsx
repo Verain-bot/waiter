@@ -1,8 +1,9 @@
 import { useEffect } from "react"
-import { useNavigate, useNavigation, useParams, useSearchParams } from "react-router-dom"
+import { useLocation, useNavigate, useNavigation, useParams, useSearchParams } from "react-router-dom"
 import APIRoutes, { makeURL } from "../utilities/APIRoutes"
 import { PATHS } from "../utilities/routeList"
 import { CartActions, useCartContext } from "../context/CartContext"
+import { makeRequest } from "../utilities/fetchData"
 
 const App = ()=>{
 
@@ -10,19 +11,40 @@ const App = ()=>{
     const navigate = useNavigate()
     const [cart, dispatch] = useCartContext()
 
+    const loc = useLocation()
+
+    const confirmPayment = async ()=>{
+        const response = loc.state as Object
+        const req = new Request(APIRoutes.RAZORPAY_CALLBACK,{method:"POST"})
+        const fd = new FormData()
+
+        for (const [key, value] of Object.entries(response)) {
+            fd.append(key, String(value))
+        }
+
+        await makeRequest(APIRoutes.RAZORPAY_CALLBACK,req, fd)
+        navigate(makeURL(PATHS.ORDER_DETAIL, {'orderID': String(orderID)}))
+    }
+
     useEffect(()=>{
         
         dispatch({
             type: CartActions.CLEAR
         })
 
-        const t = setTimeout(()=>{
-            navigate(makeURL(PATHS.ORDER_DETAIL, {'orderID': String(orderID)}))
-        },5000  )
+        //check payment status
 
-        return()=>{
-            clearTimeout(t)
-        }
+        
+        confirmPayment()
+        
+
+        // const t = setTimeout(()=>{
+        //     navigate(makeURL(PATHS.ORDER_DETAIL, {'orderID': String(orderID)}))
+        // },5000  )
+
+        // return()=>{
+        //     clearTimeout(t)
+        // }
     },[])
 
     return(

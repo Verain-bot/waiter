@@ -1,15 +1,41 @@
-import { ActionFunction, Form, Link, redirect } from "react-router-dom"
+import { ActionFunction, Form, Link, redirect, useNavigate } from "react-router-dom"
 import { CartItemType, useCartContext } from "../../context/CartContext"
 import { FormCard } from "../forms/formCard"
-import { LoginContextType } from "../../context/LoginContext"
+import { LoginContextType, useLoginContext } from "../../context/LoginContext"
 import { ActionErrorDataType } from "../../hooks/useActionError"
 import APIRoutes, { makeURL } from "../../utilities/APIRoutes"
 import { makeRequest } from "../../utilities/fetchData"
 import { PATHS } from "../../utilities/routeList"
+import useRazorpay from "react-razorpay"
+import { useActionData } from "react-router-dom"
+import { useEffect } from "react"
+import { payUsingRazorPay } from "../../utilities/payRZP"
+import { RazorpayInitiateResponse } from "../orders/paymentBar"
 
 type CartFooterProps = {}
 
 export const CartFooter = (props : CartFooterProps) =>{
+    const [Razorpay] = useRazorpay()
+    const actionData = useActionData() as RazorpayInitiateResponse
+    const [user, setUser] = useLoginContext()
+    const navigate = useNavigate()
+
+    const onPay = (response: Object)=>{
+        navigate(makeURL(PATHS.ORDER_CREATED_SUCCESS, {'orderID': actionData.orderID}),
+        {
+            state:{
+                ...response
+            }
+        })
+        
+    }
+
+    useEffect(()=>{
+        if (actionData){
+            const RZP_orderID = actionData.RZP_Order_ID
+            payUsingRazorPay(RZP_orderID, Razorpay, onPay, user.user)
+        }
+    })
 
     const [cart, dispatch] = useCartContext()
     const url = `/restaurant/${cart[0].restaurantID}/menu`
@@ -37,7 +63,7 @@ export const CartFooter = (props : CartFooterProps) =>{
 }
 
 export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction= (LoginContext ) => async ({params, request }) : Promise<ActionErrorDataType | Response> => {
-    const windowReference = window.open();
+
     const r = localStorage.getItem('cart')
     if (!r){
         return null
@@ -58,9 +84,7 @@ export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.Se
     const fd2 = new FormData()
     fd2.append('order_id', json.orderID)
 
-    const x = await makeRequest(APIRoutes.PHONE_PE_INITITATE,requestForPayment, fd2)
-
-    windowReference?.location.assign(x.json.url)
+    const x = await makeRequest(APIRoutes.RAZORPAY_INITIATE,requestForPayment, fd2)
 
     if(!response.ok){
         localStorage.setItem('cart', '[]')
@@ -70,5 +94,6 @@ export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.Se
             type: "error"
         }
     }
-    return redirect(makeURL(PATHS.ORDER_CREATED_SUCCESS, {'orderID': json.orderID}))
+
+    return {...x.json, orderID: json.orderID}
 }

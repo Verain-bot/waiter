@@ -3,18 +3,25 @@ import { TableItem } from "../table/tableItems"
 import APIRoutes from "../../utilities/APIRoutes"
 import { makeRequest } from "../../utilities/fetchData"
 import { useMessageContext } from "../../context/MessageContext"
-
+import { payUsingRazorPay } from "../../utilities/payRZP"
+import useRazorpay from "react-razorpay"
+import { useLoginContext } from "../../context/LoginContext"
 type PropType = {
     paymentStatus: string
     orderID: number | string
 
 }
 
-const PaymentBar = ( props : PropType )=>{
+export type RazorpayInitiateResponse = {
+    RZP_Order_ID: string
+    orderID: number
+}
 
+const PaymentBar = ( props : PropType )=>{
+    const [Razorpay] = useRazorpay()
     const [message, setMessage] = useMessageContext()
     const disabled =  props.paymentStatus=='PAID' || props.paymentStatus=='REFUNDED'
-
+    const [user, _] = useLoginContext()
     const checkPaymentStatus = async ()=>{
         const req = new Request(APIRoutes.PHONE_PE_CHECK_STATUS, {
             method: 'POST',
@@ -23,7 +30,7 @@ const PaymentBar = ( props : PropType )=>{
         const fd = new FormData()
         fd.append('order_id', String(props.orderID))
 
-        const {json, response, message} = await makeRequest(APIRoutes.PHONE_PE_CHECK_STATUS, req, fd)
+        const {json, response, message} = await makeRequest(APIRoutes.RAZORPAY_CHECK_STATUS, req, fd)
 
         if(!response.ok){
             setMessage({
@@ -34,7 +41,6 @@ const PaymentBar = ( props : PropType )=>{
             return
         }
     
-        
         setMessage({
             heading: 'Payment Info',
             body: json.message + ' Please refresh the page.',
@@ -43,20 +49,17 @@ const PaymentBar = ( props : PropType )=>{
 
         return
         
-        
     }
 
     const retryPayment = async () =>{
-        const windowReference = window.open();
-
-        const requestForPayment = new Request(APIRoutes.PHONE_PE_INITITATE,{
+        const requestForPayment = new Request(APIRoutes.RAZORPAY_INITIATE,{
             method: 'POST',
         })
     
         const fd2 = new FormData()
         fd2.append('order_id', String(props.orderID))
-        const {json, response, message} = await makeRequest(APIRoutes.PHONE_PE_INITITATE,requestForPayment, fd2)
-
+        const {json, response, message} = await makeRequest(APIRoutes.RAZORPAY_INITIATE,requestForPayment, fd2)
+        
         if(!response.ok){
             setMessage({
                 heading: 'Something went wrong',
@@ -66,7 +69,8 @@ const PaymentBar = ( props : PropType )=>{
             return
         }
         
-        windowReference?.location.assign(json.url)
+        payUsingRazorPay(json.RZP_Order_ID, Razorpay, (res) => {},user.user)
+
         return
     }
 

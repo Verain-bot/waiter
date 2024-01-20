@@ -17,6 +17,9 @@ export const APIRoutes = {
     "PHONE_PE_UPI_INTENT": '/pay/phonepe/upi/',
     "PHONE_PE_CHECK_STATUS": '/pay/phonepe/checkstatus/',
     "ADD_UPDATE_TOKEN": "/api/account/device-token/",
+    "RAZORPAY_INITIATE": "/pay/razorpay/initiate/",
+    "RAZORPAY_CHECK_STATUS": "/pay/razorpay/checkstatus/",
+    "RAZORPAY_CALLBACK": "/pay/razorpay/callback/",
 }
 
 export const makeURL = (route: string, params: Record<string, string | number>) => {

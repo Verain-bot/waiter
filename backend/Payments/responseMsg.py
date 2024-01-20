@@ -8,3 +8,22 @@ ORDER_CANT_PAY = {
     "type": "error",
 }
 
+ORDER_SERVER_ERROR = {
+    "message": "PG returned an error",
+    "type": "error",
+}
+
+ORDER_STATUS_CHECK_MESSAGE = lambda x: {
+    "message": "Your payment was successful." if x else "Your payment was not successful",
+    "type": "error",
+}
+
+ORDER_INVALID_FIELDS_PASSED = {
+    "message": "Invalid fields passed",
+    "type": "error",
+}
+
+ORDER_NOT_PAID = {
+    "message": "Payment unsuccessful",
+    "type": "error",
+}

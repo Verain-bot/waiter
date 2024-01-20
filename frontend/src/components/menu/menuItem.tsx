@@ -17,6 +17,9 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
     const [customizations, setCustomizations] = useState<CustomizationsType[]>([])
     const [custModal, setCustModal] = useMenuCustModalContext()
     const quantity = getCartQuantity(customizations)
+    const [imgLoaded, setImgLoaded] = useState(false)
+
+    const imgClass = "rounded img-thumbnail shadow-sm border-0 "
 
     const openCustModal = ()=>{
         setCustModal({
@@ -72,6 +75,8 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
         })
     }
 
+
+
     const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
         //change source
         e.currentTarget.src = '/media/placeholderMenuItem.png'
@@ -85,7 +90,8 @@ export const MenuItem : React.FC<MenuItemListFetch> = memo((props) => {
 
             <div className="row d-flex align-items-center justify-content-center">
                 <div className="col-4 mx-auto">
-                    <img className='rounded img-thumbnail shadow-sm border-0' loading="lazy" src={String(props.itemPhoto)} onError={handleImageError} alt="No image" />
+                    <img className={!imgLoaded?imgClass:imgClass+'d-none'} loading="lazy" src={'/media/placeholderMenuItem.png'} />
+                    <img className={imgLoaded?imgClass:imgClass+'d-none'} loading="lazy" src={String(props.itemPhoto)} onError={handleImageError} alt="No image" onLoad={()=>setImgLoaded(true)}/>
                 </div>
                 
                 <div className="col-8 mx-0 mt px-0">

@@ -12,7 +12,7 @@ class AnalyticsMiddleware:
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if settings.DEBUG:
-            
+            time.sleep(0.7)
             return None
 
         if request.path.startswith('/media') or request.path.startswith('/static'):

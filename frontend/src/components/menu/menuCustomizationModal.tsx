@@ -50,22 +50,25 @@ export const MenuCustomizationModal = ()=>{
     const [selectedCustomizations, setSelectedCustomizations] = useState<CustomizationsListType[]>([])
     const [screen, setScreen] = useState(1)
     const [isLoading,setIsLoading] = useState(true)
-    const controller = new AbortController()
     const [message, setMessage] = useMessageContext()
     const [props, setProps] = useMenuCustModalContext()
     const [lastItem, setLastItem] = useState<number>(-1)
-
+    let controller = new AbortController()
     const getCustomizations = useCallback(async () =>{
         const URLid =String(props.menuItemID)
         let response
         try {
             setIsLoading(true)
             response = await getData(makeURL(APIRoutes.MENU_DETAILS, {pk : URLid}), controller.signal)
-        } catch (error) {
+        } catch (error : any) {
+            console.error(error)
             setIsLoading(false)
+            if (controller.signal.aborted)
+                return
             setMessage({heading:'Error', body:'Something went wrong', type:'error'})
             return
         }
+        
         const json : MenuItemDetailFetch = await response.json()
         const cust = json.customizations
         setCustomizations(cust)
@@ -79,6 +82,8 @@ export const MenuCustomizationModal = ()=>{
             }
         }
         ))
+        if (props.menuItemID)
+            setLastItem(props.menuItemID)
     }, [props.menuItemID])
 
 
@@ -87,8 +92,6 @@ export const MenuCustomizationModal = ()=>{
         if(customizations.length===0 || String(lastItem)!==String(props.menuItemID))
         {
             getCustomizations()
-            if (props.menuItemID)
-                setLastItem(props.menuItemID)
         }
 
         // If already selected customizations, set to screen 1 (Option to select new or repeat last customization)
@@ -129,9 +132,9 @@ export const MenuCustomizationModal = ()=>{
 
 
     const closeModal = ()=>{
+        controller.abort()
         setProps({...props, show: false})
         setUseLast(false)
-        controller.abort()
     }
 
     const add = useCallback( ()=>{
@@ -199,10 +202,25 @@ export const MenuCustomizationModal = ()=>{
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
+            
+            {!isLoading?<>
             <Modal.Body>{body}</Modal.Body>
             <Modal.Footer>
                 {footer}
             </Modal.Footer>
+            </>:
+            <>
+            <Modal.Body>
+                <PlaceHolder />
+                <PlaceHolder />
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="danger" onClick={closeModal}>
+                    Close
+                </Button>
+            </Modal.Footer>
+            </>
+            }
         </Modal>
     )
 }

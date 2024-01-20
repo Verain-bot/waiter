@@ -1,4 +1,6 @@
+import { useLocation } from "react-router-dom"
 import { Properties } from "../utilities/properties"
+import { useEffect } from "react"
 
 const App = ()=>{
 
