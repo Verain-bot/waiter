@@ -9,14 +9,14 @@ const App = ()=>{
         
         <div className='col-12 col-md-8 p-0'>
             <div className="card shadow">
-                <div className="card-header pt-3 bg-primary-subtle text-primary-emphasis">
+                <div className="card-header pt-3 bg-primary-subtle text-primary-emphasis" >
                     <h4>
                     Terms and Conditions
                     </h4>
                 </div>
                 <div className="card-body">
                     <p className="card-text">
-                    These Terms and Conditions ("Terms") govern your use of toOne website (the "Platform"), which is operated by toOne ("we," "our," or "us"). By accessing or using the Platform, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Platform.
+                    These Terms and Conditions ("Terms") govern your use of toOne website (the "Platform"), which is operated by ViewOne Digital Solutions Private Limited ("we," "our," or "us"). By accessing or using the Platform, you agree to comply with and be bound by these Terms. If you do not agree with these Terms, please do not use the Platform.
                     </p>
 
                     <h5 className="card-title">

@@ -1,4 +1,4 @@
-import { ActionFunction, Form, Link, redirect, useNavigate } from "react-router-dom"
+import { ActionFunction, Form, Link, redirect, useNavigate, useNavigation } from "react-router-dom"
 import { CartItemType, useCartContext } from "../../context/CartContext"
 import { FormCard } from "../forms/formCard"
 import { LoginContextType, useLoginContext } from "../../context/LoginContext"
@@ -8,7 +8,7 @@ import { makeRequest } from "../../utilities/fetchData"
 import { PATHS } from "../../utilities/routeList"
 import useRazorpay from "react-razorpay"
 import { useActionData } from "react-router-dom"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { payUsingRazorPay } from "../../utilities/payRZP"
 import { RazorpayInitiateResponse } from "../orders/paymentBar"
 
@@ -16,11 +16,15 @@ type CartFooterProps = {}
 
 export const CartFooter = (props : CartFooterProps) =>{
     const [Razorpay] = useRazorpay()
-    const actionData = useActionData() as RazorpayInitiateResponse
+    const actionData = useActionData() as (RazorpayInitiateResponse & {loading: boolean} | null)
     const [user, setUser] = useLoginContext()
     const navigate = useNavigate()
+    const navigation = useNavigation()
+    const disabled =  !(navigation.state=='idle')
+    //actionData?.loading ||
 
     const onPay = (response: Object)=>{
+        if (actionData)
         navigate(makeURL(PATHS.ORDER_CREATED_SUCCESS, {'orderID': actionData.orderID}),
         {
             state:{
@@ -30,28 +34,38 @@ export const CartFooter = (props : CartFooterProps) =>{
         
     }
 
-    useEffect(()=>{
+    const makePayment = ()=>{
         if (actionData){
             const RZP_orderID = actionData.RZP_Order_ID
             payUsingRazorPay(RZP_orderID, Razorpay, onPay, user.user)
         }
-    })
+    }
+
+    useEffect(()=>{
+        makePayment()
+    },[actionData])
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (actionData){
+            makePayment()
+            e.preventDefault()
+        }
+    }
 
     const [cart, dispatch] = useCartContext()
-    const url = `/restaurant/${cart[0].restaurantID}/menu`
+    const url = makeURL(PATHS.MENU, {restaurantID: cart[0].restaurantID})
     
     return(
-        <div className='sticky-bottom d-flex flex-row '>
-            <button className='btn btn-dark col-6'>
-                <Link to={url} style={{color: "inherit"}}>
+        <div className='sticky-bottom d-flex flex-row ' style={{zIndex: 900}}>
+                <Link to={url} className='btn btn-dark col-6 text-light' style={{color: "inherit"}}>
                     <strong>
                         Menu
                     </strong>
                 </Link>
-            </button>
 
             <Form className="col-6" method="POST" >
-                <button className='btn btn-danger w-100'>
+                <button className='btn btn-danger w-100' disabled={disabled} onClick={handleClick}>
+                {navigation.state != 'idle' && <span className="spinner-border spinner-border-sm mx-2" role="status" aria-hidden="true"></span>}
                     <strong>
                         Checkout
                     </strong>
@@ -95,5 +109,5 @@ export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.Se
         }
     }
 
-    return {...x.json, orderID: json.orderID}
+    return {...x.json, orderID: json.orderID, loading: true}
 }

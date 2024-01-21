@@ -15,6 +15,7 @@ type PropType = {
 export type RazorpayInitiateResponse = {
     RZP_Order_ID: string
     orderID: number
+    
 }
 
 const PaymentBar = ( props : PropType )=>{

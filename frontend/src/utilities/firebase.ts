@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken } from "firebase/messaging";
+import { Messaging, getMessaging, getToken, isSupported } from "firebase/messaging";
 import APIRoutes from "./APIRoutes";
 import { makeRequest } from "./fetchData";
 // TODO: Replace the following with your app's Firebase project configuration
@@ -10,12 +10,21 @@ const firebaseConfig = JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG || '{}')
 const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Cloud Messaging and get a reference to the service
-export const messaging = getMessaging(app);
+
+export const getMessagingInstance = async () => {
+    if (await isSupported()) {
+        return getMessaging(app);
+    }
+    return null;
+}
 
 
 export const sendPushToken = async (currentToken: string)=>{
+    const messaging = await getMessagingInstance()
+    if (!('serviceWorker' in navigator) || !messaging)
+        return null
     const SWregistration = await navigator.serviceWorker.ready
-            
+        
         const firebaseDeviceToken = await getToken(messaging, {
             vapidKey: process.env.REACT_APP_VAPID_KEY,
             serviceWorkerRegistration: SWregistration,

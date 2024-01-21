@@ -468,9 +468,14 @@ input::-webkit-inner-spin-button
     opacity: 1
    
 
-.loading
+.loading 
   height: 80vh
-  animation: fade-in 0.5s ease-in-out 0.5s forwards
+  animation: fade-in 0.3s ease-in-out 0.3s forwards
+  opacity: 0
+
+.loading::after
+  height: 80vh
+  animation: fade-out 0.3s ease-in-out 0.3s forwards
   opacity: 0
 
 .btn-circle
@@ -524,3 +529,7 @@ input::-webkit-inner-spin-button
 
 .view
   min-height: 90vh
+
+.loading-content
+  animation: fade-in 0.15s ease-in-out 0.15s forwards
+  opacity: 0

@@ -13,7 +13,7 @@ import { SearchContextProvider } from './context/SearchContext';
 import { RatingContextProvider } from './context/RatingContext';
 import { LoginContextProvider, useLoginContext } from './context/LoginContext';
 import { CartContextProvider } from './context/CartContext';
-import { messaging } from './utilities/firebase';
+import { getMessagingInstance } from './utilities/firebase';
 import { onMessage } from 'firebase/messaging';
 
 const root = ReactDOM.createRoot(
@@ -65,12 +65,17 @@ root.render(
   </React.StrictMode>
 );
 
-onMessage(messaging, (payload : any)=>{
+const OM = (async ()=>{
+  const messaging = await getMessagingInstance()
+    if (messaging)
+    onMessage(messaging, (payload : any)=>{
   new Notification(payload.notification.title, {
     body: payload.notification.body,
     icon: process.env.PUBLIC_URL+'/192.png',
   })
 })
+
+})()
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -210,6 +210,12 @@ const list : CustomRouteType[] = [
       name: 'Refund Policy',
       pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
       viewFileName: 'refundPolicy.tsx'
+    },{
+      path: PATHS.LOADING,
+      element: <Loading />,
+      name: 'Loading',
+      pathType: [PathType.LOGGED_IN, PathType.LOGGED_OUT],
+      viewFileName: 'loading.tsx'
     }
   ];
 

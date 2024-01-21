@@ -14,7 +14,7 @@ const App = ()=>{
                 </div>
                 <div className="card-body">
                     <p className="card-text">
-                    toOne is committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your personal data when you use our online platform and related services ("Platform").
+                    We (ViewOne Digital Solutions Private Limited) are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your personal data when you use our online platform and related services ("Platform").
                     By accessing or using the Platform, you consent to the practices described in this Privacy Policy. Please take a moment to review this policy carefully.
                     </p>
 

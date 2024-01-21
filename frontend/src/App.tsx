@@ -22,7 +22,6 @@ const App = () => {
   const navigate = useNavigate()
   const [message, setMessage] = useMessageContext()
 
-
   useEffect(()=>{
     window.scrollTo(0,0)
     if(matches.length > 0 && login.login !== null)
@@ -63,7 +62,7 @@ const App = () => {
           }
 
           {navigation.state !== 'loading' &&
-          <div className='view  d-flex  justify-content-center'>
+          <div className='view d-flex justify-content-center loading-content'>
             <ErrorBoundary FallbackComponent={ErrorComp} onReset={()=> window.location.reload()}>
               <Outlet />
             </ErrorBoundary>
@@ -71,8 +70,8 @@ const App = () => {
           }
         
           
-          <Footer />
         </div>
+          <Footer />
       </div>
     </main>
   )

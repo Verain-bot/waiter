@@ -90,5 +90,4 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-comp
 
 
 firebase.initializeApp(JSON.parse(process.env.REACT_APP_FIREBASE_CONFIG || '{}'))
-
 const messaging = firebase.messaging();

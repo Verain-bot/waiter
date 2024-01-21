@@ -5,8 +5,6 @@ import { PATHS } from "./routeList";
 import { LoginContextType } from "../context/LoginContext";
 import { redirect } from "react-router-dom";
 import { ActionErrorDataType } from "../hooks/useActionError";
-import { messaging } from "./firebase";
-import { getToken } from "firebase/messaging";
 import {sendPushToken} from "./firebase";
 
 export const fetchUserData = async () : Promise<null | UserContextType> => {
@@ -23,8 +21,6 @@ export const fetchUserData = async () : Promise<null | UserContextType> => {
     
     if (req.response.ok) {
         const jsonData = await req.json as UserContextType & {token: string}
-
-        
         sendPushToken(jsonData.token)
 
         return jsonData as UserContextType

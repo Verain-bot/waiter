@@ -7,9 +7,9 @@ export const payUsingRazorPay = (id : string, Razorpay : any, handler_func: (res
         key: process.env.REACT_APP_RZP_KEY as string, // Enter the Key ID generated from the Dashboard
         amount: "50000", // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         currency: "INR",
-        name: "Acme Corp",
-        description: "Test Transaction",
-        image: process.env.PUBLIC_URL + "/logo192.png",
+        name: "ViewOne Digital Solutions",
+        description: "Payment for Order #"+id,
+        image: "/icon/1080.png",
         order_id: id,
         handler: handler_func,
         prefill: {
@@ -18,7 +18,7 @@ export const payUsingRazorPay = (id : string, Razorpay : any, handler_func: (res
           contact: user?.username,
         },
         theme: {
-          color: "#3399cc",
+          color: "#000000",
         },
       }
     
