@@ -6,6 +6,7 @@ import { useMessageContext } from "../../context/MessageContext"
 import { payUsingRazorPay } from "../../utilities/payRZP"
 import useRazorpay from "react-razorpay"
 import { useLoginContext } from "../../context/LoginContext"
+import { useState } from "react"
 type PropType = {
     paymentStatus: string
     orderID: number | string
@@ -21,9 +22,14 @@ export type RazorpayInitiateResponse = {
 const PaymentBar = ( props : PropType )=>{
     const [Razorpay] = useRazorpay()
     const [message, setMessage] = useMessageContext()
-    const disabled =  props.paymentStatus=='PAID' || props.paymentStatus=='REFUNDED'
+    const [loading, setLoading] = useState(false)
+
+    const disabled =  props.paymentStatus=='PAID' || props.paymentStatus=='REFUNDED' || loading
+
     const [user, _] = useLoginContext()
     const checkPaymentStatus = async ()=>{
+        setLoading(true)
+
         const req = new Request(APIRoutes.PHONE_PE_CHECK_STATUS, {
             method: 'POST',
         })
@@ -48,11 +54,12 @@ const PaymentBar = ( props : PropType )=>{
             type: 'success',
         })
 
-        return
-        
+        setLoading(false)
     }
 
     const retryPayment = async () =>{
+        setLoading(true)
+
         const requestForPayment = new Request(APIRoutes.RAZORPAY_INITIATE,{
             method: 'POST',
         })
@@ -67,12 +74,13 @@ const PaymentBar = ( props : PropType )=>{
                 body: message,
                 type: 'error',
             })
+            setLoading(false)
             return
         }
         
         payUsingRazorPay(json.RZP_Order_ID, Razorpay, (res) => {},user.user)
 
-        return
+        setLoading(false)
     }
 
 
@@ -85,11 +93,13 @@ const PaymentBar = ( props : PropType )=>{
             <div className="col-12 pb-4 mx-0 px-0">
                 <button className='btn btn-outline-dark col-6 ' onClick={checkPaymentStatus} disabled={disabled} >
                     <strong>
+                    {loading && <span className="spinner-border spinner-border-sm mx-2" role="status" aria-hidden="true"></span>}
                         Check Status
                     </strong>
                 </button>
 
                 <button className='btn btn-dark col-6' onClick={retryPayment} disabled={disabled} >
+                {loading && <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>}
                     <strong>
                         Retry Payment
                     </strong>

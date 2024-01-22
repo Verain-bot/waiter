@@ -203,24 +203,30 @@ export const MenuCustomizationModal = ()=>{
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             
-            {!isLoading?<>
-            <Modal.Body>{body}</Modal.Body>
-            <Modal.Footer>
-                {footer}
-            </Modal.Footer>
-            </>:
-            <>
-            <Modal.Body>
-                <PlaceHolder />
-                <PlaceHolder />
+            <Modal.Body className="cust-modal">
+                {isLoading? 
+                <>
+                    <PlaceHolder />
+                    <PlaceHolder />
+                </>:
+                <div className="loading-content">
+                    {body}
+                </div>
+                }
+                
             </Modal.Body>
+            
             <Modal.Footer>
-                <Button variant="danger" onClick={closeModal}>
+                {isLoading?<Button variant="danger" onClick={closeModal}>
                     Close
-                </Button>
+                </Button>:footer}
             </Modal.Footer>
-            </>
-            }
+            
+
+            
+                
+            
+            
         </Modal>
     )
 }

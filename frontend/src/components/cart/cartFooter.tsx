@@ -2,7 +2,7 @@ import { ActionFunction, Form, Link, redirect, useNavigate, useNavigation } from
 import { CartItemType, useCartContext } from "../../context/CartContext"
 import { FormCard } from "../forms/formCard"
 import { LoginContextType, useLoginContext } from "../../context/LoginContext"
-import { ActionErrorDataType } from "../../hooks/useActionError"
+import { ActionErrorDataType, useActionError } from "../../hooks/useActionError"
 import APIRoutes, { makeURL } from "../../utilities/APIRoutes"
 import { makeRequest } from "../../utilities/fetchData"
 import { PATHS } from "../../utilities/routeList"
@@ -16,7 +16,8 @@ type CartFooterProps = {}
 
 export const CartFooter = (props : CartFooterProps) =>{
     const [Razorpay] = useRazorpay()
-    const actionData = useActionData() as (RazorpayInitiateResponse & {loading: boolean} | null)
+    const err = useActionError()
+    const actionData = useActionData() as (RazorpayInitiateResponse | null)
     const [user, setUser] = useLoginContext()
     const navigate = useNavigate()
     const navigation = useNavigation()
@@ -109,5 +110,5 @@ export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.Se
         }
     }
 
-    return {...x.json, orderID: json.orderID, loading: true}
+    return {...x.json, orderID: json.orderID}
 }

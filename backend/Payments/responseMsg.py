@@ -4,7 +4,7 @@ ORDER_ID_NOT_PASSED = {
 }
 
 ORDER_CANT_PAY = {
-    "message": "You can't pay for this order",
+    "message": "You can't pay for this order. Please place a new order. If you think this is a mistake, please contact us.",
     "type": "error",
 }
 
