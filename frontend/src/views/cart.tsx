@@ -4,7 +4,7 @@ import { CartItem, CartTotalItem } from '../components/cart/cartItem';
 import { Check } from '../components/forms/inputsUncontrolled';
 import Table  from '../components/table/table';
 import { TableHeading, TableItem } from '../components/table/tableItems';
-import { Link, LoaderFunction, useLoaderData, useNavigate } from 'react-router-dom';
+import { Link, LoaderFunction, defer, useLoaderData, useNavigate } from 'react-router-dom';
 import { CartActions, CartItemType, CustomizationsType, useCartContext } from '../context/CartContext';
 import EmptyCart from '../components/cart/emptyCart';
 import { PATHS } from '../utilities/routeList';
@@ -12,12 +12,13 @@ import { makeRequest } from '../utilities/fetchData';
 import APIRoutes from '../utilities/APIRoutes';
 import { useMessageContext } from '../context/MessageContext';
 import { useLoginContext } from '../context/LoginContext';
+import LoaderWrapper from '../components/loader/LoaderWrapper';
 
 
-const App = ()=>{
+const App = ({data} : {data: {valid: boolean} | null})=>{
     const [cart, setCart] = useCartContext()
     const [msg, setMessage] = useMessageContext()
-    const loaderData = useLoaderData() as {valid: boolean} | null
+    const loaderData = data
     const [user,setUser] = useLoginContext()
     const address  = localStorage.getItem('address')
 
@@ -72,7 +73,7 @@ const App = ()=>{
     return(
         <>
         
-        <div className='col-12 col-md-6'>
+        <div className='col-12 col-md-6 loading-content'>
 
             <div className='row card shadow'>
                 <h5 className='card-title'>Cart</h5>
@@ -155,17 +156,22 @@ export const cartLoader : LoaderFunction = async ({params, request})=>{
     fd.append('restaurantID', cart[0].restaurantID.toString())
     fd.append('address', address? address: '')
 
-    const {json, response, message} = await  makeRequest( APIRoutes.CART_PRICE, req, fd)
+    const ret = makeRequest( APIRoutes.CART_PRICE, req, fd).then(({json,response,message})=>{
+        if (parseInt(json.price) === p)
+            return {
+                'valid' : true, 
+        }
+        else
+            return {
+                'valid' : false,
+        }
+    })
 
-    if (parseInt(json.price) === p)
-        return {
-            'valid' : true, 
-    }
-    else
-        return {
-            'valid' : false,
-    }
+    return defer({
+        data: ret
+    })
 }
 
+const Main = ()=>LoaderWrapper(App)
 
-export default App
+export default Main

@@ -12,8 +12,10 @@ import { useEffect, useState } from 'react';
 import { makeRequest } from './helper/fetchData';
 import { APIRoutes } from './helper/APIRoutes';
 import {  sendPushToken } from './helper/firebase';
-import PromptModal from './components/promptModal';
-import OrderPlaceHolder from './components/orderCardPlaceholder';
+import OrderListView from './views/orderListView';
+import PromptModal from './components/modals/promptModal';
+import ItemListView from './views/itemListView';
+import PauseResumeMenuItemModal from './components/modals/pauseResumeMenuItemModal';
 
 
 type Item = {
@@ -88,13 +90,20 @@ export type OrderType = {
   address?: string
 };
 
+
+export enum Views {
+  ORDERS = 'orders',
+  ITEMS = 'items',
+}
+
 export type OrderStatusType = 'NOT_CONFIRMED'|'CONFIRMED'|'PREPARING'|'DISPATCHING'|'READY'|'COMPLETE'|'CANCELLED'
 
 const App = ()=> {
 
-  const [data, _] = useOrderContext()
+  
   const [name, setName] = useState<string>('Orders')
-
+  const [view,setView] = useState<Views>(Views.ORDERS)
+  
   const getData = async()=>{
     const req = new Request(APIRoutes.ADMIN_GET_DETAILS, { method: 'GET'})
     const res = await makeRequest(APIRoutes.ADMIN_GET_DETAILS, req, new FormData)
@@ -112,22 +121,16 @@ const App = ()=> {
     
   },[])
 
+  console.log(view)
+
+  const viewToRender = view == Views.ORDERS ? <OrderListView /> : <ItemListView />
+
   return (
     <>
-      <Header name={name}/>
-      <main>
-          <PromptModal onAccept={getData} />
-            
-            <ResponsiveMasonry columnsCountBreakPoints={{250: 1, 700: 2, 1000: 3, 1200: 4}} >
-              <Masonry >
-              {
-                data===null?  new Array(11).fill(<OrderPlaceHolder />)  : data.map((item )=>
-                <OrderCard {...item} key={item.id} />
-                )
-              }
-            </Masonry>
-            </ResponsiveMasonry>
-      </main>
+      <Header name={name} changeScreen={setView}/>
+      <PromptModal onAccept={getData} />
+      <PauseResumeMenuItemModal />
+      {viewToRender}
     </>
   )
 }

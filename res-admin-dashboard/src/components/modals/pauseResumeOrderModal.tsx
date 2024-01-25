@@ -23,6 +23,7 @@ export default function PauseResumeOrderModal( props : Props) {
         props.onAccept()
         hideModal()
     }
+    
 
     return (
         <Modal show={props.show} onHide={hideModal} backdrop={'static'} >

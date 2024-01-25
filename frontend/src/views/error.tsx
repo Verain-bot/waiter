@@ -20,7 +20,25 @@ const App = ()=>{
         <main id="main" className="main">
         <div className='row p-2 d-flex align-items-center justify-content-center view'>
             <div className='col-12 col-md-6'>
-                <div className="row" style={{marginTop: '150px', marginBottom: '200px'}}>
+                <ErrorBody status={error.status} text={error.statusText} data={error.data} />
+            </div>
+            <Footer />
+            </div>
+        </main>
+        </>
+    )
+}
+
+type Props ={
+    status?: number,
+    text?: string,
+    data?: string
+
+}
+
+export const ErrorBody = (error : Props) =>{
+    return(
+        <div className="row" style={{marginTop: '150px', marginBottom: '200px'}}>
                     <div className="col-12 text-danger text-center my-4">
                         <h2>
                             <strong>
@@ -40,7 +58,7 @@ const App = ()=>{
 
                     <div className="col-12 text-center">
                         <h5>
-                            {error.statusText&&error.statusText}
+                            {error.text&&error.text}
                         </h5>
                     </div>
 
@@ -55,11 +73,6 @@ const App = ()=>{
                     </div>
 
                 </div>
-            </div>
-            <Footer />
-            </div>
-        </main>
-        </>
     )
 }
 

@@ -22,13 +22,13 @@ export const AccountDropDown: React.FC<AccountDropDownProps> = (props) => {
                         !
                     </div>}
                     </div>
-                    
                 </button>
-            ) : (
+
+            ) : login.login!==null?(
                 <Link className='btn btn-outline-dark' to={PATHS.LOGIN}>
                     <strong>Login</strong>
                 </Link>
-            )}
+            ): <></>}
             {login.login&& <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                 <li className="dropdown-header">
                     {!detailsGiven?

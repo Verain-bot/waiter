@@ -1,9 +1,11 @@
-import React, { useRef, useState } from "react"
+import React, { useContext, useRef, useState } from "react"
 import { CustomizationOption, OrderStatusType, OrderType} from "../App"
 import { makeRequest } from "../helper/fetchData"
 import { APIRoutes, makeURL } from "../helper/APIRoutes"
 import { useOrderContext } from "../Contexts/orderContext"
 import { motion } from "framer-motion"
+import PauseResumeMenuItemModal from "./modals/pauseResumeMenuItemModal"
+import { usePauseResumeItemModal } from "../Contexts/menuItemModalContext"
 
 type OrderActionItemType = {
     name: string
@@ -15,6 +17,7 @@ type OrderActionItemType = {
 
 export default function OrderCard(props : OrderType) {
     const ref = useRef<HTMLUListElement>(null)
+    
     const orderTime = new Date(props.time)
     const handleClick = async (_ : React.MouseEvent<HTMLUListElement, MouseEvent>)=>{
         console.log(JSON.stringify(props))
@@ -109,16 +112,18 @@ export default function OrderCard(props : OrderType) {
 
   return (
     <motion.div layout='preserve-aspect' layoutId={String(props.id)}  transition={{ type: "spring", stiffness: 100, damping: 12}} className="col-12 p-0" data-bs-theme='light'>
+        
       <div className="row card shadow m-2 zoom" style={{cursor: 'pointer'}}  onMouseEnter={handleOver} onMouseLeave={handleExit}  >
         <div className={`card-header bg-${color}-subtle`}  onClick={()=>{setShowDetails(!showDetails)}} >
             <div className="row" >
                 <div className={`col-8 text-${color}-emphasis`}>
                     Order ID: {props.id}
                 </div>
-                <div className="col-4 text-end">
+                <div className="col-4 text-end d-flex align-items-center justify-content-center">
                 <span className={`badge bg-${color}-subtle border border-${color}-subtle text-${color}-emphasis rounded-pill`} data-bs-theme='dark'>
                     {selectedAction?.orderStatus}
                 </span>
+                    <i className={`bi bi-check-circle text-${color}-emphasis p-0 mx-2 my-0`} style={{fontSize: 20, top: 0, right: 3}}></i>
                 </div>
             </div>
         </div>
@@ -127,14 +132,10 @@ export default function OrderCard(props : OrderType) {
                 {OrderActions.map((action, index)=>(
                     <OrderActionItem obj={action} setState={setOrderState} currentState={selectedAction} key={index} id={props.id} />
                 ))}
-                
             </ul>
         </div>
 
-            
-
-
-        
+                    
             <ul className={`list-group list-group-flush bg-${color} pt-2 pb-3 px-0 position-relative w-100`} onClick={handleClick} >
             <div>
                 
@@ -155,7 +156,7 @@ export default function OrderCard(props : OrderType) {
                 </li>
 
                 {items.map((item, index)=>
-                    <OrderItem name={item.itemDetails.name} qty={item.qty} customizations={item.option} key={index} />
+                    <OrderItem name={item.itemDetails.name} qty={item.qty} customizations={item.option} key={index} id={item.itemDetails.id} />
                     
                     )}
 
@@ -172,18 +173,34 @@ type OrderItemProps = {
     name: string
     qty: number
     customizations: string
+    id: number
 }
 
 const OrderItem = (props: OrderItemProps)=>{
     
+    const [modalProps, setModalProps] = usePauseResumeItemModal()
+    
+    const handleClick =  ()=>{
+       setModalProps({show: true, menuItemID: String(props.id), itemName: props.name})
+    }
+
     return(
         <li className="list-group-item "  >
-            <strong>
-                {props.qty} x {props.name}
-            </strong>
-            <span className="text-secondary">
-                : {props.customizations}
-            </span>
+            <div className="container">
+                <div className="row">
+                    <div className="col-10 text-start px-0">
+                        <strong>
+                            {props.qty} x {props.name}
+                        </strong>
+                        <span className="text-secondary">
+                            : {props.customizations}
+                        </span>
+                    </div>
+                    <div className="col-2 text-end">
+                    <i className="bi bi-x-circle text-muted p-0" style={{fontSize: 20, top: 0, right: 3}} onClick={handleClick}></i>
+                    </div>
+                </div>
+            </div>
         </li>
     )   
 }
@@ -197,7 +214,7 @@ type OrderActionItemProps = {
 
 const OrderActionItem = (props: OrderActionItemProps)=>{
     const [orders , setOrderContext] = useOrderContext()
-
+    const [loading, setLoading] = useState(false)
     if (props.obj.name == '')
         return <></>
 
@@ -214,7 +231,9 @@ const OrderActionItem = (props: OrderActionItemProps)=>{
             return order
         }))
 
+        setLoading(true)
         const {json, response, message} = await makeRequest(makeURL(APIRoutes.ADMIN_UPDATE_ORDER_STATUS, {'pk': props.id}), r,fd )
+        setLoading(false)
 
         if (!response.ok){
             console.error(json, response, message)
@@ -225,7 +244,7 @@ const OrderActionItem = (props: OrderActionItemProps)=>{
         props.setState(json.orderStatus)
     }
 
-    const disabled = !props.currentState?.acceptableStates.includes(props.obj.state)
+    const disabled = !props.currentState?.acceptableStates.includes(props.obj.state) || loading
 
     return(
         <li>

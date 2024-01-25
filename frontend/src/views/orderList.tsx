@@ -1,7 +1,7 @@
 import useSearchBar from "../hooks/useSearchBar"
 import Table from "../components/table/table"
 import { TableHeading, TableItem } from "../components/table/tableItems"
-import { LoaderFunction, useLoaderData } from "react-router-dom"
+import { LoaderFunction, defer, useLoaderData } from "react-router-dom"
 import { getData } from "../utilities/fetchData"
 import APIRoutes, { makeURL } from "../utilities/APIRoutes"
 import { ArrayResponseFetch, RestaurantListItemFetch } from "./restaurantList"
@@ -9,6 +9,7 @@ import Search from "../utilities/search"
 import { SearchResultMessage } from "../components/header/search"
 import { Link } from "react-router-dom"
 import { PATHS } from "../utilities/routeList"
+import LoaderWrapper from "../components/loader/LoaderWrapper"
 
 type OrderListTypeFetch = {
     id: number
@@ -17,14 +18,15 @@ type OrderListTypeFetch = {
     time: string
 }
 
-const App = ()=>{
+const App = ({data} : {data : ArrayResponseFetch<OrderListTypeFetch>})=>{
 
     const search = useSearchBar()
-    const data = useLoaderData() as ArrayResponseFetch<OrderListTypeFetch>
+    
     const results = Search(data.results,search,'restaurant.name')
-    if (results.length==0)
+    
+    if (results.length==0 && search.length===0)
         return(
-    <div style={{marginTop: '200px'}} className="text-center">
+    <div style={{marginTop: '200px'}} className="text-center loading-content">
         <h2>
             You don't have any orders yet.
             Please place a order and then come back.
@@ -33,9 +35,23 @@ const App = ()=>{
             <Link to={PATHS.RESTAURANT_LIST} className='btn btn-outline-danger'>Browse Restaurants</Link>
         </h2>
     </div>)
+
+    if (results.length==0 && search.length>0)
+        return(
+            <div className='col-12 col-md-6 m-0 p-0 loading-content'>
+                <SearchResultMessage />
+            <div style={{marginTop: '200px'}} className="text-center loading-content">
+                <h2>
+                    No Search Results Found.
+                    <br/>
+                </h2>
+            </div>
+            </div>
+    )
+
     return(
         <>
-        <div className='col-12 col-md-6 m-0 p-0'>
+        <div className='col-12 col-md-6 m-0 p-0 loading-content'>
             <SearchResultMessage />
             <Table title='Orders' subTitle={'Your orders from all the restaurants available'} info={'Check your order history here. In case you need help, please contact the restaurant.'}  >
                 <TableHeading left='Restaurant' right='Amount' width={8} />
@@ -84,10 +100,9 @@ const Left : React.FC<OrderListTableLeftProps>= (props)=>{
 }
 
 export const orderListLoader : LoaderFunction = async ({request})=>{
-    const data  = await getData(APIRoutes.ORDER_LIST, request.signal)
-    const json = await data.json()
-    return json
+    const data  = getData(APIRoutes.ORDER_LIST, request.signal).then((data)=>data.json())
+    return defer({data: data})
 }
 
-
-export default App
+const Main = ()=>LoaderWrapper(App)
+export default Main

@@ -4,7 +4,7 @@ import {Body, Body2, Body3, Footer} from './menuCustomizationComponents'
 import { CustomizationsListType, CustomizationsType } from "../../context/CartContext"
 import APIRoutes, { makeURL } from "../../utilities/APIRoutes"
 import { useMessageContext } from "../../context/MessageContext"
-import { PlaceHolder } from "../../views/loading"
+import { PlaceHolder, PlaceHolderSimple } from "../../views/loading"
 import { useMenuCustModalContext } from "../../context/MenuModalContext"
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -206,8 +206,10 @@ export const MenuCustomizationModal = ()=>{
             <Modal.Body className="cust-modal">
                 {isLoading? 
                 <>
-                    <PlaceHolder />
-                    <PlaceHolder />
+                    <PlaceHolderSimple />
+                    <PlaceHolderSimple />
+                    <PlaceHolderSimple />
+                    <PlaceHolderSimple />
                 </>:
                 <div className="loading-content">
                     {body}

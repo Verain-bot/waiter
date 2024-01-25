@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react"
 import { APIRoutes } from "../helper/APIRoutes";
 import { getData, makeRequest } from "../helper/fetchData";
-import PauseResumeOrderModal from "./pauseResumeOrderModal";
+import PauseResumeOrderModal from "./modals/pauseResumeOrderModal";
+import { Views } from "../App";
 
 
 type Props = {
   name: string
+  changeScreen: React.Dispatch<React.SetStateAction<Views>>
 }
 
 export default function App( props: Props) {
@@ -52,6 +54,19 @@ export default function App( props: Props) {
     }
   }
 
+  const changeView = ()=>{
+    props.changeScreen((prev)=>{
+      if(prev===Views.ORDERS)
+      {
+        return Views.ITEMS
+      }
+      else
+      {
+        return Views.ORDERS
+      }
+    })
+  }
+
   return (
     <nav className='navbar navbar-expand-lg bg-dark shadow p-2 mx-auto sticky-top' >
       <PauseResumeOrderModal show={showModal} setShow={setShowModal} takingOrders={isTakingOrders} onAccept={handleClickPauseResumeOrders} />
@@ -67,6 +82,11 @@ export default function App( props: Props) {
           </h3>
         </div>
         <div className="ms-auto dropdown">
+
+        <button className="btn btn-outline-light border-0 rounded-circle" onClick={changeView}>
+          <i className="bi bi-arrow-left-right" style={{'fontSize': '25px'}}></i>
+        </button>
+
         <button className="btn btn-outline-light border-0 rounded-circle d-md-inline d-none" onClick={setFullScreen}>
               {fullScreenEnabled?
               <i className="bi bi-fullscreen-exit" style={{'fontSize': '25px'}}></i>
@@ -114,6 +134,7 @@ type DropDownItemProps = {
     href?: string
     newTab?: boolean
   }
+
   const DropDownItem = (props : DropDownItemProps)=>{
     const display = props.forSmallScreenOnly?'d-md-none':'d-flex'
 

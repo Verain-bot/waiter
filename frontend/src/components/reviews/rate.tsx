@@ -3,6 +3,7 @@ import { useRatingContext } from "../../context/RatingContext";
 import { Form } from "react-router-dom";
 import { PATHS } from "../../utilities/routeList";
 import { makeURL } from "../../utilities/APIRoutes";
+import { Button } from "../forms/inputsControlled";
 
 type StarSelectorProps = {
     setStars: React.Dispatch<React.SetStateAction<number[]>>;
@@ -34,7 +35,7 @@ const StarSelector: React.FC<StarSelectorProps> = (props) => {
 };
 
 type RateProps = {
-    // Add any additional props here
+    setShow: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const Rate: React.FC<RateProps> = (props) => {
@@ -51,12 +52,20 @@ const Rate: React.FC<RateProps> = (props) => {
             <div className='col-12 d-flex flex-column'>
                 <Form method="PATCH" action={rating.actionURL} >
                     <h3>Rate</h3>
-                    <div className='row pointer' style={{ fontSize: "40px" }}>
+                    <div className='row pointer mb-3' style={{ fontSize: "40px" }}>
                         <StarSelector setStars={setStarsArr} stars={starsArr} />
                     </div>
-                    <input type="hidden" name={rating.starFieldName} value={stars} />
-                    <textarea placeholder='Please write your review here' className='form-control rounded w-100' name={rating.bodyFieldName} defaultValue={rating.reviewWritten}></textarea>
-                    <button className='btn btn-primary w-100 my-2' data-bs-dismiss="modal" >Submit</button>
+                    <input type="hidden"  name={rating.starFieldName} value={stars} />
+
+                    <textarea 
+                        placeholder='Please write your review here' 
+                        className='form-control rounded w-100 mb-4' 
+                        style={{minHeight: '111px'}}
+                        name={rating.bodyFieldName} 
+                        defaultValue={rating.reviewWritten}
+                    />
+                    
+                    <Button name="Submit" />
                 </Form>
             </div>
         </div>

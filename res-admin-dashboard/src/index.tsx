@@ -5,14 +5,17 @@ import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { OrderContextProvider } from './Contexts/orderContext';
+import { PauseResumeItemModalProvider } from './Contexts/menuItemModalContext';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
+  <PauseResumeItemModalProvider >
     <OrderContextProvider>
       <App />
     </OrderContextProvider>
+  </PauseResumeItemModalProvider>
   </React.StrictMode>
 );
 

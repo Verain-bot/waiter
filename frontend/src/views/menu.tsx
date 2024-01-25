@@ -3,7 +3,7 @@ import { MenuHeader } from "../components/menu/menuFilterHeader";
 import { MenuTitle } from "../components/menu/menuTitle";
 import { MenuSection } from "../components/menu/menuSubSection";
 import useSearchBar from "../hooks/useSearchBar"
-import { useLoaderData, LoaderFunction, useNavigate, useNavigation } from "react-router-dom";
+import { useLoaderData, LoaderFunction, useNavigate, useNavigation, defer } from "react-router-dom";
 import { getData } from "../utilities/fetchData";
 import Search from "../utilities/search";
 import { SearchResultMessage } from "../components/header/search";
@@ -15,6 +15,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import ErrorComp from "../components/error/ErrorComp";
 import { PATHS } from "../utilities/routeList";
 import { MenuCustModalContextProvider } from "../context/MenuModalContext";
+import LoaderWrapper from "../components/loader/LoaderWrapper";
 
 export type MenuItemListFetch = {
     id: number;
@@ -57,9 +58,9 @@ const getSectionsFromMenu = (menu : MenuItemListFetch[])=>{
 }
 
 
-const App = () =>{
+const App = ({data} : {data: RestaurantDetailsFetch}) =>{
     const search = useSearchBar()
-    const data = useLoaderData() as RestaurantDetailsFetch
+    
     const [filterSelections, setFilterSelections] = useState(new Set<string>())
     const [menuItems, setMenuItems] = useState<MenuItemListFetch[]>(data.menu)
     
@@ -91,7 +92,7 @@ const App = () =>{
     
     return(
     
-        <div className='col-md-7 col-12 p-0'>
+        <div className='col-md-7 col-12 p-0 loading-content'>
             <ErrorBoundary fallbackRender={ErrorComp} onReset={()=>navigate(PATHS.RESTAURANT_LIST)}>
 
                 <MenuTitle name={data.name} type={data.restaurantType.split(',')} stars={data.rating} numRatings={data.totalRatings} phone={data.phone} />
@@ -126,8 +127,9 @@ const App = () =>{
 
 export const MenuListLoader  : LoaderFunction = async ({params, request})=>{
     const id = params.restaurantID as string
-    const data = await getData(makeURL(APIRoutes.RESTAURANT_DETAILS, {"pk" : id}), request.signal)
-    return data.json()
+    const data = getData(makeURL(APIRoutes.RESTAURANT_DETAILS, {"pk" : id}), request.signal).then((data)=>data.json())
+    return defer({data: data})
 }
 
-export default App;
+const Main = ()=>LoaderWrapper(App)
+export default Main

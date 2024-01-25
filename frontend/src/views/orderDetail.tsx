@@ -2,7 +2,7 @@ import { CartTotalItem } from "../components/cart/cartItem"
 import Table from "../components/table/table"
 import { TableHeading, TableItem } from "../components/table/tableItems"
 import { useRatingContext } from "../context/RatingContext"
-import { ActionFunction, LoaderFunction, redirect, useLoaderData, useNavigation } from "react-router-dom"
+import { ActionFunction, LoaderFunction, defer, redirect, useLoaderData, useNavigation } from "react-router-dom"
 import APIRoutes, { makeURL } from "../utilities/APIRoutes"
 import { getData, makeRequest } from "../utilities/fetchData"
 import { PATHS } from "../utilities/routeList"
@@ -13,8 +13,9 @@ import { ActionErrorDataType } from "../hooks/useActionError"
 import OrderDetailItem from "../components/orders/orderDetailItem"
 import PaymentBar from "../components/orders/paymentBar"
 import NotificationPromptModal from "../components/modal/allowNotificationPromptModal"
+import LoaderWrapper from "../components/loader/LoaderWrapper"
 
-  
+
 export type ItemOptionFetch = {
     id: number;
     customization: string;
@@ -72,11 +73,9 @@ export type OrderData = {
   
 type OrderStatusType = 'NOT_CONFIRMED'|'CONFIRMED'|'PREPARING'|'DISPATCHING'|'READY'|'COMPLETE'|'CANCELLED'
 
-const App = ()=>{
+const App = ({data} : {data : OrderData})=>{
 
     const [rate, setRate]= useRatingContext()
-    
-    const data = useLoaderData() as OrderData
     
     const review = ()=>{
         setRate({...rate,
@@ -122,8 +121,7 @@ const App = ()=>{
     const time = new Date(data.time)
 
     return(
-    <>
-    <div className='col-12 col-md-6'>
+    <div className='col-12 col-md-6 loading-content'>
         <NotificationPromptModal />
         <Table title="Order Details" subTitle={`Order no.: #${data.id}`} info={`Order details for Order Number #${data.id}`}>
             <TableItem left='Restaurant' right={data.restaurant.name} width={4} nohr/>
@@ -153,21 +151,20 @@ const App = ()=>{
 
 
         {data.orderStatus == 'COMPLETE' && <div className='row card shadow p-1 pb-3 pointer' onClick={review}>
-            <h2 className='card-title mb-0 pb-2'>Rate order</h2>
-            <h6 className='card-subtitle mb-0 pb-1'>Click here to provide feedback</h6>
+            <h1 className='card-title mb-0 pb-2'>Rate order</h1>
+            <hr/>
+            <h6 className='card-subtitle mb-0 pb-1'><strong>Click here to provide feedback</strong></h6>
         </div>
         }
 
     </div>
-    </>
     )
 }
 
 export const orderDetailLoader : LoaderFunction = async ({params, request})=>{
     const url = makeURL(APIRoutes.ORDER_DETAILS, {'pk' : String(params.orderID)})
-    const data = await getData(url, request.signal)
-    const json = await data.json()
-    return json
+    const data =  getData(url, request.signal).then((data)=>data.json())
+    return defer({data: data})
 }
 
 export const orderDetailAction : (val : [LoginContextType, React.Dispatch<React.SetStateAction<LoginContextType>>]) => ActionFunction = (LoginContext ) => async({request, params}) : Promise<ActionErrorDataType | Response>=>{
@@ -184,4 +181,5 @@ export const orderDetailAction : (val : [LoginContextType, React.Dispatch<React.
     return redirect(makeURL(PATHS.ORDER_DETAIL, {'orderID': params.orderID as string}))
 }
 
-export default App
+const Main = ()=>LoaderWrapper(App)
+export default Main

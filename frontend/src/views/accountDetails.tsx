@@ -1,4 +1,4 @@
-import { Link, LoaderFunction, redirect, useLoaderData, useNavigate } from "react-router-dom"
+import { Link, LoaderFunction, defer, redirect, useLoaderData, useNavigate } from "react-router-dom"
 import { FormCard } from "../components/forms/formCard"
 import { Button, LinkFooter } from "../components/forms/inputsControlled"
 import Table from "../components/table/table"
@@ -8,25 +8,32 @@ import { useEffect } from "react"
 import { UserContextType, useLoginContext } from "../context/LoginContext"
 import { PATHS } from "../utilities/routeList"
 import { checkUserDetailsEntered } from "../utilities/LoginHelper"
+import LoaderWrapper from "../components/loader/LoaderWrapper"
 
-const App = ()=>{
+const App = ({data} : {data: UserContextType})=>{
     
-    const data  = useLoaderData() as UserContextType
+    
     const [login, setLogin] = useLoginContext()
     const navigate = useNavigate()
 
+    
     useEffect(()=>{
-        setLogin({
-            login: true,
-            user: data,
-        })
+        if(data)
+        {
+            setLogin({
+                login: true,
+                user: data,
+            })
+            
+            !checkUserDetailsEntered(login) && navigate(PATHS.REGISTER)
+        }
+        else
+        navigate(PATHS.LOGIN)
 
-        !checkUserDetailsEntered(login) && navigate(PATHS.REGISTER)
-
-    },[])
+    },[data])
 
     return(
-        <div className='col-12 col-md-6'>
+        <div className='col-12 col-md-6 loading-content'>
             <FormCard title='Account' subtitle="View your account information here" >
                 <TableItem width={4} left={<strong>First Name</strong>} right={<span>{data?.first_name}</span>} nohr />
                 <TableItem width={4} left={<strong>Last Name</strong>} right={<span>{data?.last_name}</span>} nohr />
@@ -40,13 +47,10 @@ const App = ()=>{
 }
 
 export const accountDetailsLoader : LoaderFunction= async ({params, request})=>{
-    const user = await fetchUserData()
-
-    if(user)
-        return user
-
-    return redirect(PATHS.LOGIN)
+    const user = fetchUserData()
+    return defer({data: user})
 }
 
+const Main = ()=>LoaderWrapper(App)
 
-export default App
+export default Main

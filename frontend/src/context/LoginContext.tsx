@@ -23,15 +23,12 @@ const LoginContext = createContext<[LoginContextType, React.Dispatch<React.SetSt
 
 export const LoginContextProvider = ({ children }: { children: ReactNode }) => {
     const [login, setLogin] = useState<LoginContextType>({ login: null, user: null });
+    
     const abortSignal = new AbortController();
 
-
     const getUser = useCallback(async () =>{
-      console.log('Fetching user')
       
       const user = await fetchUserData()
-      
-      console.log('User Fetched')
       
       if (user) {
         setLogin({login: true, user: user})
