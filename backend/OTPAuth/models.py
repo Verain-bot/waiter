@@ -9,3 +9,10 @@ class Analytics(models.Model):
     remote_addr = models.CharField(max_length=100, null=True)
     user_agent = models.CharField(max_length=250, null=True)
     host = models.CharField(max_length=100, null=True)
+
+class UserToken(models.Model):
+    user = models.OneToOneField(Customer, related_name='user_token', on_delete=models.CASCADE)
+    token = models.CharField(max_length=200, null=True)
+
+    def __str__(self):
+        return f'{self.user.username}'

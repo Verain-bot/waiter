@@ -6,7 +6,6 @@ from django.contrib.auth.views import LoginView, LogoutView
 from api.models import Restaurant, Customer, Order
 from rest_framework import views, generics, permissions
 from api.serializers import OrderDetailsSerializer
-from django.core.cache import cache
 from django.shortcuts import get_object_or_404
 from .helper import setRestaurantOrderAvailable, getRestaurantOrderAvailable
 from django.contrib.auth import decorators
@@ -14,8 +13,9 @@ from django.urls import reverse_lazy as reverse
 from django.contrib import admin
 from Payments.tasks import refund_payment_for_order
 from rest_framework.response import Response
+from OTPAuth.tasks import sendNotification
+from OTPAuth.models import UserToken
 # Create your views here.
-
 
 class OwnerLoginView(LoginView):
     template_name = 'admin/login.html'
@@ -91,6 +91,10 @@ class UpdateOrderView(generics.RetrieveUpdateAPIView):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
+        orderStatus_to_display = dict(Order.OrderStatusChoices.choices)[newOrderStatus]
+
+        sendNotification.delay(instance.customers.first().pk, f'Order {orderStatus_to_display}', f'Your order {instance.id} is {orderStatus_to_display}')
+
         return Response(serializer.data)
 
 class OwnerLogoutView(LogoutView):
@@ -99,7 +103,7 @@ class OwnerLogoutView(LogoutView):
 @decorators.login_required(login_url=reverse('owner-login'))
 @decorators.user_passes_test(lambda u: u.groups.filter(name='RestaurantOwner').exists())
 def ManageOrdersView(request):
-    return render(request, 'index.html')
+    return render(request, 'resadmin.html')
 
 class ToggleViewRestaurantAcceptingOrders(views.APIView):
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
@@ -113,3 +117,12 @@ class ToggleViewRestaurantAcceptingOrders(views.APIView):
     def get(self, request, *args, **kwargs):
         restaurant = Restaurant.objects.filter(owner=self.request.user).first()
         return http.JsonResponse({"available": restaurant.acceptingOrders})
+
+class DetailsGetUpdate(views.APIView):
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def get(self, request, *args, **kwargs):
+        restaurant = Restaurant.objects.filter(owner=self.request.user).first()
+        tokenObj = UserToken.objects.get_or_create(user=request.user)[0]
+
+        return http.JsonResponse({"restaurant": restaurant.name, "token": tokenObj.token })

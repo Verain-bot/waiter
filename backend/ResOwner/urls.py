@@ -13,7 +13,7 @@ class URL_FOR_RESOwner(URLEnumMixin,enum.StrEnum):
     OWNER_MANAGE_ORDERS = 'orders/view'
     OWNER_LOGOUT = 'logout/'
     OWNER_ACCEPTING_ORDERS = 'change/acceptingOrders'
-
+    OWNER_GET_DETAILS = 'details/'
 
     BASE = URL_FOR_APPS.RES_OWNER
 
@@ -26,5 +26,5 @@ urlpatterns = [
     path(URL_FOR_RESOwner.OWNER_MANAGE_ORDERS, views.ManageOrdersView, name='owner-order-manage'),
     path(URL_FOR_RESOwner.OWNER_LOGOUT, views.OwnerLogoutView.as_view(), name='owner-logout'),
     path(URL_FOR_RESOwner.OWNER_ACCEPTING_ORDERS, views.ToggleViewRestaurantAcceptingOrders.as_view(), name='owner-toggle-accepting-orders'),
-    
+    path(URL_FOR_RESOwner.OWNER_GET_DETAILS, views.DetailsGetUpdate.as_view(), name='owner-get-details')
 ]

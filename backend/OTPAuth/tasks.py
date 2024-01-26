@@ -6,7 +6,9 @@ import requests
 from django.conf import settings
 from random import randint
 from datetime import datetime
+from firebase_admin import messaging
 import bcrypt
+from .models import UserToken
 
 @shared_task
 def expireOTP(phone):
@@ -46,3 +48,42 @@ def sendOTP(phone):
     expireOTP.apply_async((phone,), countdown=deleteOTPAfter)
 
     return result
+
+@shared_task
+def sendNotification(user_id, title, body):
+    obj = UserToken.objects.filter(user__id=user_id)
+
+    if not obj:
+        return 'Error, No entry in DB'
+    
+    obj = obj[0]    
+    registration_token = obj.token
+
+    if registration_token is None or registration_token == '':
+        return 'Error, Invalid token found'
+    
+    try:
+        print(registration_token)
+
+        message = messaging.Message(
+            data={
+                'title': title,
+                'body': body,
+            },
+            token=registration_token,
+            notification = messaging.Notification(title, body),
+        )
+
+        response = messaging.send(message)
+
+        return {'message': 'Notification Sent',
+                'response': response}
+    
+    except Exception as e:
+        print(e)
+        obj.token = None
+        obj.save()
+        return { 
+            'message':'Error, Cant send notification',
+            'error': str(e)
+            }

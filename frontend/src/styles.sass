@@ -1,0 +1,539 @@
+$primaryColor: #3FD0C0
+$secondaryColor: #2B8AD6
+@import 'bootstrap/scss/bootstrap.scss'
+
+
+.header
+  transition: all 0.5s
+  z-index: 997
+  height: 60px
+  box-shadow: 0px 2px 20px rgba(1, 41, 112, 0.1)
+  background-color: #fff
+  padding-left: 20px
+
+.header .toggle-sidebar-btn 
+  font-size: 32px
+  padding-left: 10px
+  cursor: pointer
+  color: #012970
+
+.header .search-bar 
+  min-width: 360px
+  padding: 0 20px
+
+@media (max-width: 1199px) 
+  .header .search-bar 
+    position: fixed
+    top: 50px
+    left: 0
+    right: 0
+    padding: 20px
+    box-shadow: 0px 0px 15px 0px rgba(1, 41, 112, 0.1)
+    background: white
+    z-index: 9999
+    transition: 0.3s
+    visibility: hidden
+    opacity: 0
+  
+
+  .header .search-bar-show 
+    top: 60px
+    visibility: visible
+    opacity: 1
+  
+
+.header .search-form 
+  width: 100%
+
+
+.header .search-form input 
+  border: 0
+  font-size: 14px
+  color: #012970
+  border: 1px solid rgba(1, 41, 112, 0.2)
+  padding: 7px 38px 7px 8px
+  border-radius: 3px
+  transition: 0.3s
+  width: 100%
+
+
+.header .search-form input:focus,
+.header .search-form input:hover 
+  outline: none
+  box-shadow: 0 0 10px 0 rgba(1, 41, 112, 0.15)
+  border: 1px solid rgba(1, 41, 112, 0.3)
+
+
+.header .search-form button 
+  border: 0
+  padding: 0
+  margin-left: -30px
+  background: none
+
+
+
+
+.header-nav ul 
+  list-style: none
+
+.header-nav>ul 
+  margin: 0
+  padding: 0
+
+.header-nav .nav-icon 
+  font-size: 22px
+  color: #012970
+  margin-right: 25px
+  position: relative
+
+.header-nav .nav-profile 
+  color: #012970
+
+.header-nav .nav-profile img 
+  max-height: 36px
+
+.header-nav .nav-profile span 
+  font-size: 14px
+  font-weight: 600
+
+.header-nav .badge-number 
+  position: absolute
+  inset: -2px -5px auto auto
+  font-weight: normal
+  font-size: 12px
+  padding: 3px 6px
+
+.header-nav .notifications 
+  inset: 8px -15px auto auto !important
+
+.header-nav .notifications .notification-item 
+  display: flex
+  align-items: center
+  padding: 15px 10px
+  transition: 0.3s
+
+.header-nav .notifications .notification-item i 
+  margin: 0 20px 0 10px
+  font-size: 24px
+
+.header-nav .notifications .notification-item h4 
+  font-size: 16px
+  font-weight: 600
+  margin-bottom: 5px
+
+.header-nav .notifications .notification-item p 
+  font-size: 13px
+  margin-bottom: 3px
+  color: #919191
+
+.header-nav .notifications .notification-item:hover 
+  background-color: #f6f9ff
+
+.header-nav .messages 
+  inset: 8px -15px auto auto !important
+
+.header-nav .messages .message-item 
+  padding: 15px 10px
+  transition: 0.3s
+
+.header-nav .messages .message-item a 
+  display: flex
+
+.header-nav .messages .message-item img 
+  margin: 0 20px 0 10px
+  max-height: 40px
+
+.header-nav .messages .message-item h4 
+  font-size: 16px
+  font-weight: 600
+  margin-bottom: 5px
+  color: #444444
+
+.header-nav .messages .message-item p 
+  font-size: 13px
+  margin-bottom: 3px
+  color: #919191
+
+.header-nav .messages .message-item:hover 
+  background-color: #f6f9ff
+
+.header-nav .profile 
+  min-width: 240px
+  padding-bottom: 0
+  top: 8px !important
+
+.header-nav .profile .dropdown-header h6 
+  font-size: 18px
+  margin-bottom: 0
+  font-weight: 600
+  color: #444444
+
+.header-nav .profile .dropdown-header span 
+  font-size: 14px
+
+.header-nav .profile .dropdown-item 
+  font-size: 14px
+  padding: 10px 15px
+  transition: 0.3s
+
+.header-nav .profile .dropdown-item i 
+  margin-right: 10px
+  font-size: 18px
+  line-height: 0
+
+.header-nav .profile .dropdown-item:hover 
+  background-color: #f6f9ff
+
+
+
+
+
+.sidebar 
+  position: fixed
+  top: 60px
+  left: 0
+  bottom: 0
+  width: 300px
+  z-index: 1100
+  transition: all 0.3s
+  padding: 20px
+  overflow-y: auto
+  scrollbar-width: thin
+  scrollbar-color: #aab7cf transparent
+  box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1)
+  background-color: #fff
+
+@media (max-width: 1199px) 
+  .sidebar 
+    left: -300px
+  
+
+.sidebar::-webkit-scrollbar 
+  width: 5px
+  height: 8px
+  background-color: #fff
+
+.sidebar::-webkit-scrollbar-thumb 
+  background-color: #aab7cf
+
+@media (min-width: 1200px) 
+  #main
+  #footer 
+    margin-left: 300px
+  
+
+@media (max-width: 1199px) 
+  .toggle-sidebar .sidebar 
+    left: 0
+  
+
+@media (min-width: 1200px) 
+  .toggle-sidebar #main
+  .toggle-sidebar #footer 
+    margin-left: 0
+  
+  .toggle-sidebar .sidebar 
+    left: -300px
+  
+
+.sidebar-nav 
+  padding: 0
+  margin: 0
+  list-style: none
+
+.sidebar-nav li 
+  padding: 0
+  margin: 0
+  list-style: none
+
+.sidebar-nav .nav-item 
+  margin-bottom: 5px
+
+.sidebar-nav .nav-heading 
+  font-size: 11px
+  text-transform: uppercase
+  color: #899bbd
+  font-weight: 600
+  margin: 10px 0 5px 15px
+
+.sidebar-nav .nav-link 
+  display: flex
+  align-items: center
+  font-size: 15px
+  font-weight: 600
+  color: #4154f1
+  transition: 0.3
+  background: #f6f9ff
+  padding: 10px 15px
+  border-radius: 4px
+
+.sidebar-nav .nav-link i 
+  font-size: 16px
+  margin-right: 10px
+  color: #4154f1
+
+.sidebar-nav .nav-link.collapsed 
+  color: #012970
+  background: #fff
+
+.sidebar-nav .nav-link.collapsed i 
+  color: #899bbd
+
+.sidebar-nav .nav-link:hover 
+  color: #4154f1
+  background: #f6f9ff
+
+.sidebar-nav .nav-link:hover i 
+  color: #4154f1
+
+.sidebar-nav .nav-link .bi-chevron-down 
+  margin-right: 0
+  transition: transform 0.2s ease-in-out
+
+.sidebar-nav .nav-link:not(.collapsed) .bi-chevron-down 
+  transform: rotate(180deg)
+
+.sidebar-nav .nav-content 
+  padding: 5px 0 0 0
+  margin: 0
+  list-style: none
+
+.sidebar-nav .nav-content a 
+  display: flex
+  align-items: center
+  font-size: 14px
+  font-weight: 600
+  color: #012970
+  transition: 0.3
+  padding: 10px 0 10px 40px
+  transition: 0.3s
+
+.sidebar-nav .nav-content a i 
+  font-size: 6px
+  margin-right: 8px
+  line-height: 0
+  border-radius: 50%
+
+.sidebar-nav .nav-content a:hover
+.sidebar-nav .nav-content a.active 
+  color: #4154f1
+
+.sidebar-nav .nav-content a.active i 
+  background-color: #4154f1
+
+
+
+:root 
+  scroll-behavior: smooth
+
+body 
+  font-family: "Open Sans", sans-serif
+  background: #f6f9ff
+  color: #444444
+
+a 
+  color: #4154f1
+  text-decoration: none
+
+a:hover 
+  color: #717ff5
+  text-decoration: none
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 
+  font-family: "Nunito", sans-serif
+
+#main 
+  margin-top: 60px
+  padding: 20px 30px
+  transition: all 0.3s
+
+@media (max-width: 1199px) 
+  #main 
+    padding: 20px
+  
+
+.pagetitle 
+  margin-bottom: 10px
+
+.pagetitle h1 
+  font-size: 24px
+  margin-bottom: 0
+  font-weight: 600
+  color: #012970
+
+.back-to-top 
+  position: fixed
+  visibility: hidden
+  opacity: 0
+  right: 15px
+  bottom: 15px
+  z-index: 99999
+  background: #4154f1
+  width: 40px
+  height: 40px
+  border-radius: 4px
+  transition: all 0.4s
+
+.back-to-top i 
+  font-size: 24px
+  color: #fff
+  line-height: 0
+
+.back-to-top:hover 
+  background: #6776f4
+  color: #fff
+
+.back-to-top.active 
+  visibility: visible
+  opacity: 1
+
+input[type=number] 
+  -moz-appearance: textfield
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button 
+  -webkit-appearance: none
+  margin: 0
+
+.add-to-cart-btn
+    font-size: 30px
+    cursor: pointer
+
+.hidden
+    visibility: hidden
+
+.cart-input
+    text-align: center
+    padding: 0px
+    margin: 0px
+    max-width: 40px
+  
+@media ( max-width: 750px )    
+    .btn-sm
+        padding-right: 2px
+        padding-left: 2px
+
+    .small
+        font-size: 10px
+
+    .medium
+        font-size: 15px
+
+.menu-header-show
+    top: 70px
+    z-index: 990
+    transition: top 0.3s
+
+.menu-header-hide
+    top: 0px
+    z-index: 990
+    transition: top 0.3s
+
+
+.menu-cart-footer
+    z-index: 990
+    cursor: pointer
+
+.menu-footer-show
+    bottom: 60px
+    z-index: 990
+    transition: bottom 0.5s
+  
+.menu-footer-hide
+    bottom: -50px
+    z-index: 990
+    transition: bottom 0.5s
+
+@media ( min-width: 750px )    
+    .menu-cart-footer
+        visibility: hidden
+
+.pointer
+    cursor: pointer
+  
+@media (max-width: 450px) 
+    .content 
+      overflow-x: hidden
+      white-space: normal
+
+@keyframes fade-in
+  from 
+    opacity: 0
+  to 
+    opacity: 1
+   
+
+.loading 
+  height: 80vh
+  animation: fade-in 0.3s ease-in-out 0.3s forwards
+  opacity: 0
+
+.loading::after
+  height: 80vh
+  animation: fade-out 0.3s ease-in-out 0.3s forwards
+  opacity: 0
+
+.btn-circle
+    width: 30px
+    height: 30px
+    padding: 6px 0px
+    border-radius: 15px
+    font-size: 8px
+    text-align: center
+
+.btn-badge
+  min-width: 100px
+
+
+.no-sb
+  -ms-overflow-style: none
+  scrollbar-width: none
+  scrollbar-height: none
+
+
+.no-sb::-webkit-scrollbar 
+  display: none
+
+::-webkit-scrollbar 
+  width: 0px
+  background: transparent
+  padding: 0px
+  margin: 0px
+  height: 0px
+
+.cart-badge 
+  position: absolute
+  bottom: -5px
+  right: -5px
+  background-color: maroon
+  color: white
+  border-radius: 50%
+  width: 20px
+  height: 20px
+  display: flex
+  justify-content: center
+  align-items: center
+  font-size: 12px
+
+.img-restaurant
+  object-fit: contain
+  max-width: 110px
+  height: 80px
+  float: left
+  padding: 0px
+
+.view
+  min-height: 90vh
+
+.loading-content
+  animation: fade-in 0.15s ease-in-out 0.15s forwards
+  opacity: 0
+
+.cust-modal
+  min-height: 60vh
+  overflow: scroll

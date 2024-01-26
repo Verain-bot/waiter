@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'nested_admin',
     'rest_framework',
     'api',
+    'ResOwner',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,7 +62,19 @@ MIDDLEWARE = [
     'backend.middleware.AnalyticsMiddleware'
 ]
 
-CSRF_TRUSTED_ORIGINS = [os.environ.get("V_FRONTEND_URL")] + ['https://'+ah for ah in ALLOWED_HOSTS] + ['http://'+ah for ah in ALLOWED_HOSTS]
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+
+CSRF_TRUSTED_ORIGINS = os.environ.get("V_FRONTEND_URL").split(',') + ['https://'+ah for ah in ALLOWED_HOSTS] + ['http://'+ah for ah in ALLOWED_HOSTS]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -69,8 +82,8 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-                    '/Users/verainsardana/Desktop/Developer/waiter/owner-dashboard/dist',
-                    os.path.join(BASE_DIR, 'templates')
+                    os.path.join(BASE_DIR, 'templates'),
+                    *STATICFILES_DIRS
                 ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -87,9 +100,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-CORS_ALLOWED_ORIGINS = [
-    os.environ.get("V_FRONTEND_URL"),
-]
+CORS_ALLOWED_ORIGINS = os.environ.get("V_FRONTEND_URL").split(',')
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -145,15 +156,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
