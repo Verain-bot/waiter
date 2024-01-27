@@ -12,7 +12,7 @@
 3. Bootstrap 5
 
 
-## Project Setup
+## Run Project Locally
 
 1. Git Clone Repo
 2. Set up Python virtual env
@@ -28,6 +28,7 @@ pip install -r requirements.txt
 6. Configure env variables mentioned below
 7. Run Redis server, Postgres, Celery and Django Backend on localhost:8000.
 8. Run frontend on port set in env variables
+9. You can also add test data to database by running "setUpTestData" method defined in backend.tests.TestBase class
 
 ## Commands
 
