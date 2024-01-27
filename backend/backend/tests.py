@@ -206,7 +206,11 @@ class TestBase(TestCase):
         pizza_toppings_onion = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Onion', price=0)
         pizza_toppings_capsicum = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Capsicum', price=0)
         pizza_toppings_tomato = CustomatizationOptions.objects.create(customization=pizza_toppings_customization, name='Tomato', price=0)
-        
+
+        # Create CustomatizationOptions objects for Coke
+        coke_size_small = CustomatizationOptions.objects.create(customization=coke_size_customization, name='Small', price=0)
+        coke_size_large = CustomatizationOptions.objects.create(customization=coke_size_customization, name='XXXL', price=10)
+
         cls.order1_bar = order1_bar = Order.objects.create(restaurant=bar_res)
         cls.order2_bar=order2_bar = Order.objects.create(restaurant=bar_res)
         cls.order_pizza= order_pizza = Order.objects.create(restaurant=pizza_res)
