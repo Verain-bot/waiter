@@ -74,6 +74,17 @@ export const MenuCustomizationModal = ()=>{
         setCustomizations(cust)
         setIsLoading(false)
         setSelectedCustomizations(cust.map((customization)=>{
+                if (customization.customizationOptions.length===0)
+                {
+                    setMessage({heading:'Error', body:'Something went wrong', type:'error'})
+                    setProps({...props, show: false})
+                    return {
+                        CustomizationID: customization.id,
+                        CustomizationName: customization.name,
+                        Options: []
+                    }
+                }
+                    
                 const initialOption = customization.customizationType == 'radio'? [customization.customizationOptions[0]] : []
                 return {
                 CustomizationID: customization.id,
@@ -108,7 +119,6 @@ export const MenuCustomizationModal = ()=>{
     
     useEffect(()=>{
         
-
         if(useLast && props.currentCustomizations.length>0)
         {
             const last = props.currentCustomizations[props.currentCustomizations.length-1]
