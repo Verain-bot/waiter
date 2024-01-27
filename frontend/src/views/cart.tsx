@@ -132,7 +132,9 @@ export const cartLoader : LoaderFunction = async ({params, request})=>{
     const cart = JSON.parse(r) as CartItemType[]
 
     if(cart.length==0)
-        return null
+        return defer({
+            data: null
+        })
 
     const address = localStorage.getItem('address')
     
