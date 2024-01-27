@@ -2,8 +2,6 @@ from celery import shared_task
 from api.models import Order
 from .models import PaymentStatus
 from ResOwner.helper import setRestaurantOrderAvailable
-from phonepe.sdk.pg.payments.v1.payment_client import PhonePePaymentClient
-from phonepe.sdk.pg.env import Env
 import razorpay
 import uuid
 from OTPAuth.tasks import sendNotification
