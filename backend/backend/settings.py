@@ -33,6 +33,8 @@ ALLOWED_HOSTS = os.environ.get("V_ALLOWED_HOSTS").split(",")
 
 # Application definition
 
+RES_ADMIN_URL = os.environ.get('V_RES_ADMIN_URL')
+
 INSTALLED_APPS = [
     'OTPAuth',
     'Payments',
@@ -74,7 +76,7 @@ STATICFILES_DIRS = [
 ]
 
 
-CSRF_TRUSTED_ORIGINS = os.environ.get("V_FRONTEND_URL").split(',') + ['https://'+ah for ah in ALLOWED_HOSTS] + ['http://'+ah for ah in ALLOWED_HOSTS]
+CSRF_TRUSTED_ORIGINS = os.environ.get("V_FRONTEND_URL").split(',') + ['https://'+ah for ah in ALLOWED_HOSTS] + ['http://'+ah for ah in ALLOWED_HOSTS] + RES_ADMIN_URL.split(',')
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -100,7 +102,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-CORS_ALLOWED_ORIGINS = os.environ.get("V_FRONTEND_URL").split(',')
+CORS_ALLOWED_ORIGINS = os.environ.get("V_FRONTEND_URL").split(',') + RES_ADMIN_URL.split(',')
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -226,3 +228,4 @@ SECURE_HSTS_SECONDS = 31536000
 
 PHONE_PE_MERCHANT_ID = os.environ.get('V_PHONE_PE_MERCHANT_ID')
 PHONE_PE_SALT_KEY = os.environ.get('V_PHONE_PE_SALT_KEY')
+

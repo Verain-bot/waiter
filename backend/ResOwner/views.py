@@ -15,11 +15,12 @@ from Payments.tasks import refund_payment_for_order
 from rest_framework.response import Response
 from OTPAuth.tasks import sendNotification
 from OTPAuth.models import UserToken
+from django.conf import settings
 # Create your views here.
 
 class OwnerLoginView(LoginView):
     template_name = 'admin/login.html'
-    next_page = reverse('owner-order-manage')
+    next_page = settings.RES_ADMIN_URL
     redirect_authenticated_user = True
     extra_context = {
         'site_header': 'Restaurant Owner Login',
@@ -125,4 +126,4 @@ class DetailsGetUpdate(views.APIView):
         restaurant = Restaurant.objects.filter(owner=self.request.user).first()
         tokenObj = UserToken.objects.get_or_create(user=request.user)[0]
 
-        return http.JsonResponse({"restaurant": restaurant.name, "token": tokenObj.token })
+        return http.JsonResponse({"restaurant": restaurant.name, "token": tokenObj.token , 'acceptingOrders': restaurant.acceptingOrders})
