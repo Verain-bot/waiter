@@ -25,7 +25,6 @@ mypy-extensions==1.0.0
 Naked==0.1.32
 packaging==23.2
 paytmchecksum==1.7.0
-phonepe-sdk==1.1.0
 Pillow==10.0.0
 prompt-toolkit==3.0.39
 psycopg2==2.9.9

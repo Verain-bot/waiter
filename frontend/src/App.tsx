@@ -2,7 +2,7 @@ import './App.css';
 //import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Message from './components/modal/messageModal';
-import './styles.sass'
+import './styles.css'
 import { useEffect } from 'react';
 import {Outlet, useLocation, useMatches, useNavigate, useNavigation} from 'react-router-dom';
 import Review from './components/modal/ratingModal'
@@ -14,6 +14,8 @@ import RouteList, { PATHS, PathType } from './utilities/routeList';
 import Footer from './components/footer/footer';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorComp from './components/error/ErrorComp';
+import 'bootstrap/dist/css/bootstrap.min.css'
+
 
 const App = () => {
   const [login, setLogin] = useLoginContext()
