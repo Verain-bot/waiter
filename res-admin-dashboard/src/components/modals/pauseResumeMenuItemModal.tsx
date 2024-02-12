@@ -2,18 +2,27 @@ import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 import { usePauseResumeItemModal } from '../../Contexts/menuItemModalContext'
+import { ActionFunction, useActionData, useNavigation } from 'react-router'
+import { makeRequest } from '../../helper/fetchData'
+import { APIRoutes } from '../../helper/APIRoutes'
+import { Form } from 'react-router-dom'
 
 export default function PauseResumeMenuItemModal() {
-  const currentlyActive = useState<boolean | null>(null)
-
+  
   const [props,setProps] = usePauseResumeItemModal()
-
+  const currentlyActive = props.currentlyActive
+  const navigation = useNavigation()
   const hideModal = ()=>{
-    setProps({show: false, menuItemID: '', itemName: ''})
+    setProps( (p)=>({
+      ...p,
+      show: false
+    }))
+      
   }
 
-  const handleAllow = async ()=>{
-    hideModal()
+  const handleClick = ()=>{
+    if (navigation.state === 'idle')
+      hideModal()
   }
 
   return (
@@ -30,11 +39,25 @@ export default function PauseResumeMenuItemModal() {
           <Button variant="secondary" onClick={hideModal} >
           Close
           </Button>
-          <Button variant={currentlyActive?"danger":"success"} onClick={handleAllow} >
-          {currentlyActive?"Stop":"Start"}
-          </Button>
+          
+          <Form method='POST' action='/menu' >
+            <input type='hidden' name='menuItemId' value={props.menuItemID} />
+            <Button type='submit' variant={currentlyActive?"danger":"success"} disabled={navigation.state !== 'idle'} onClick={handleClick} >
+            {currentlyActive?"Stop":"Start"}
+            </Button>
+          </Form>
+
+
       </Modal.Footer>
     </Modal>
 
   )
+}
+
+export const MenuPauseResumeAction : ActionFunction = async (args)=>{
+  console.log('ids')
+  const fd = await args.request.formData()
+  console.log(fd.get('menuItemId'), 'iddd')
+  const response = await makeRequest(APIRoutes.ADMIN_MENU, args.request, fd)
+  return response.json
 }

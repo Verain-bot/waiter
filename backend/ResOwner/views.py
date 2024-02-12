@@ -3,9 +3,10 @@ from django import http
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.views import LoginView, LogoutView
-from api.models import Restaurant, Customer, Order
+from api.models import Restaurant, Customer, Order, MenuItem
 from rest_framework import views, generics, permissions
 from api.serializers import OrderDetailsSerializer
+from .serializers import MenuListSerializer
 from django.shortcuts import get_object_or_404
 from .helper import setRestaurantOrderAvailable, getRestaurantOrderAvailable
 from django.contrib.auth import decorators
@@ -16,6 +17,7 @@ from rest_framework.response import Response
 from OTPAuth.tasks import sendNotification
 from OTPAuth.models import UserToken
 from django.conf import settings
+from . import responseMessages as msg
 # Create your views here.
 
 class OwnerLoginView(LoginView):
@@ -127,3 +129,28 @@ class DetailsGetUpdate(views.APIView):
         tokenObj = UserToken.objects.get_or_create(user=request.user)[0]
 
         return http.JsonResponse({"restaurant": restaurant.name, "token": tokenObj.token , 'acceptingOrders': restaurant.acceptingOrders})
+
+
+class MenuListView(generics.ListAPIView):
+    queryset = MenuItem.objects.all()
+    serializer_class = MenuListSerializer
+    permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(restaurant__owner=self.request.user)
+    
+    def post(self, request):
+        menuItemId = request.data.get('menuItemId', None)
+        
+        if menuItemId is None or len(menuItemId) == 0:
+            return Response(msg.INVALID_REQUEST, status=400)
+        
+        menuItem = MenuItem.objects.filter(pk=menuItemId).first()
+
+        if menuItem is None or menuItem.restaurant.owner != self.request.user:
+            return Response(msg.INVALID_REQUEST, status=400)
+        
+        menuItem.isActive = not menuItem.isActive
+        menuItem.save()
+
+        return Response({"isActive": menuItem.isActive}, status=200)

@@ -177,9 +177,6 @@ const OrderItem = (props: OrderItemProps)=>{
     
     const [modalProps, setModalProps] = usePauseResumeItemModal()
     
-    const handleClick =  ()=>{
-       setModalProps({show: true, menuItemID: String(props.id), itemName: props.name})
-    }
 
     return(
         <li className="list-group-item "  >
@@ -194,7 +191,6 @@ const OrderItem = (props: OrderItemProps)=>{
                         </span>
                     </div>
                     <div className="col-2 text-end">
-                    <i className="bi bi-x-circle text-muted p-0" style={{fontSize: 20, top: 0, right: 3}} onClick={handleClick}></i>
                     </div>
                 </div>
             </div>
@@ -221,6 +217,7 @@ const OrderActionItem = (props: OrderActionItemProps)=>{
         })
         const fd = new FormData()
         fd.append('orderStatus', props.obj.state)
+        
         if (orders)
         setOrderContext(orders.map(order=>{
             if(order.id == props.id)
