@@ -79,7 +79,7 @@ def refund_payment_from_paymentid(paymnt_id):
     if paymentStatus.success == False or paymentStatus.terminal_state == False:
         return {'success': False, 'paymnt_id': paymnt_id, 'msg': 'Payment status shows failed'}
     
-    client = razorpay.Client(auth=('rzp_test_LTygpkM0cIuy85','zz4WggINF67hf0YMuf0QLw62'))
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET))
     client.set_app_details({"title" : "Django App", "version" : "121.21"})
 
     data = client.order.payments(paymnt_id)

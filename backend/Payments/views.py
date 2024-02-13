@@ -33,7 +33,7 @@ class RazorPayPayment(APIView):
         if payment.exists():
             return Response({'RZP_Order_ID': payment.first().payment_id})
 
-        client = razorpay.Client(auth=('rzp_test_LTygpkM0cIuy85','zz4WggINF67hf0YMuf0QLw62'))
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET))
         client.set_app_details({"title" : "Django App", "version" : "121.21"})
 
         x = client.order.create({
@@ -61,7 +61,7 @@ class RazorPayCallback(APIView):
         if not razorpay_order_id or not razorpay_payment_id or not razorpay_signature:
             return Response(msg.ORDER_INVALID_FIELDS_PASSED, status=400)
         
-        client = razorpay.Client(auth=('rzp_test_LTygpkM0cIuy85','zz4WggINF67hf0YMuf0QLw62'))
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET))
         client.set_app_details({"title" : "Django App", "version" : "121.21"})
 
         try:
@@ -88,7 +88,7 @@ class RazorPayCheckStatus(APIView):
         payments = get_list_or_404(PaymentStatus, order=order)
         latest_payment = payments[0]
 
-        client = razorpay.Client(auth=('rzp_test_LTygpkM0cIuy85','zz4WggINF67hf0YMuf0QLw62'))
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET))
         client.set_app_details({"title" : "Django App", "version" : "121.21"})
 
         #get payment from orderID

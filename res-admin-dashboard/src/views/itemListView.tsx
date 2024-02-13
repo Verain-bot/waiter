@@ -1,5 +1,7 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo } from 'react'
 import { useOrderContext } from '../Contexts/orderContext'
+import { useNavigate } from 'react-router'
+import { PATHS } from '../helper/routeList'
 
 type ListItem  = {
     id: number
@@ -9,8 +11,7 @@ type ListItem  = {
 
 export default function ItemListView() {
     const [data, _] = useOrderContext()
-
-    
+    const navigate = useNavigate()
     const ListOfItems = useMemo(()=>data?.flatMap((orderObj)=>{
         if (orderObj.orderStatus ==='DISPATCHING' || orderObj.orderStatus ==='CANCELLED' || orderObj.orderStatus ==='NOT_CONFIRMED' || orderObj.orderStatus ==='COMPLETE')
             return []
@@ -18,7 +19,7 @@ export default function ItemListView() {
             return orderObj.customers.flatMap((customer)=>{
                 console.log(customer.items)
                 return customer.items.flatMap((item)=>(
-                    {id: item.item.id, name: item.item.name, qty : item.quantity[0].qty}
+                    {id: item.item.id, name: item.item.name, qty : item.quantity.reduce((acc,curr)=>acc+curr.qty,0)}
                 ))
             })
     }).reduce((acc : ListItem[] , curr)=>{
@@ -34,7 +35,13 @@ export default function ItemListView() {
         return acc
     },[]),[data])
     
+    useEffect(()=>{
 
+        if (data?.length===0)
+        {
+            navigate(PATHS.ORDER_LIST)
+        }
+    })
 
         console.log('Items ',ListOfItems)
 

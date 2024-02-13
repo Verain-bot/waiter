@@ -7,7 +7,8 @@ export const APIRoutes = {
     'ADMIN_UPDATE_ORDER_STATUS': '/restaurant/admin/orders/update/:pk',
     'ADMIN_ORDERS_AVAILABLE': '/restaurant/admin/orders/available',
     'ADMIN_GET_DETAILS' : '/restaurant/admin/details/',
-    'ADMIN_UPDATE_TOKEN': '/api/account/device-token/'
+    'ADMIN_UPDATE_TOKEN': '/api/account/device-token/',
+    'ADMIN_MENU': '/restaurant/admin/menu/'
 }
 
 export const makeURL = (route: string, params: Record<string, string | number>) => {

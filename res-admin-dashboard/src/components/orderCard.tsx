@@ -6,6 +6,7 @@ import { useOrderContext } from "../Contexts/orderContext"
 import { motion } from "framer-motion"
 import PauseResumeMenuItemModal from "./modals/pauseResumeMenuItemModal"
 import { usePauseResumeItemModal } from "../Contexts/menuItemModalContext"
+import Dropdown from 'react-bootstrap/Dropdown';
 
 type OrderActionItemType = {
     name: string
@@ -16,15 +17,9 @@ type OrderActionItemType = {
 }
 
 export default function OrderCard(props : OrderType) {
-    const ref = useRef<HTMLUListElement>(null)
+    
     
     const orderTime = new Date(props.time)
-    const handleClick = async (_ : React.MouseEvent<HTMLUListElement, MouseEvent>)=>{
-        console.log(JSON.stringify(props))
-        if(ref.current){
-            ref.current.classList.toggle('show')
-        }
-    }
 
     const [showDetails, setShowDetails] = useState(false)
 
@@ -127,17 +122,18 @@ export default function OrderCard(props : OrderType) {
                 </div>
             </div>
         </div>
-        <div className="border-1">
-            <ul  className="dropdown dropdown-menu dropdown-menu-end zoom" ref={ref}>
-                {OrderActions.map((action, index)=>(
-                    <OrderActionItem obj={action} setState={setOrderState} currentState={selectedAction} key={index} id={props.id} />
-                ))}
-            </ul>
-        </div>
+        
+            
+        
 
-                    
-            <ul className={`list-group list-group-flush bg-${color} pt-2 pb-3 px-0 position-relative w-100`} onClick={handleClick} >
-            <div>
+            <Dropdown  bsPrefix="p-0 m-0">
+                <Dropdown.Menu className="position-absolute top-0" >
+                    {OrderActions.map((action, index)=>(
+                        <OrderActionItem obj={action} setState={setOrderState} currentState={selectedAction} key={index} id={props.id} />
+                        ))}
+                </Dropdown.Menu>
+            <ul className={`list-group list-group-flush bg-${color} pt-2 pb-3 px-0 position-relative w-100`} >
+            <Dropdown.Toggle as={'div'} bsPrefix="w-100" >
                 
                 <li className={`list-group-item d-${showDetails?'block':'none'} `} style={{zIndex: 20, boxSizing: 'border-box'}} >
                     
@@ -160,9 +156,10 @@ export default function OrderCard(props : OrderType) {
                     
                     )}
 
-            </div>
-            </ul>
             
+            </Dropdown.Toggle>
+            </ul>
+            </Dropdown>   
       </div>
         
     </motion.div>
@@ -180,9 +177,6 @@ const OrderItem = (props: OrderItemProps)=>{
     
     const [modalProps, setModalProps] = usePauseResumeItemModal()
     
-    const handleClick =  ()=>{
-       setModalProps({show: true, menuItemID: String(props.id), itemName: props.name})
-    }
 
     return(
         <li className="list-group-item "  >
@@ -197,7 +191,6 @@ const OrderItem = (props: OrderItemProps)=>{
                         </span>
                     </div>
                     <div className="col-2 text-end">
-                    <i className="bi bi-x-circle text-muted p-0" style={{fontSize: 20, top: 0, right: 3}} onClick={handleClick}></i>
                     </div>
                 </div>
             </div>
@@ -224,6 +217,7 @@ const OrderActionItem = (props: OrderActionItemProps)=>{
         })
         const fd = new FormData()
         fd.append('orderStatus', props.obj.state)
+        
         if (orders)
         setOrderContext(orders.map(order=>{
             if(order.id == props.id)
@@ -247,10 +241,10 @@ const OrderActionItem = (props: OrderActionItemProps)=>{
     const disabled = !props.currentState?.acceptableStates.includes(props.obj.state) || loading
 
     return(
-        <li>
+        <Dropdown.Item>
             <button className="dropdown-item" onClick={handleClick} disabled={disabled} >
                 {props.obj.name}
             </button>
-        </li>
+        </Dropdown.Item>
     )
 }

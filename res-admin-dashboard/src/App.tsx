@@ -16,7 +16,8 @@ import OrderListView from './views/orderListView';
 import PromptModal from './components/modals/promptModal';
 import ItemListView from './views/itemListView';
 import PauseResumeMenuItemModal from './components/modals/pauseResumeMenuItemModal';
-
+import MenuListView from './views/menuListView';
+import {Outlet} from 'react-router-dom'
 
 type Item = {
   id: number;
@@ -121,16 +122,13 @@ const App = ()=> {
     
   },[])
 
-  console.log(view)
-
-  const viewToRender = view == Views.ORDERS ? <OrderListView /> : <ItemListView />
 
   return (
     <>
-      <Header name={name} changeScreen={setView}/>
+      <Header name={name}/>
       <PromptModal onAccept={getData} />
       <PauseResumeMenuItemModal />
-      {viewToRender}
+      <Outlet />
     </>
   )
 }

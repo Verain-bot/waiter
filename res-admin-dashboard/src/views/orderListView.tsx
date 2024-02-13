@@ -22,6 +22,11 @@ export default function OrderListView(props: Props) {
                     <OrderCard {...item} key={item.id} />
                     )
                 }
+                {
+                    data!==null && data?.length<1 && <h1 className='mt-4 px-2'>
+                        No orders yet!
+                    </h1>
+                }
                 </Masonry>
                 </ResponsiveMasonry>
         </main>

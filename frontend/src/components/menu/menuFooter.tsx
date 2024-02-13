@@ -55,11 +55,16 @@ type MenuFooterProps = {
 export const MenuFooter = (props : MenuFooterProps) =>{
 
     const scroll = useScrollDirection()
+    const [show,setShow] = useState(false)
+
+    const handleClick = ()=>{
+        setShow(true)
+    }
 
     return(
         <>
-        <MenuModal id='MenuModal' sections={props.sections} />
-        <div className={`fixed-bottom d-md-none ${scroll==='up'?'menu-footer-show':'menu-footer-hide'}`} data-bs-toggle="modal" data-bs-target="#MenuModal">
+        <MenuModal sections={props.sections} show={show} setShow={setShow} />
+        <div className={`fixed-bottom d-md-none ${scroll==='up'?'menu-footer-show':'menu-footer-hide'}`} onClick={handleClick}>
             <div className='container d-flex align-items-center justify-content-center'>
                 <div className='col-3 bg-dark text-white rounded p-2 text-center pointer'>
                     <i className='bi bi-card-list'></i>
