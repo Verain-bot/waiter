@@ -26,7 +26,7 @@ from .health import health_check
 admin.site.site_header = 'toOne Admin'
 admin.site.site_title = 'toOne Admin Portal'
 admin.site.index_title = 'toOne Admin Portal'
-admin.site.site_url = '/restaurant/admin/login/'
+admin.site.site_url = settings.RES_ADMIN_URL
 
 class URL_FOR_APPS(URLEnumMixin,enum.StrEnum):
     ADMIN = 'admin/'

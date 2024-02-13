@@ -3,11 +3,14 @@ import { APIRoutes } from "../helper/APIRoutes";
 import { getData, makeRequest } from "../helper/fetchData";
 import PauseResumeOrderModal from "./modals/pauseResumeOrderModal";
 import { Views } from "../App";
-
+import { useOrderContext } from "../Contexts/orderContext";
+import { useLocation, useNavigate } from "react-router";
+import { PATHS } from "../helper/routeList";
+import { Link } from "react-router-dom";
+import { BASEUrl } from "../helper/fetchData";
 
 type Props = {
   name: string
-  changeScreen: React.Dispatch<React.SetStateAction<Views>>
 }
 
 export default function App( props: Props) {
@@ -16,6 +19,11 @@ export default function App( props: Props) {
   const [fullScreenEnabled, setFullScreenEnabled] = useState(false)
   const [fetching, setFetching] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [orders, setOrders] = useOrderContext()
+
+  const newOrderAvailable = orders? orders.filter((order)=>order.orderStatus === 'NOT_CONFIRMED').length>0 : false
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const handleClickPauseResumeOrders = async ()=>{
     const r = new Request(APIRoutes.ADMIN_ACCEPTING_ORDERS, {
@@ -55,16 +63,15 @@ export default function App( props: Props) {
   }
 
   const changeView = ()=>{
-    props.changeScreen((prev)=>{
-      if(prev===Views.ORDERS)
-      {
-        return Views.ITEMS
-      }
-      else
-      {
-        return Views.ORDERS
-      }
-    })
+    if(location.pathname === PATHS.ORDER_LIST){
+      navigate(PATHS.ITEM_LIST)
+    }
+    else if (location.pathname === PATHS.ITEM_LIST){
+      navigate(PATHS.ORDER_LIST)
+    }
+    else{
+      navigate(PATHS.ORDER_LIST)
+    }
   }
 
   return (
@@ -83,8 +90,9 @@ export default function App( props: Props) {
         </div>
         <div className="ms-auto dropdown">
 
-        <button className="btn btn-outline-light border-0 rounded-circle" onClick={changeView}>
+        <button className="btn btn-outline-light border-0 rounded-circle position-relative" onClick={changeView}>
           <i className="bi bi-arrow-left-right" style={{'fontSize': '25px'}}></i>
+          {newOrderAvailable && <div className="red-dot position-absolute" style={{top: '5px', right: '5px'}} />}
         </button>
 
         <button className="btn btn-outline-light border-0 rounded-circle d-md-inline d-none" onClick={setFullScreen}>
@@ -112,9 +120,10 @@ export default function App( props: Props) {
           </button>
 
           <ul className="dropdown-menu dropdown-menu-end">
-            <DropDownItem name='View Orders' icon='list' href={APIRoutes.ADMIN_ORDERS_ADMIN} newTab />
-            <DropDownItem name='Manage Restaurant' icon='gear-wide-connected' href={APIRoutes.ADMIN_RESTAURANT_ADMIN} newTab />
-            <DropDownItem name='Logout' icon='box-arrow-right' href={APIRoutes.ADMIN_LOGOUT}/>
+            <DropDownItem name='View Orders' icon='list' href={BASEUrl + APIRoutes.ADMIN_ORDERS_ADMIN} newTab />
+            <DropDownItem name='Manage Restaurant' icon='gear-wide-connected' href={BASEUrl+APIRoutes.ADMIN_RESTAURANT_ADMIN} newTab />
+            <DropDownItem name='Menu' icon='grid' href={PATHS.MENU_LIST} />
+            <DropDownItem name='Logout' icon='box-arrow-right' href={BASEUrl+APIRoutes.ADMIN_LOGOUT}/>
           </ul>
         </div>
         
@@ -131,7 +140,7 @@ type DropDownItemProps = {
     icon: string
     forSmallScreenOnly?: boolean
     onClick?: ()=>void
-    href?: string
+    href: string
     newTab?: boolean
   }
 
@@ -149,12 +158,12 @@ type DropDownItemProps = {
       
         <li>
           
-            <a className={`dropdown-item p-3 align-items-center ${display}`} href={props.href} onClick={handleClick} target={props.newTab?"_blank":"_self"}>
+            <Link className={`dropdown-item p-3 align-items-center ${display}`} to={props.href} onClick={handleClick} target={props.newTab?"_blank":"_self"}>
             <i className={`bi bi-${props.icon} mx-2`} style={{'fontSize': '25px'}}></i>
               <span>
                 {props.name}
               </span>
-            </a>
+            </Link>
           
         </li>
       

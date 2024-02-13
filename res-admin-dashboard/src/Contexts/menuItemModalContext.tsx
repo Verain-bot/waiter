@@ -2,8 +2,9 @@ import React, { createContext, useEffect } from "react";
 
 type PauseResumeItemModalType ={
     show: boolean
-    menuItemID: string
+    menuItemID: string | number
     itemName: string
+    currentlyActive: boolean
   }
   
 type PauseResumeItemModalContextType = [PauseResumeItemModalType , React.Dispatch<React.SetStateAction<PauseResumeItemModalType>>]
@@ -11,7 +12,7 @@ type PauseResumeItemModalContextType = [PauseResumeItemModalType , React.Dispatc
 const PauseResumeItemModalContext = createContext<PauseResumeItemModalContextType | null>(null)
 
 export const PauseResumeItemModalProvider = ({children}: {children: React.ReactNode})=>{
-    const x = React.useState<PauseResumeItemModalType>({show: false, menuItemID: '', itemName: ''})
+    const x = React.useState<PauseResumeItemModalType>({show: false, menuItemID: '', itemName: '', currentlyActive: false})
 
     return(
         <PauseResumeItemModalContext.Provider value={x}>

@@ -6,6 +6,27 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { OrderContextProvider } from './Contexts/orderContext';
 import { PauseResumeItemModalProvider } from './Contexts/menuItemModalContext';
+import MenuListView from './views/menuListView';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import OrderListView from './views/orderListView';
+import ItemListView from './views/itemListView';
+import Error from './views/error';
+import RouteList from './helper/routeList';
+
+const router = createBrowserRouter([{
+  path: '/',
+  element: <App />,
+  errorElement: <Error />,
+  // @ts-ignore
+  children: RouteList.map((route)=>({
+    path: route.path,
+    element: route.element,
+    loader: route.ldr,
+    action: route.action
+  }))
+}])
+
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -13,7 +34,7 @@ root.render(
   <React.StrictMode>
   <PauseResumeItemModalProvider >
     <OrderContextProvider>
-      <App />
+      <RouterProvider router={router}/>
     </OrderContextProvider>
   </PauseResumeItemModalProvider>
   </React.StrictMode>

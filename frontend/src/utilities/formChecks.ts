@@ -35,7 +35,8 @@ export const checkPhone = (phone : string | number) : [boolean, ActionErrorDataT
         errors:[]
     }
 
-    return [true, notErr]
+    if(process.env.NODE_ENV === 'development')
+        return [true, notErr]
 
     const regex = new RegExp('^[0-9]{10}$')
     const r = regex.test(String(phone))
