@@ -1,4 +1,5 @@
 export const APIRoutes = {
+    'ADMIN_LOGIN': '/restaurant/admin/login/',
     'ADMIN_ORDERS': '/restaurant/admin/orders/',
     'ADMIN_LOGOUT': '/restaurant/admin/logout/',
     'ADMIN_RESTAURANT_ADMIN': '/admin/api/restaurant/',

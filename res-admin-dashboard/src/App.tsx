@@ -9,7 +9,7 @@ import OrderCard from './components/orderCard'
 import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 import { useOrderContext } from './Contexts/orderContext';
 import { useEffect, useState } from 'react';
-import { makeRequest } from './helper/fetchData';
+import { BASEUrl, makeRequest } from './helper/fetchData';
 import { APIRoutes } from './helper/APIRoutes';
 import {  sendPushToken } from './helper/firebase';
 import OrderListView from './views/orderListView';
@@ -17,7 +17,7 @@ import PromptModal from './components/modals/promptModal';
 import ItemListView from './views/itemListView';
 import PauseResumeMenuItemModal from './components/modals/pauseResumeMenuItemModal';
 import MenuListView from './views/menuListView';
-import {Outlet} from 'react-router-dom'
+import {Outlet, useNavigate} from 'react-router-dom'
 
 type Item = {
   id: number;
@@ -104,22 +104,31 @@ const App = ()=> {
   
   const [name, setName] = useState<string>('Orders')
   const [view,setView] = useState<Views>(Views.ORDERS)
-  
+
   const getData = async()=>{
     const req = new Request(APIRoutes.ADMIN_GET_DETAILS, { method: 'GET'})
-    const res = await makeRequest(APIRoutes.ADMIN_GET_DETAILS, req, new FormData)
-
+    try{
+      const res = await makeRequest(APIRoutes.ADMIN_GET_DETAILS, req, new FormData)
+      if (!res.response.ok)
+      //@ts-ignore
+        window.location = BASEUrl+APIRoutes.ADMIN_LOGIN
     const currentToken = res.json.token
     setName(res.json.restaurant)
 
     if ('serviceWorker' in navigator && 'PushManager' in window && Notification.permission === 'granted'){
         sendPushToken(currentToken)
       }
+    }
+    catch(err){
+      console.log('error Caught')
+      //@ts-ignore
+      
+      console.log(err)
+    }
   }
 
   useEffect(()=>{
     getData()
-    
   },[])
 
 

@@ -32,9 +32,15 @@ export const OrderContextProvider = ({children}: {children: React.ReactNode})=>{
     }
 
     const loadData =async ()=>{
-        const x = await getData(APIRoutes.ADMIN_ORDERS, new AbortController().signal)
-        const j = await x.json()
-        setOrderSorted(j.results)
+        try{
+
+            const x = await getData(APIRoutes.ADMIN_ORDERS, new AbortController().signal)
+            const j = await x.json()
+            setOrderSorted(j.results)
+        }
+        catch(e){
+            console.log(e)
+        }
     }
 
     const updateData = async()=>{

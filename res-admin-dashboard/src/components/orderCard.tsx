@@ -18,9 +18,8 @@ type OrderActionItemType = {
 
 export default function OrderCard(props : OrderType) {
     
-    
     const orderTime = new Date(props.time)
-
+    const [orders , setOrderContext] = useOrderContext()
     const [showDetails, setShowDetails] = useState(false)
 
 
@@ -105,6 +104,42 @@ export default function OrderCard(props : OrderType) {
         })
     })
 
+    const handleClickCheck = async ()=>{
+        let newOrderState : OrderStatusType
+        if (orderState === 'NOT_CONFIRMED'){
+            newOrderState = 'PREPARING'
+        }
+        else{
+            newOrderState = 'COMPLETE'
+        }
+
+        const r = new Request(APIRoutes.ADMIN_UPDATE_ORDER_STATUS, {
+            method: 'PUT',
+        })
+
+        const fd = new FormData()
+        fd.append('orderStatus', newOrderState)
+        
+        if (orders)
+        setOrderContext(orders.map(order=>{
+            if(order.id == props.id)
+                return {...order, orderStatus: newOrderState}
+            return order
+        }))
+
+        setOrderState(newOrderState)
+
+        const {json, response, message} = await makeRequest(makeURL(APIRoutes.ADMIN_UPDATE_ORDER_STATUS, {'pk': props.id}), r,fd )
+        
+        if (!response.ok){
+            console.error(json, response, message)
+            alert('Something went wrong, please refresh the page.')
+            return
+        }
+        if (newOrderState !== json.orderStatus)
+            setOrderState(json.orderStatus)
+    }
+
   return (
     <motion.div layout='preserve-aspect' layoutId={String(props.id)}  transition={{ type: "spring", stiffness: 100, damping: 12}} className="col-12 p-0" data-bs-theme='light'>
         
@@ -118,7 +153,7 @@ export default function OrderCard(props : OrderType) {
                 <span className={`badge bg-${color}-subtle border border-${color}-subtle text-${color}-emphasis rounded-pill`} data-bs-theme='dark'>
                     {selectedAction?.orderStatus}
                 </span>
-                    <i className={`bi bi-check-circle text-${color}-emphasis p-0 mx-2 my-0`} style={{fontSize: 20, top: 0, right: 3}}></i>
+                    <i className={`bi bi-check-circle text-${color}-emphasis p-0 mx-2 my-0`} style={{fontSize: 20, top: 0, right: 3}} onClick={handleClickCheck} />
                 </div>
             </div>
         </div>
