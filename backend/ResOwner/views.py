@@ -1,6 +1,7 @@
 from typing import Any
 from django import http
-from django.shortcuts import render
+from django.contrib.auth import logout
+from django.shortcuts import render, redirect
 from django.http import HttpRequest, HttpResponse
 from django.contrib.auth.views import LoginView, LogoutView
 from api.models import Restaurant, Customer, Order, MenuItem
@@ -100,8 +101,15 @@ class UpdateOrderView(generics.RetrieveUpdateAPIView):
 
         return Response(serializer.data)
 
-class OwnerLogoutView(LogoutView):
-    next_page = reverse('owner-login')
+class OwnerLogoutView(views.APIView):
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            logout(request)
+            
+        request.session.flush()
+
+        return redirect(reverse('owner-login'))
     
 @decorators.login_required(login_url=reverse('owner-login'))
 @decorators.user_passes_test(lambda u: u.groups.filter(name='RestaurantOwner').exists())

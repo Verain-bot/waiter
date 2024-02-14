@@ -1,9 +1,10 @@
 import React from 'react'
 import { LoaderFunction, useLoaderData, useNavigate, useNavigation } from 'react-router'
-import { makeRequest } from '../helper/fetchData'
+import { BASEUrl, makeRequest } from '../helper/fetchData'
 import { APIRoutes } from '../helper/APIRoutes'
 import PauseResumeMenuItemModal from '../components/modals/pauseResumeMenuItemModal'
 import { usePauseResumeItemModal } from '../Contexts/menuItemModalContext'
+import { redirect } from 'react-router-dom'
 
 type MenuFetch = {
   id: number
@@ -121,5 +122,8 @@ const ListItem = (props : ListItemProps)=>{
 
 export const MenuListLoader : LoaderFunction = async (Arg) =>{
   const {json,message, response} = await makeRequest(APIRoutes.ADMIN_MENU, Arg.request, new FormData())
+
+  if (response.status === 403)
+    return redirect(BASEUrl + APIRoutes.ADMIN_LOGIN)
   return json.results
 }
