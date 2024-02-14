@@ -31,17 +31,27 @@ export default function App( props: Props) {
     })
     
     setFetching(true)
-    const  {json} = await makeRequest(APIRoutes.ADMIN_ACCEPTING_ORDERS, r, new FormData())
-    setFetching(false)
+    try{
 
+      const  {json} = await makeRequest(APIRoutes.ADMIN_ACCEPTING_ORDERS, r, new FormData())
+      setFetching(false) 
+      setIsTakingOrders(json.available)
+    }
+    catch(err){
+      console.log(err)
+      setFetching(false)
 
-    setIsTakingOrders(json.available)
+    }
   }
 
   const init = async ()=>{
-    const response = await getData(APIRoutes.ADMIN_ACCEPTING_ORDERS, new AbortController().signal)
-    const json = await response.json()
-    setIsTakingOrders(json.available)
+    try{
+      const response = await getData(APIRoutes.ADMIN_ACCEPTING_ORDERS, new AbortController().signal)
+      const json = await response.json()
+      setIsTakingOrders(json.available)
+    }
+    catch(err){
+    }
   }
 
   useEffect(()=>{
@@ -88,7 +98,7 @@ export default function App( props: Props) {
             {props.name}
           </h3>
         </div>
-        <div className="ms-auto dropdown">
+        <div className="ms-auto dropdown d-flex align-items-center justify-content-center">
 
         <button className="btn btn-outline-light border-0 rounded-circle position-relative" onClick={changeView}>
           <i className="bi bi-arrow-left-right" style={{'fontSize': '25px'}}></i>
@@ -102,18 +112,23 @@ export default function App( props: Props) {
               <i className="bi bi-fullscreen" style={{'fontSize': '25px'}}></i>}
         </button>
           
-          <span className="mx-3 d-inline">
-            <span className="d-md-inline d-none">
+          <div className="mx-3 d-flex align-items-center justify-content-center">
+            <span className="d-md-block d-none">
               {isTakingOrders?"Pause Orders":"Resume Orders"}
             </span>
+
             <button className='btn btn-outline-light border-0 rounded-circle ' onClick={()=>setShowModal(true)} disabled={fetching}>
               {isTakingOrders?
-                <i className="bi bi-pause-circle" style={{'fontSize': '25px'}}></i>
+                <i className="bi bi-pause-circle" style={{'fontSize': '25px'}} ></i>
                 :
-                <i className="bi bi-play-circle" style={{'fontSize': '25px'}}></i>
+                <i className="bi bi-play-circle" style={{'fontSize': '25px'}} ></i>
               }
             </button>
-          </span>
+              
+              <div className={isTakingOrders?"green-dot": "red-dot"} data-bs-theme='dark'></div>
+          </div>
+
+          
 
           <button className='btn btn-outline-light  border-0 rounded-circle ' data-bs-toggle="dropdown">
             <i className="bi bi-person-circle" style={{'fontSize': '25px'}}></i>
@@ -157,14 +172,12 @@ type DropDownItemProps = {
     return (
       
         <li>
-          
             <Link className={`dropdown-item p-3 align-items-center ${display}`} to={props.href} onClick={handleClick} target={props.newTab?"_blank":"_self"}>
             <i className={`bi bi-${props.icon} mx-2`} style={{'fontSize': '25px'}}></i>
               <span>
                 {props.name}
               </span>
             </Link>
-          
         </li>
       
     )
