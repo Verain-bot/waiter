@@ -42,7 +42,7 @@ export default function Footer() {
             </span>
 
             <span className='text-secondary text-center my-2 ' style={style}>
-                Application version : v2.3
+                Application version : v2.3.2
             </span>
 
             <span className='text-secondary text-center my-2 ' style={style}>

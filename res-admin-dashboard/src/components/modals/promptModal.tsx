@@ -19,7 +19,8 @@ export default function PromptModal( props : Props) {
     }
 
     useEffect(()=>{
-        if (Notification.permission !== 'granted')
+
+        if ('Notification' in window && Notification.permission !== 'granted')
         {
             const t = setTimeout( showModal , 1000)
             return ()=>{
@@ -38,6 +39,11 @@ export default function PromptModal( props : Props) {
             console.error(e)
         }
     }
+
+    if (!('Notification' in window))
+    return(
+        <></>
+        )
 
     if (Notification.permission==='default')
     return (

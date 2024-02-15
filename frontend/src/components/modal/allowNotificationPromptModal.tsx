@@ -15,13 +15,17 @@ const NotificationPromptModal = ()=>{
     }
 
     const handleAllow = async ()=>{
-        const permission = await Notification.requestPermission()
-        sendPushToken('token')
-        closeModal()
+        if ('Notification' in window)
+        {
+            const permission = await Notification.requestPermission()
+            sendPushToken('token')
+            closeModal()
+        }
     }
 
     useEffect(()=>{
-        if (Notification.permission !== 'granted')
+
+        if ('Notification' in window && Notification.permission !== 'granted')
         {
             const t = setTimeout(openModal, 2000)
 
@@ -30,6 +34,11 @@ const NotificationPromptModal = ()=>{
         }
     }
     },[])
+
+    if (!('Notification' in window))
+    return(
+        <></>
+        )
 
 
     if (Notification.permission === 'default')
