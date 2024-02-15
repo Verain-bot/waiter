@@ -1,4 +1,4 @@
-export const BASEUrl = process.env.NODE_ENV !== 'production'? 'http://localhost:8000' : ''
+export const BASEUrl = process.env.NODE_ENV !== 'production'? 'http://localhost:8000' : 'https://admin.toone.in'
 
 export const getData : (url: string, signal: AbortSignal ) => Promise<Response> = async (url,signal) =>{
 let response = new Response('',{statusText: 'Something went wrong.', status: 500})

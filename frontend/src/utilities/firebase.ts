@@ -20,7 +20,11 @@ export const getMessagingInstance = async () => {
 
 
 export const sendPushToken = async (currentToken: string)=>{
+    if (!('Notification' in window && Notification.permission === 'granted'))
+        return null
+
     const messaging = await getMessagingInstance()
+    console.log('Sending push token to server. ', currentToken, messaging)
     if (!('serviceWorker' in navigator) || !messaging)
         return null
     const SWregistration = await navigator.serviceWorker.ready

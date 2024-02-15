@@ -18,6 +18,7 @@ import ItemListView from './views/itemListView';
 import PauseResumeMenuItemModal from './components/modals/pauseResumeMenuItemModal';
 import MenuListView from './views/menuListView';
 import {Outlet, useNavigate} from 'react-router-dom'
+import Footer from './components/footer';
 
 type Item = {
   id: number;
@@ -134,10 +135,13 @@ const App = ()=> {
 
   return (
     <>
+    <div style={{minHeight: '100vh'}}>
       <Header name={name}/>
       <PromptModal onAccept={getData} />
       <PauseResumeMenuItemModal />
       <Outlet />
+    </div>
+    <Footer />
     </>
   )
 }

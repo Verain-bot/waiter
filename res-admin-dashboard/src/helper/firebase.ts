@@ -15,6 +15,10 @@ export const messaging = getMessaging(app);
 
 
 export const sendPushToken = async (currentToken: string)=>{
+    
+    if (!('Notification' in window && Notification.permission === 'granted'))
+        return null
+
     if ('serviceWorker' in navigator && 'PushManager' in window && Notification.permission === 'granted')
     {
         const SWregistration = await navigator.serviceWorker.ready

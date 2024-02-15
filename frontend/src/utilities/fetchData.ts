@@ -1,7 +1,7 @@
 import { json } from 'react-router-dom'
 import APIRoutes from './APIRoutes'
 
-export const BASEUrl = 'http://localhost:8000'
+export const BASEUrl = process.env.NODE_ENV === 'development' ? 'http://abc.localhost:8000' : 'https://admin.toone.in'
 
 
 export const getData : (url: string, signal: AbortSignal ) => Promise<Response> = async (url,signal) =>{

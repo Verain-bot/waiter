@@ -31,6 +31,8 @@ else:
 
 ALLOWED_HOSTS = os.environ.get("V_ALLOWED_HOSTS").split(",")
 
+CSRF_COOKIE_DOMAIN=os.environ.get("V_COOKIE_DOMAIN") or 'localhost'
+
 # Application definition
 
 RES_ADMIN_URL = os.environ.get('V_RES_ADMIN_URL')
