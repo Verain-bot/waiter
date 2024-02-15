@@ -31,7 +31,8 @@ else:
 
 ALLOWED_HOSTS = os.environ.get("V_ALLOWED_HOSTS").split(",")
 
-CSRF_COOKIE_DOMAIN=os.environ.get("V_COOKIE_DOMAIN") or 'localhost'
+if os.environ.get("V_COOKIE_DOMAIN"):
+    CSRF_COOKIE_DOMAIN = os.environ.get("V_COOKIE_DOMAIN")
 
 # Application definition
 

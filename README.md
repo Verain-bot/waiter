@@ -80,6 +80,7 @@ V_RAZORPAY_KEY_SECRET
 REACT_APP_FIREBASE_CONFIG
 REACT_APP_VAPID_KEY
 REACT_APP_RZP_KEY
+V_COOKIE_DOMAIN                     "required in prod .toone.in (should start with .)"
 ```
 ## Other info
 
