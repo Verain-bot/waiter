@@ -1,5 +1,12 @@
 from django.db import models
-from api.models import Order
+from api.models import Order, Restaurant
+
+class AccountDetails(models.Model):
+    restaurant = models.OneToOneField(Restaurant, on_delete=models.DO_NOTHING, related_name='account_details')
+    account_id = models.CharField(max_length=50, primary_key=True)
+    
+    def __str__(self) -> str:
+        return self.restaurant.name + "\t" + self.account_id
 
 class PaymentStatus(models.Model):
     class PaymentGatewayChoices(models.TextChoices):

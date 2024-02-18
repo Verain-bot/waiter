@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PaymentStatus
+from .models import *
 # Register your models here.
 
 class PaymentStatusAdmin(admin.ModelAdmin):
@@ -8,3 +8,4 @@ class PaymentStatusAdmin(admin.ModelAdmin):
 
 
 admin.site.register(PaymentStatus, PaymentStatusAdmin)
+admin.site.register(AccountDetails)

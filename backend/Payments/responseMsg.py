@@ -15,7 +15,7 @@ ORDER_SERVER_ERROR = {
 
 ORDER_STATUS_CHECK_MESSAGE = lambda x: {
     "message": "Your payment was successful." if x else "Your payment was not successful",
-    "type": "error",
+    "type": "error" if x else "success",
 }
 
 ORDER_INVALID_FIELDS_PASSED = {
@@ -25,5 +25,10 @@ ORDER_INVALID_FIELDS_PASSED = {
 
 ORDER_NOT_PAID = {
     "message": "Payment unsuccessful",
+    "type": "error",
+}
+
+ORDER_NO_ACCOUNT_ID= {
+    "message": "No account id found for this restaurant",
     "type": "error",
 }

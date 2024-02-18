@@ -14,6 +14,7 @@ def process_payment_for_order(paymentId : int, data , success : bool):
     obj = PaymentStatus.objects.get(payment_id=paymentId)
     if not success:
         if not obj.success and obj.terminal_state:
+            obj.order.paymentStatus = Order.OrderPaymentStatusChoices.FAILED
             return {'success': False, 'paymentId': paymentId, 'msg': 'Payment already processed'}
         
         obj.success = False
@@ -22,12 +23,14 @@ def process_payment_for_order(paymentId : int, data , success : bool):
         if obj.order.paymentStatus == Order.OrderPaymentStatusChoices.PENDING:
             obj.order.paymentStatus = Order.OrderPaymentStatusChoices.FAILED
             obj.order.save()
-
+            
         obj.data = data
         obj.save()
         return {'success': False, 'paymentId': paymentId, 'msg': 'Payment failed'}
     
     if obj.success and obj.terminal_state:
+        obj.order.paymentStatus = Order.OrderPaymentStatusChoices.PAID
+        obj.order.save()
         return {'success': False, 'paymentId': paymentId, 'msg': 'Payment already processed'}
 
     obj.success = True

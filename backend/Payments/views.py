@@ -36,11 +36,29 @@ class RazorPayPayment(APIView):
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET))
         client.set_app_details({"title" : "Django App", "version" : "121.21"})
 
+        try:
+            account_id = order.restaurant.account_details.account_id
+            if not account_id:
+                return Response(msg.ORDER_NO_ACCOUNT_ID, status=400)
+        except:
+            return Response(msg.ORDER_NO_ACCOUNT_ID, status=400)
+
         x = client.order.create({
             "amount": order.price * 100,
             "currency": "INR",
             "receipt": f"ORDER #{order.id}",
             "partial_payment": False,
+            "transfers":[
+                {
+                    "account": account_id,
+                    "amount": order.price * 100,
+                    "currency":"INR",
+                    "notes":{
+                        "order_number" : order_id
+                    },
+                    "on_hold": 0
+                }
+            ]
         })
         
         id = x.get("id")
@@ -100,7 +118,7 @@ class RazorPayCheckStatus(APIView):
             if item.get('status') == 'captured':
                 success = True
                 break
-        
+        print(success, "success")
         process_payment_for_order.delay(latest_payment.payment_id, data, success)
 
         #print(success)
