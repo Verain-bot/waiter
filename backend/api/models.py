@@ -156,12 +156,10 @@ class Restaurant(models.Model):
     ]
 
     name = models.CharField(max_length=50, blank=True)
-    licenceNo = models.CharField(max_length=15, blank =True)
     restaurantType = models.CharField(max_length=30, blank = True)
     customers = models.ManyToManyField(Customer, related_name='customers', through=CustomerVisit)
     logo = models.ImageField(upload_to=restaurantUploadTo, blank=True)
     owner = models.ForeignKey(Customer, related_name='owner', on_delete=models.CASCADE)
-    location = models.CharField(max_length=30,blank=True)
     phone = models.PositiveBigIntegerField(blank=True, null=True)
     email = models.EmailField(blank=True)
     joinDate = models.DateField(default=now)

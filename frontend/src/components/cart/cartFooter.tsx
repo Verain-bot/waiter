@@ -36,7 +36,7 @@ export const CartFooter = (props : CartFooterProps) =>{
     }
 
     const makePayment = ()=>{
-        if (actionData){
+        if (actionData && err.length == 0){
             const RZP_orderID = actionData.RZP_Order_ID
             payUsingRazorPay(RZP_orderID, Razorpay, onPay, user.user)
         }
@@ -101,12 +101,13 @@ export const cartFooterAction : ( val:[LoginContextType, React.Dispatch<React.Se
 
     const x = await makeRequest(APIRoutes.RAZORPAY_INITIATE,requestForPayment, fd2)
 
-    if(!response.ok){
+    if(!x.response.ok){
         localStorage.setItem('cart', '[]')
         return {
             heading: "Something went wrong",
-            body: message,
-            type: "error"
+            body: x.message,
+            type: "error",
+            errors: [x.message]
         }
     }
 
