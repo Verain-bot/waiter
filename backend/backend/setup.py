@@ -85,5 +85,19 @@ def generateMenuFromCSV(path : str):
 
             print(f'{name} Created!')
 
-if __name__ == '__main__':
-    generateMenuFromCSV('/Users/verainsardana/Downloads/CafeMenu.csv')
+def decreasePriceByPercent():
+    res = int(input('Enter Restaurant Primary key: '))
+    percent = int(input('Enter percent to decrease: '))
+
+    res = Restaurant.objects.get(pk=res)
+    confirm = input(f"Decrease price by {percent}% for restaurant {res.name} (y/n): ")
+
+    if confirm.lower() != 'y':
+        return
+    
+    items = MenuItem.objects.filter(restaurant=res)
+    
+    for item in items:
+        item.price = item.price - (item.price * percent / 100)
+        item.price = item.price//1
+        item.save()

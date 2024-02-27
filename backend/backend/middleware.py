@@ -15,7 +15,7 @@ class AnalyticsMiddleware:
             time.sleep(0.7)
             return None
 
-        if request.path.startswith('/media') or request.path.startswith('/static'):
+        if request.path.startswith('/media') or request.path.startswith('/static') or (request.user.is_authenticated and request.user.is_staff):
             return None
         
         pathname = str(view_func.__name__).lower().removesuffix('view')
