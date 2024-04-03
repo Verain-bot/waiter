@@ -2,25 +2,44 @@ import React, { useContext, useState, useEffect, useRef } from "react";
 import { useSearchContext } from "../../context/SearchContext";
 
 type SearchBarProps = {
-    cref: React.RefObject<HTMLDivElement>;
+    visible: boolean
+    setVisible: React.Dispatch<React.SetStateAction<boolean>>
 };
 
 export const SearchBar: React.FC<SearchBarProps> = (props) => {
     const [search, setSearch] = useSearchContext()
     const searchBarRef = useRef<HTMLInputElement>(null);
-
+    const className = props.visible? "search-bar search-bar-show":"search-bar"
+    
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (props.cref.current) {
-            props.cref.current.classList.toggle("search-bar-show");
-        }
-        
+        props.setVisible(false)
         setSearch(searchBarRef.current?.value || "");
         return false;
     };
 
+    useEffect(()=>{
+        if (props.visible)
+        {
+            const t = setTimeout(()=>
+            {
+                if (searchBarRef.current)
+                searchBarRef.current.focus()
+            },100)
+            
+            return ()=>clearTimeout(t)
+
+        }
+    },[props.visible])
+
+    if (search.length === 0)
+    {   
+        if (searchBarRef.current)
+            searchBarRef.current.value = ''
+    }
+
     return (
-        <div className="search-bar" ref={props.cref}>
+        <div className={className}>
             <form className="search-form d-flex align-items-center" onSubmit={submit}>
                 <input
                     type="text"
@@ -38,15 +57,10 @@ export const SearchBar: React.FC<SearchBarProps> = (props) => {
     );
 };
 
-type ToggleSearchBarProps = {
-    cref: React.RefObject<HTMLDivElement>;
-};
 
-export const ToggleSearchBar: React.FC<ToggleSearchBarProps> = (props) => {
+export const ToggleSearchBar: React.FC<SearchBarProps> = (props) => {
     const toggleSearchBar = () => {
-        if (props.cref.current) {
-            props.cref.current.classList.toggle("search-bar-show");
-        }
+        props.setVisible((prev) => !prev)
     };
 
     return (

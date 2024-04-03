@@ -1,4 +1,4 @@
-import React, { useRef} from 'react';
+import React, { useRef, useState} from 'react';
 import { SearchBar, ToggleSearchBar } from './search';
 import { AccountDropDown } from './accountDropDown';
 import { SideBar, ToggleSideBar } from './sidebar';
@@ -9,18 +9,18 @@ import ReloadHeaderBtn from './ReloadHeaderBtn';
 type HeaderProps = {};
 
 export const Header: React.FC<HeaderProps> = (props) => {
-    const searchBar = useRef<HTMLInputElement | null>(null);
+    const [searchBarVisible, setSearchBarVisible] = useState(false)
 
     const searchBarState = useSearchBarContext()[0]
-
+    
     return (
         <>
             <header id="header" className="header fixed-top d-flex align-items-center">
                 <ToggleSideBar />
-                {searchBarState && <SearchBar cref={searchBar} />}
+                {searchBarState && <SearchBar visible={searchBarVisible} setVisible={setSearchBarVisible} />}
                 <nav className="header-nav ms-auto">
                     <ul className="d-flex align-items-center">
-                        {searchBarState && <ToggleSearchBar cref={searchBar} />}
+                        {searchBarState && <ToggleSearchBar visible={searchBarVisible} setVisible={setSearchBarVisible} />}
                         <ReloadHeaderBtn />
                         <CartHeader />
                         <AccountDropDown />

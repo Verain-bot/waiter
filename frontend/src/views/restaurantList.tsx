@@ -34,7 +34,7 @@ export type ArrayResponseFetch<T> = {
 const App = ({data} : {data : ArrayResponseFetch<RestaurantListItemFetch>})=>{
 
     const search = useSearchBar()
-    const filteredRestaurants = Search(data.results,search,'name').filter((item)=>item.acceptingOrders)
+    const filteredRestaurants = Search(data.results,search,['name']).filter((item)=>item.acceptingOrders)
     
     if (filteredRestaurants.length === 0)
         return(

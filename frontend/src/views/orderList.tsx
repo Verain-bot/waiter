@@ -22,7 +22,7 @@ const App = ({data} : {data : ArrayResponseFetch<OrderListTypeFetch>})=>{
 
     const search = useSearchBar()
     
-    const results = Search(data.results,search,'restaurant.name')
+    const results = Search(data.results,search,['restaurant.name'])
     
     if (results.length==0 && search.length===0)
         return(

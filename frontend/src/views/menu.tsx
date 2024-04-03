@@ -64,7 +64,7 @@ const App = ({data} : {data: RestaurantDetailsFetch}) =>{
     const [filterSelections, setFilterSelections] = useState(new Set<string>())
     const [menuItems, setMenuItems] = useState<MenuItemListFetch[]>(data.menu)
     
-    const MItoDisplay = getSectionsFromMenu(Search(menuItems,search,'name'))
+    const MItoDisplay = getSectionsFromMenu(Search(menuItems,search,['name','itemType']))
     const navigate = useNavigate()
     
     useEffect(()=>{

@@ -233,12 +233,6 @@ export const MenuCustomizationModal = ()=>{
                     Close
                 </Button>:footer}
             </Modal.Footer>
-            
-
-            
-                
-            
-            
         </Modal>
     )
 }

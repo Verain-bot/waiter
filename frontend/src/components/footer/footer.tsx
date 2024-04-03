@@ -38,11 +38,10 @@ export default function Footer() {
 
             <span className='text-secondary text-center my-2 ' style={style}>
                 This is a Progressive Web App (PWA) for more information on the installation of this app please click <Link to={PATHS.PWA_INFO} > here </Link>.
-                
             </span>
 
             <span className='text-secondary text-center my-2 ' style={style}>
-                Application version : v2.3.3
+                Application version : v2.3.4
             </span>
 
             <span className='text-secondary text-center my-2 ' style={style}>

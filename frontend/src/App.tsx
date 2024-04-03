@@ -14,6 +14,7 @@ import RouteList, { PATHS, PathType } from './utilities/routeList';
 import Footer from './components/footer/footer';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorComp from './components/error/ErrorComp';
+import { useSearchContext } from './context/SearchContext';
 
 const App = () => {
   const [login, setLogin] = useLoginContext()
@@ -21,9 +22,11 @@ const App = () => {
   const matches = useMatches()
   const navigate = useNavigate()
   const [message, setMessage] = useMessageContext()
+  const [search, setSearch] = useSearchContext()
 
   useEffect(()=>{
     window.scrollTo(0,0)
+    setSearch('')
     if(matches.length > 0 && login.login !== null)
       {
         // find index
